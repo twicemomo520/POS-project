@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 //排除帳密登入驗證就是加上 exclude = SecurityAutoConfiguration.class
 //等號後面若有多個class時，就要用大括號，只有一個時大括號可有可無
 //
+//
 @SpringBootApplication(exclude= {SecurityAutoConfiguration.class})
 public class Pos10Application {
 
