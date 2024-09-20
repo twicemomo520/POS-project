@@ -23,5 +23,34 @@ public class ComboItems {
 
 	@Column(name = "combo_description")
 	private String comDescription;
+
+	public ComboItems() {
+		super();
+	}
+
+	public ComboItems(@NotBlank(message = "Combo name cannot be null or empty !!") String comboName, String comboDetail,
+			int discountAmount, String comDescription) {
+		super();
+		this.comboName = comboName;
+		this.comboDetail = comboDetail;
+		this.discountAmount = discountAmount;
+		this.comDescription = comDescription;
+	}
+
+	public String getComboName() {
+		return comboName;
+	}
+
+	public String getComboDetail() {
+		return comboDetail;
+	}
+
+	public int getDiscountAmount() {
+		return discountAmount;
+	}
+
+	public String getComDescription() {
+		return comDescription;
+	}
 	
 }

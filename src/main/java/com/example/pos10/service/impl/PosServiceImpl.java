@@ -19,6 +19,7 @@ import com.example.pos10.repository.OptionsDao;
 import com.example.pos10.repository.OrderDetailHistoryDao;
 import com.example.pos10.service.ifs.PosService;
 import com.example.pos10.vo.BasicRes;
+import com.example.pos10.vo.CreateCbReq;
 import com.example.pos10.vo.CreateCgReq;
 import com.example.pos10.vo.CreateReq;
 import com.example.pos10.vo.JoinOrderVo;
@@ -110,5 +111,22 @@ public class PosServiceImpl implements PosService{
 		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
 	}
 
+	@Override
+	public BasicRes createCombo(CreateCbReq req) {
+		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 }
