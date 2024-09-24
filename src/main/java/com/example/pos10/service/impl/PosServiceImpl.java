@@ -76,25 +76,25 @@ public class PosServiceImpl implements PosService{
 	@Override
 	public BasicRes create(CreateReq req) {
 		String mealName = req.getMealName();
-		// ­Y¸ê®Æ®w§ä¨ì¤@¼ËªºmealName¼Æ¶q¤j©ó0¡Aªí¥ÜmealName¦s¦b©ó¸ê®Æ®w
+		// ï¿½Yï¿½ï¿½Æ®wï¿½ï¿½ï¿½@ï¿½Ëªï¿½mealNameï¿½Æ¶qï¿½jï¿½ï¿½0ï¿½Aï¿½ï¿½ï¿½mealNameï¿½sï¿½bï¿½ï¿½ï¿½Æ®w
 		if (menuItemsDao.existsByMealName(mealName) > 0) {
-			// ªð¦^µæ³æ¤w¦s¦bªº¿ù»~°T®§
+			// ï¿½ï¿½^ï¿½ï¿½ï¿½wï¿½sï¿½bï¿½ï¿½ï¿½ï¿½ï¿½~ï¿½Tï¿½ï¿½
 			return new BasicRes(ResMessage.MEAL_NAME_EXISTS.getCode(), ResMessage.MEAL_NAME_EXISTS.getMessage());
 		}
 		int categoryId = req.getCategoryId();
-		// ±ý·s¼WªºcategoryId¥²¶·¤w¦s¦b
+		// ï¿½ï¿½ï¿½sï¿½Wï¿½ï¿½categoryIdï¿½ï¿½ï¿½ï¿½ï¿½wï¿½sï¿½b
 		if(categoriesDao.optionExists(categoryId) == 0) {
-			// ­Y¤£¦s¦bªð¦^¿ù»~°T®§
+			// ï¿½Yï¿½ï¿½ï¿½sï¿½bï¿½ï¿½^ï¿½ï¿½ï¿½~ï¿½Tï¿½ï¿½
 			return new BasicRes(ResMessage.CATEGORYID_NOT_FOUND.getCode(), ResMessage.CATEGORYID_NOT_FOUND.getMessage());
 		}
-		// ¥ÎJpaªºsave¦s¶i¸ê®Æ®w¡A©w¸qÅÜ¼Æres
+		// ï¿½ï¿½Jpaï¿½ï¿½saveï¿½sï¿½iï¿½ï¿½Æ®wï¿½Aï¿½wï¿½qï¿½Ü¼ï¿½res
 		MenuItems res = menuItemsDao.save(new MenuItems(mealName, req.getMealDescription(), categoryId, req.getWorkstationId(), req.getPrice()));
 		List<Options> optionsList = req.getOptionsList();
-		// ¨ú¥XresªºcategoryId¶ë¶ioptionsListªº¨C¤@­Ócg_id
+		// ï¿½ï¿½ï¿½Xresï¿½ï¿½categoryIdï¿½ï¿½ioptionsListï¿½ï¿½ï¿½Cï¿½@ï¿½ï¿½cg_id
 		optionsList.forEach(item ->{
 			item.setCategoryId(res.getCategoryId());
 		});
-		// Jpa ªº saveAll(saveAll¬O°}¦Cªº¦sªk)
+		// Jpa ï¿½ï¿½ saveAll(saveAllï¿½Oï¿½}ï¿½Cï¿½ï¿½ï¿½sï¿½k)
 		optionsDao.saveAll(optionsList);
 		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
 	}
@@ -102,9 +102,9 @@ public class PosServiceImpl implements PosService{
 	@Override
 	public BasicRes createCategory(CreateCgReq req) {
 		String categoryName = req.getCategory();
-		// ·s¼WÀ\ÂI¤ÀÃþ¡A·s¼WªºÃþ§O¦WºÙ¤£¯à¤w¦s¦b
+		// ï¿½sï¿½Wï¿½\ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½sï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½Wï¿½Ù¤ï¿½ï¿½ï¿½wï¿½sï¿½b
 		if(categoriesDao.cgNameExists(categoryName) > 0) {
-			//¦^¶Ç¿ù»~°T®§
+			//ï¿½^ï¿½Ç¿ï¿½ï¿½~ï¿½Tï¿½ï¿½
 			return new BasicRes(ResMessage.CATEGORYID_ALREADY_EXISTS.getCode(), ResMessage.CATEGORYID_ALREADY_EXISTS.getMessage());
 		}
 		categoriesDao.insert(categoryName);
