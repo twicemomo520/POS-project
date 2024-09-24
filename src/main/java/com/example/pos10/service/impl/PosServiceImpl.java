@@ -9,6 +9,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.example.pos10.constants.ResMessage;
 import com.example.pos10.entiey.MenuItems;
@@ -51,12 +52,12 @@ public class PosServiceImpl implements PosService{
 		LocalDate endDateInput = req.getEndDate();
 		
 
-		if (startDateInput == null) {
+		if (endDateInput == null) {
 			startDateInput = LocalDate.of(1900, 1, 1);
 		}
 
 		if (endDateInput == null) {
-			endDateInput = LocalDate.of(1900, 1, 1);
+			endDateInput = LocalDate.of(2999, 1, 1);
 		}
 		
 
