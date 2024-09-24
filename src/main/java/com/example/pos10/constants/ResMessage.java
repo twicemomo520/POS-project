@@ -6,7 +6,9 @@ public enum ResMessage {
 	PLEASE_LOGIN_FIRST(400, "Please login first"),//
 	MEAL_NAME_EXISTS(400, "Meal name exists !"),//
 	CATEGORYID_NOT_FOUND(404, "Category id not FOUND !"),//
-	CATEGORYID_ALREADY_EXISTS(400, "Category already exists !");
+	CATEGORYID_ALREADY_EXISTS(400, "Category already exists !"),
+	ANNOUNCE_NOT_FOUND(400,"Announce not found"),
+	WORKSTATION_ALREADY_EXISTS(400,"Workstation already exists");
 	
 	
 	private int code;
