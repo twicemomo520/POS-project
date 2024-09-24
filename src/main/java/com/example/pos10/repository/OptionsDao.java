@@ -13,7 +13,7 @@ import com.example.pos10.entiey.Options;
 @Repository
 public interface OptionsDao extends JpaRepository<Options, Integer> {
 	
-	//·s¼W¸ê®Æ
+	//æ–°å¢žè³‡æ–™
 	@Modifying
 	@Transactional
 	@Query(value="insert into options "

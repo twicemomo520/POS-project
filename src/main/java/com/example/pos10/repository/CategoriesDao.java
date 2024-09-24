@@ -13,15 +13,15 @@ import com.example.pos10.entiey.Categories;
 @Repository
 public interface CategoriesDao extends JpaRepository<Categories, Integer> {
 
-	// select categoryId¤w¦s¦b¡ADBªº¦WºÙ¬Ocategory_id¡Ajavaºİªº¦WºÙ¬°categoryId
+	// select categoryIdå·²å­˜åœ¨ï¼ŒDBçš„åç¨±æ˜¯category_idï¼Œjavaç«¯çš„åç¨±ç‚ºcategoryId
 	@Query(value = "SELECT COUNT(1) FROM categories WHERE category_id = :categoryId", nativeQuery = true)
 	public int optionExists(@Param("categoryId") int categoryId);
 	
-	// select ¤ÀÃş¦WºÙ¬O§_¦s¦b¡A¦^¶Ç·j´Mµ²ªG¬Û¦Pªº¼Æ¶q
+	// select åˆ†é¡åç¨±æ˜¯å¦å­˜åœ¨ï¼Œå›å‚³æœå°‹çµæœç›¸åŒçš„æ•¸é‡
 	@Query(value = "select count(1) from categories where category = :categoryName", nativeQuery = true)
 	public int cgNameExists(@Param("categoryName") String categoryName);
 
-	// ·s¼W¸ê®Æ
+	// æ–°å¢è³‡æ–™
 	@Modifying
 	@Transactional
 	@Query(value = "insert into categories (category) values (:category)", nativeQuery = true)
