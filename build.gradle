@@ -16,9 +16,9 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	//驗證參數用
+	//嚙踝蕭嚙課參數伐蕭
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	//security:為了使用BCryptPasswordEncoder
+	//security:嚙踝蕭嚙瘤嚙誕伐蕭BCryptPasswordEncoder
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	//JPA
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
