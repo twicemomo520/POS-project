@@ -4,9 +4,9 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import com.example.pos10.entiey.Categories;
-import com.example.pos10.entiey.MenuItems;
-import com.example.pos10.entiey.Options;
+import com.example.pos10.entity.Categories;
+import com.example.pos10.entity.MenuItems;
+import com.example.pos10.entity.Options;
 
 public class CreateReq extends MenuItems {
 	

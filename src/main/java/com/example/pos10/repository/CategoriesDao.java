@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.example.pos10.entiey.Categories;
+import com.example.pos10.entity.Categories;
 
 @Repository
 public interface CategoriesDao extends JpaRepository<Categories, Integer> {

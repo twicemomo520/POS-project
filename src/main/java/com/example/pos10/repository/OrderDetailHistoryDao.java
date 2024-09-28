@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.example.pos10.entiey.OrderDetailHistory;
-import com.example.pos10.entiey.OrderHistory;
+import com.example.pos10.entity.OrderDetailHistory;
+import com.example.pos10.entity.OrderHistory;
 import com.example.pos10.vo.JoinOrderVo;
 
 public interface OrderDetailHistoryDao extends JpaRepository<OrderDetailHistory, Integer>{

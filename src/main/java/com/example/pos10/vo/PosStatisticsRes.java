@@ -2,8 +2,8 @@ package com.example.pos10.vo;
 
 import java.util.List;
 
-import com.example.pos10.entiey.OrderDetailHistory;
-import com.example.pos10.entiey.OrderHistory;
+import com.example.pos10.entity.OrderDetailHistory;
+import com.example.pos10.entity.OrderHistory;
 
 public class PosStatisticsRes extends BasicRes{
 	private List<JoinOrderVo> joinOrderList;

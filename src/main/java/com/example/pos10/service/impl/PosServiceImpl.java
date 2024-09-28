@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.pos10.constants.ResMessage;
-import com.example.pos10.entiey.MenuItems;
-import com.example.pos10.entiey.Options;
+import com.example.pos10.entity.MenuItems;
+import com.example.pos10.entity.Options;
 import com.example.pos10.repository.CategoriesDao;
 import com.example.pos10.repository.MenuItemsDao;
 import com.example.pos10.repository.OptionsDao;

@@ -2,7 +2,7 @@ package com.example.pos10.vo;
 
 import javax.validation.constraints.NotBlank;
 
-import com.example.pos10.entiey.ComboItems;
+import com.example.pos10.entity.ComboItems;
 
 public class CreateCbReq extends ComboItems {
 

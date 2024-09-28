@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.example.pos10.entiey.MenuItems;
+import com.example.pos10.entity.MenuItems;
 
 @Repository
 public interface MenuItemsDao extends JpaRepository<MenuItems, String> {

@@ -1,6 +1,6 @@
 package com.example.pos10.vo;
 
-import com.example.pos10.entiey.Categories;
+import com.example.pos10.entity.Categories;
 
 public class CreateCgReq extends Categories {
 
