@@ -17,7 +17,7 @@ public interface OrderDetailHistoryDao extends JpaRepository<OrderDetailHistory,
 	 @Query(value = "select new com.example.pos10.vo.JoinOrderVo(od.id, od.orderId, od.comboName, od.mealDetail, od.quantity, od.price, o.checkoutTime)"
 	 		+ " from OrderDetailHistory as od  "
 	 		+ " join OrderHistory as o on od.orderId = o.orderId "
-	 		+ " where o.checkoutTime between :inputStartDate and :inputEndDate",  nativeQuery = false)
+	 		+ " where (:inputStartDate is null or :inputEndDate is null or o.checkoutTime between :inputStartDate and :inputEndDate)",  nativeQuery = false)
 	 public List<JoinOrderVo> selectDate(
 			 @Param("inputStartDate") LocalDateTime startDate, 
 			 @Param ("inputEndDate")LocalDateTime endDate);

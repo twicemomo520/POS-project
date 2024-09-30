@@ -13,12 +13,12 @@ import com.example.pos10.entity.MenuItems;
 @Repository
 public interface MenuItemsDao extends JpaRepository<MenuItems, String> {
 	
-    // §PÂ_¸ê®Æ¬O§_¦s¦bªºSQL»yªk
-	// ¦bmenu_items¸Ì­±§ä¿é¤J¦WºÙ»P¸ê®Æ®w²{¦³ªºmeal_name¦WºÙ¬Û¦Pªº¸ê®Æ¡A­Y§ä¨ì¦^¶Ç(1)¡A³Ì«á¦Acount¦^¶Ç´X¦¸(1)
+    // åˆ¤æ–·è³‡æ–™æ˜¯å¦å­˜åœ¨çš„SQLèªæ³•
+	// åœ¨menu_itemsè£¡é¢æ‰¾è¼¸å…¥åç¨±èˆ‡è³‡æ–™åº«ç¾æœ‰çš„meal_nameåç¨±ç›¸åŒçš„è³‡æ–™ï¼Œè‹¥æ‰¾åˆ°å›å‚³(1)ï¼Œæœ€å¾Œå†countå›å‚³å¹¾æ¬¡(1)
     @Query(value = "SELECT COUNT(1) FROM menu_items WHERE meal_name = :mealName", nativeQuery = true)
     public int existsByMealName(@Param("mealName") String mealName);
 	
-	// ·s¼W¸ê®ÆªºSQL»yªk
+	// æ–°å¢è³‡æ–™çš„SQLèªæ³•
 	@Modifying
 	@Transactional
 	@Query(value = "insert into menu_items "

@@ -3,9 +3,10 @@ package com.example.pos10;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-//¦]¬°¦³¨Ï¥Î spring-boot-starter-security ¦¹¨Ì¿à¡A­n±Æ°£¹w³]ªº°ò¥»¦w¥ş©Ê³]©w(±b±Kµn¤JÅçÃÒ)
-//±Æ°£±b±Kµn¤JÅçÃÒ´N¬O¥[¤W exclude = SecurityAutoConfiguration.class
-//µ¥¸¹«á­±­Y¦³¦h­Óclass®É¡A´N­n¥Î¤j¬A¸¹¡A¥u¦³¤@­Ó®É¤j¬A¸¹¥i¦³¥iµL
+//å› ç‚ºæœ‰ä½¿ç”¨ spring-boot-starter-security æ­¤ä¾è³´ï¼Œè¦æ’é™¤é è¨­çš„åŸºæœ¬å®‰å…¨æ€§è¨­å®š(å¸³å¯†ç™»å…¥é©—è­‰)
+//æ’é™¤å¸³å¯†ç™»å…¥é©—è­‰å°±æ˜¯åŠ ä¸Š exclude = SecurityAutoConfiguration.class
+//ç­‰è™Ÿå¾Œé¢è‹¥æœ‰å¤šå€‹classæ™‚ï¼Œå°±è¦ç”¨å¤§æ‹¬è™Ÿï¼Œåªæœ‰ä¸€å€‹æ™‚å¤§æ‹¬è™Ÿå¯æœ‰å¯ç„¡
+//
 //
 //
 @SpringBootApplication(exclude= {SecurityAutoConfiguration.class})

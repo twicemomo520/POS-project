@@ -9,10 +9,11 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.example.pos10.constants.ResMessage;
-import com.example.pos10.entity.MenuItems;
-import com.example.pos10.entity.Options;
+import com.example.pos10.entiey.MenuItems;
+import com.example.pos10.entiey.Options;
 import com.example.pos10.repository.CategoriesDao;
 import com.example.pos10.repository.MenuItemsDao;
 import com.example.pos10.repository.OptionsDao;
@@ -51,12 +52,12 @@ public class PosServiceImpl implements PosService{
 		LocalDate endDateInput = req.getEndDate();
 		
 
-		if (startDateInput == null) {
+		if (endDateInput == null) {
 			startDateInput = LocalDate.of(1900, 1, 1);
 		}
 
 		if (endDateInput == null) {
-			endDateInput = LocalDate.of(1900, 1, 1);
+			endDateInput = LocalDate.of(2999, 1, 1);
 		}
 		
 
@@ -76,25 +77,25 @@ public class PosServiceImpl implements PosService{
 	@Override
 	public BasicRes create(CreateReq req) {
 		String mealName = req.getMealName();
-		// �Y��Ʈw���@�˪�mealName�ƶq�j��0�A���mealName�s�b���Ʈw
+		// 若資料庫找到一樣的mealName數量大於0，表示mealName存在於資料庫
 		if (menuItemsDao.existsByMealName(mealName) > 0) {
-			// ��^���w�s�b�����~�T��
+			// 返回菜單已存在的錯誤訊息
 			return new BasicRes(ResMessage.MEAL_NAME_EXISTS.getCode(), ResMessage.MEAL_NAME_EXISTS.getMessage());
 		}
 		int categoryId = req.getCategoryId();
-		// ���s�W��categoryId�����w�s�b
+		// 欲新增的categoryId必須已存在
 		if(categoriesDao.optionExists(categoryId) == 0) {
-			// �Y���s�b��^���~�T��
+			// 若不存在返回錯誤訊息
 			return new BasicRes(ResMessage.CATEGORYID_NOT_FOUND.getCode(), ResMessage.CATEGORYID_NOT_FOUND.getMessage());
 		}
-		// ��Jpa��save�s�i��Ʈw�A�w�q�ܼ�res
+		// 用Jpa的save存進資料庫，定義變數res
 		MenuItems res = menuItemsDao.save(new MenuItems(mealName, req.getMealDescription(), categoryId, req.getWorkstationId(), req.getPrice()));
 		List<Options> optionsList = req.getOptionsList();
-		// ���Xres��categoryId��ioptionsList���C�@��cg_id
+		// 取出res的categoryId塞進optionsList的每一個cg_id
 		optionsList.forEach(item ->{
 			item.setCategoryId(res.getCategoryId());
 		});
-		// Jpa �� saveAll(saveAll�O�}�C���s�k)
+		// Jpa 的 saveAll(saveAll是陣列的存法)
 		optionsDao.saveAll(optionsList);
 		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
 	}
@@ -102,9 +103,9 @@ public class PosServiceImpl implements PosService{
 	@Override
 	public BasicRes createCategory(CreateCgReq req) {
 		String categoryName = req.getCategory();
-		// �s�W�\�I�����A�s�W�����O�W�٤���w�s�b
+		// 新增餐點分類，新增的類別名稱不能已存在
 		if(categoriesDao.cgNameExists(categoryName) > 0) {
-			//�^�ǿ��~�T��
+			//回傳錯誤訊息
 			return new BasicRes(ResMessage.CATEGORYID_ALREADY_EXISTS.getCode(), ResMessage.CATEGORYID_ALREADY_EXISTS.getMessage());
 		}
 		categoriesDao.insert(categoryName);
