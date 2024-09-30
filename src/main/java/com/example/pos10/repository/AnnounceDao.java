@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.example.pos10.entiey.Announce;
+import com.example.pos10.entity.Announce;
 
 @Repository
 public interface AnnounceDao extends JpaRepository<Announce, Integer> {

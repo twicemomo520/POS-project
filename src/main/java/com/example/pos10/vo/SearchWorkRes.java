@@ -2,7 +2,7 @@ package com.example.pos10.vo;
 
 import java.util.List;
 
-import com.example.pos10.entiey.Workstation;
+import com.example.pos10.entity.Workstation;
 
 public class SearchWorkRes extends BasicRes {
 

@@ -2,7 +2,7 @@ package com.example.pos10.vo;
 
 import java.time.LocalDate;
 
-import com.example.pos10.entiey.Announce;
+import com.example.pos10.entity.Announce;
 
 public class AnnounceReq extends Announce{
 

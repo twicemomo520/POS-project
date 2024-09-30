@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.example.pos10.entiey.Workstation;
+import com.example.pos10.entity.Workstation;
 
 @Repository
 public interface WorkstationDao extends JpaRepository<Workstation, Integer> {

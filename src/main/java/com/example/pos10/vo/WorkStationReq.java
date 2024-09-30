@@ -1,6 +1,6 @@
 package com.example.pos10.vo;
 
-import com.example.pos10.entiey.Workstation;
+import com.example.pos10.entity.Workstation;
 
 public class WorkStationReq extends Workstation{
 

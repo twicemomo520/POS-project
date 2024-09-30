@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.pos10.constants.ResMessage;
-import com.example.pos10.entiey.Workstation;
+import com.example.pos10.entity.Workstation;
 import com.example.pos10.repository.WorkstationDao;
 import com.example.pos10.service.ifs.WorkstationService;
 import com.example.pos10.vo.BasicRes;

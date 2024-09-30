@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.pos10.constants.ResMessage;
-import com.example.pos10.entiey.Announce;
+import com.example.pos10.entity.Announce;
 import com.example.pos10.repository.AnnounceDao;
 import com.example.pos10.service.ifs.AnnounceService;
 import com.example.pos10.vo.AnnounceDeleteReq;
