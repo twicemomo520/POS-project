@@ -54,8 +54,8 @@ public class WorkstationServiceImpl implements WorkstationService {
 	public SearchWorkRes workSearch(WorkStationDeleteReq req) {
 		List<Workstation> workstation = workstationDao.searchWorkstation(req.getWorkstationId());
 		if (workstation.isEmpty()) {
-			return new SearchWorkRes(ResMessage.ANNOUNCE_NOT_FOUND.getCode(),
-					ResMessage.ANNOUNCE_NOT_FOUND.getMessage());
+			return new SearchWorkRes(ResMessage.WORKSTATION_NOT_FOUND.getCode(),
+					ResMessage.WORKSTATION_NOT_FOUND.getMessage());
 		}
 		return new SearchWorkRes(ResMessage.SUCCESS.getCode(),ResMessage.SUCCESS.getMessage(),workstation);
 	}
