@@ -11,7 +11,7 @@ public interface PosService {
 
 	public PosStatisticsRes statistics(PosStatisticsReq req);
 	
-	public BasicRes create(CreateReq req); // �Ыص��(willy)
+	public BasicRes create(CreateReq req); // 創建菜單(willy)
 	
 	public BasicRes createCategory(CreateCgReq req);
 	

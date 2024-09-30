@@ -77,25 +77,25 @@ public class PosServiceImpl implements PosService{
 	@Override
 	public BasicRes create(CreateReq req) {
 		String mealName = req.getMealName();
-		// ­Y¸ê®Æ®w§ä¨ì¤@¼ËªºmealName¼Æ¶q¤j©ó0¡Aªí¥ÜmealName¦s¦b©ó¸ê®Æ®w
+		// è‹¥è³‡æ–™åº«æ‰¾åˆ°ä¸€æ¨£çš„mealNameæ•¸é‡å¤§æ–¼0ï¼Œè¡¨ç¤ºmealNameå­˜åœ¨æ–¼è³‡æ–™åº«
 		if (menuItemsDao.existsByMealName(mealName) > 0) {
-			// ªğ¦^µæ³æ¤w¦s¦bªº¿ù»~°T®§
+			// è¿”å›èœå–®å·²å­˜åœ¨çš„éŒ¯èª¤è¨Šæ¯
 			return new BasicRes(ResMessage.MEAL_NAME_EXISTS.getCode(), ResMessage.MEAL_NAME_EXISTS.getMessage());
 		}
 		int categoryId = req.getCategoryId();
-		// ±ı·s¼WªºcategoryId¥²¶·¤w¦s¦b
+		// æ¬²æ–°å¢çš„categoryIdå¿…é ˆå·²å­˜åœ¨
 		if(categoriesDao.optionExists(categoryId) == 0) {
-			// ­Y¤£¦s¦bªğ¦^¿ù»~°T®§
+			// è‹¥ä¸å­˜åœ¨è¿”å›éŒ¯èª¤è¨Šæ¯
 			return new BasicRes(ResMessage.CATEGORYID_NOT_FOUND.getCode(), ResMessage.CATEGORYID_NOT_FOUND.getMessage());
 		}
-		// ¥ÎJpaªºsave¦s¶i¸ê®Æ®w¡A©w¸qÅÜ¼Æres
+		// ç”¨Jpaçš„saveå­˜é€²è³‡æ–™åº«ï¼Œå®šç¾©è®Šæ•¸res
 		MenuItems res = menuItemsDao.save(new MenuItems(mealName, req.getMealDescription(), categoryId, req.getWorkstationId(), req.getPrice()));
 		List<Options> optionsList = req.getOptionsList();
-		// ¨ú¥XresªºcategoryId¶ë¶ioptionsListªº¨C¤@­Ócg_id
+		// å–å‡ºresçš„categoryIdå¡é€²optionsListçš„æ¯ä¸€å€‹cg_id
 		optionsList.forEach(item ->{
 			item.setCategoryId(res.getCategoryId());
 		});
-		// Jpa ªº saveAll(saveAll¬O°}¦Cªº¦sªk)
+		// Jpa çš„ saveAll(saveAllæ˜¯é™£åˆ—çš„å­˜æ³•)
 		optionsDao.saveAll(optionsList);
 		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
 	}
@@ -103,9 +103,9 @@ public class PosServiceImpl implements PosService{
 	@Override
 	public BasicRes createCategory(CreateCgReq req) {
 		String categoryName = req.getCategory();
-		// ·s¼WÀ\ÂI¤ÀÃş¡A·s¼WªºÃş§O¦WºÙ¤£¯à¤w¦s¦b
+		// æ–°å¢é¤é»åˆ†é¡ï¼Œæ–°å¢çš„é¡åˆ¥åç¨±ä¸èƒ½å·²å­˜åœ¨
 		if(categoriesDao.cgNameExists(categoryName) > 0) {
-			//¦^¶Ç¿ù»~°T®§
+			//å›å‚³éŒ¯èª¤è¨Šæ¯
 			return new BasicRes(ResMessage.CATEGORYID_ALREADY_EXISTS.getCode(), ResMessage.CATEGORYID_ALREADY_EXISTS.getMessage());
 		}
 		categoriesDao.insert(categoryName);
