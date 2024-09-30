@@ -19,33 +19,34 @@ import com.example.pos10.entity.Member;
 @Repository
 public interface MemberDao extends JpaRepository<Member, Integer> {
 
-	//½T»{¹q¸Ü¬O§_µù¥U¹L
+	//ç¢ºèªé›»è©±æ˜¯å¦è¨»å†Šé
 	@Query(value = "SELECT COUNT(*) FROM member WHERE phone = :phone", nativeQuery = true)
     public int phoneExists(@Param("phone") String phone);
 
 
-	// ·s¼W·|­û
+	// æ–°å¢æœƒå“¡
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO member (pwd, name, phone, birthday, total_spending_amount, member_level) " +
-                   "VALUES (:pwd, :name, :phone, :birthday, :totalSpendingAmount, :memberLevel)", nativeQuery = true)
+    @Query(value = "INSERT INTO member (pwd, name, phone, birthday,email, total_spending_amount, member_level) " +
+                   "VALUES (:pwd, :name, :phone, :birthday,:email, :totalSpendingAmount, :memberLevel)", nativeQuery = true)
     public int insertMember(
             @Param("pwd") String pwd,
             @Param("name") String name,
             @Param("phone") String phone,
             @Param("birthday") LocalDate birthday,
+            @Param("email") String email,
             @Param("totalSpendingAmount") Integer totalSpendingAmount,
             @Param("memberLevel") String memberLevel);
     
-    //¥Î¹q¸Ü§ì±K½X©MID 
+    //ç”¨é›»è©±æŠ“å¯†ç¢¼å’ŒID 
     @Query(value = "SELECT member_id, pwd from member WHERE phone = :phone " , nativeQuery = true)
     public List<Object[]> CheckLogin(@Param("phone") String phone);
 
-    //§ì·|­û¸ê®Æ
+    //æŠ“æœƒå“¡è³‡æ–™
     @Query(value = "SELECT * FROM member WHERE member_id = :memberId", nativeQuery = true)
     public Optional<Member> findByMemberId(@Param("memberId") int memberId);
 
-    //²£¥ÍÅçÃÒ½X
+    //ç”¢ç”Ÿé©—è­‰ç¢¼
     @Modifying
     @Transactional
     @Query( value = "UPDATE member  SET verification_code = :verificationCode, verification_code_expiry = :expiry WHERE phone = :phone",nativeQuery = true)
@@ -55,7 +56,7 @@ public interface MemberDao extends JpaRepository<Member, Integer> {
         @Param("phone") String phone
     );
     
-    ///§ó·s±K½X
+    ///æ›´æ–°å¯†ç¢¼
     @Modifying
     @Transactional
     @Query( value = "UPDATE member  SET pwd = :pwd  WHERE phone = :phone",nativeQuery = true)
@@ -64,7 +65,9 @@ public interface MemberDao extends JpaRepository<Member, Integer> {
         @Param("phone") String phone
     );
     
-    
+    //ç¢ºèªè¼¸å…¥çš„æ‰‹æ©Ÿå’Œemailæ˜¯åŒä¸€å€‹äºº
+    @Query(value = "SELECT COUNT(*) FROM member WHERE phone = :phone AND email = :email", nativeQuery = true)
+    public int checkEmail(@Param("phone") String phone, @Param("email") String email);
     
     
     

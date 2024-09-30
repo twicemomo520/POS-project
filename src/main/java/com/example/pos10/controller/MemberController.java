@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.pos10.service.ifs.MemberService;
 import com.example.pos10.vo.BasicRes;
+import com.example.pos10.vo.ForgotPasswordReq;
 import com.example.pos10.vo.LoginMemberReq;
-import com.example.pos10.vo.PhoneReq;
 import com.example.pos10.vo.RegisterMemberReq;
 
 @RestController
@@ -39,11 +39,11 @@ public class MemberController {
 	}
 
 	@PostMapping("/forgotpassword")
-	public BasicRes forgotPassword(@RequestBody PhoneReq req) {
-		return memberService.forgotPassword(req.getPhone());
+	public BasicRes forgotPassword(@RequestBody ForgotPasswordReq req) {
+		return memberService.forgotPassword(req);
 	}
 	
-	//LoginMemberReqÆÊ¶°§@ºÀ
+	//LoginMemberReqÊ†ºÂºè‰∏ÄÊ®£
 	@PostMapping("/resetpassword")
 	public BasicRes resetPassword(@RequestBody LoginMemberReq req) {
 		return memberService.resetPassword(req);

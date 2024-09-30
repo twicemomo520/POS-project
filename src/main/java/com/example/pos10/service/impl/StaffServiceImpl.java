@@ -1,16 +1,28 @@
 package com.example.pos10.service.impl;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.pos10.entity.Member;
+import com.example.pos10.entity.Staff;
 import com.example.pos10.repository.StaffDao;
 import com.example.pos10.service.ifs.StaffService;
+import com.example.pos10.vo.AllStaffInfoRes;
 import com.example.pos10.vo.BasicRes;
+import com.example.pos10.vo.CheckLoginRes;
+import com.example.pos10.vo.LoginMemberRes;
+import com.example.pos10.vo.LoginStaffReq;
+import com.example.pos10.vo.LoginStaffRes;
+import com.example.pos10.vo.MemberInfoRes;
 import com.example.pos10.vo.RegisterStaffReq;
+import com.example.pos10.vo.StaffInfoRes;
 import com.example.pos10.vo.UpdateStaffReq;
 
 @Service
@@ -22,97 +34,201 @@ public class StaffServiceImpl implements StaffService {
 	private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	private String generateStaffNumber() {
-		// ¬d¸ß¥Ø«e³Ì°ªªº­û¤u½s¸¹ ­n§ì¼Æ¦r©¹¤U+
+		// æŸ¥è©¢ç›®å‰æœ€é«˜çš„å“¡å·¥ç·¨è™Ÿ è¦æŠ“æ•¸å­—å¾€ä¸‹+
 		String lastStaffNumber = staffDao.findLastStaffNumber();
 		if (lastStaffNumber == null) {
-			// ¦pªG¨S¦³­û¤u¡A±q "TEST001" ¶}©l ¤§«á¥i¥H+³]©wÀÉÅı¤½¥q³]©w
+			// å¦‚æœæ²’æœ‰å“¡å·¥ï¼Œå¾ "TEST001" é–‹å§‹ ä¹‹å¾Œå¯ä»¥+è¨­å®šæª”è®“å…¬å¸è¨­å®š
 			return "TEST001";
 		}
 
-		// ¨ú±o¼Æ¦r³¡¤À¡A»¼¼W1
+		// å–å¾—æ•¸å­—éƒ¨åˆ†ï¼Œéå¢1
 		String numberPart = lastStaffNumber.substring(lastStaffNumber.length() - 3);
 		int num = Integer.parseInt(numberPart) + 1;
 
-		// ®æ¦¡¤Æ¬°¤T¦ì¼Æ¡A¨Ã¥[¤W "TEST" ¥Ø«e¼g¦º ¦]¬°§Ú­Ì¨S¦³³]©wÀÉ
+		// æ ¼å¼åŒ–ç‚ºä¸‰ä½æ•¸ï¼Œä¸¦åŠ ä¸Š "TEST" ç›®å‰å¯«æ­» å› ç‚ºæˆ‘å€‘æ²’æœ‰è¨­å®šæª”
 		return String.format("TEST%03d", num);
 	}
 
-	// ·s¼W­û¤u
+	// æ–°å¢å“¡å·¥
 	@Override
 	public BasicRes registerStaff(RegisterStaffReq req) {
 
-		// 1. ¨¾§b
+		// 1. é˜²å‘†
 		if (req.getPwd() == null || req.getPwd().trim().isEmpty()) {
-			return new BasicRes(400, "·s¼W­û¤u¥¢±Ñ¡G±K½X®æ¦¡¤£¥¿½T");
+			return new BasicRes(400, "æ–°å¢å“¡å·¥å¤±æ•—ï¼šå¯†ç¢¼æ ¼å¼ä¸æ­£ç¢º");
 		}
 
 		if (req.getName() == null || req.getName().trim().isEmpty()) {
-			return new BasicRes(400, "·s¼W­û¤u¥¢±Ñ¡G©m¦W®æ¦¡¤£¥¿½T");
+			return new BasicRes(400, "æ–°å¢å“¡å·¥å¤±æ•—ï¼šå§“åæ ¼å¼ä¸æ­£ç¢º");
 		}
 
 		if (req.getPhone() == null || req.getPhone().trim().isEmpty()) {
-			return new BasicRes(400, "·s¼W­û¤u¥¢±Ñ¡G¹q¸Ü®æ¦¡¤£¥¿½T");
+			return new BasicRes(400, "æ–°å¢å“¡å·¥å¤±æ•—ï¼šé›»è©±æ ¼å¼ä¸æ­£ç¢º");
 		}
 
-		// 3. ·s·|­û¸ê®Æ
+		if (req.getEmail() == null || req.getEmail().trim().isEmpty()) {
+			return new BasicRes(400, "æ–°å¢å“¡å·¥å¤±æ•—ï¼šE-mailä¸æ­£ç¢º");
+		}
 
-		// ¥Í¦¨­û¤u½s¸¹
-		// ³z¹L¤W­±ªº¤èªk ²£¥Í«ü©wªº­û¤u½s¸¹
+		// 3. æ–°æœƒå“¡è³‡æ–™
+
+		// ç”Ÿæˆå“¡å·¥ç·¨è™Ÿ
+		// é€éä¸Šé¢çš„æ–¹æ³• ç”¢ç”ŸæŒ‡å®šçš„å“¡å·¥ç·¨è™Ÿ
 		String staffNumber = generateStaffNumber();
 
 		String name = req.getName().trim();
 		String phone = req.getPhone().trim();
 
-		// ¹w³]0 ³Ì¤pÅv­­
-		String authorization = "0";
+		// é è¨­0 æœ€å°æ¬Šé™
+		String authorization = req.getAuthorization();
+		if (authorization == null || authorization.trim().isEmpty()) {
+			authorization = "0";
+		}
 
-		// ±K½X¥[±K
+		String email = req.getEmail();
+
+		// å¯†ç¢¼åŠ å¯†
 		String encryptedPassword = passwordEncoder.encode(req.getPwd());
 		String pwd = encryptedPassword;
 
-		// 4. ·s¼W·|­û
+		// 4. æ–°å¢æœƒå“¡
 		try {
-			int result = staffDao.insertStaff(staffNumber, pwd, name, phone, authorization);
+			int result = staffDao.insertStaff(staffNumber, pwd, name, phone, authorization, email);
 			if (result > 0) {
-				return new BasicRes(200, "µù¥U¦¨¥\");
+				return new BasicRes(200, "æ–°å¢å“¡å·¥æˆåŠŸ");
 			} else {
-				return new BasicRes(500, "µù¥U¥¢±Ñ¡GµLªkµù¥U");
+				return new BasicRes(500, "æ–°å¢å“¡å·¥å¤±æ•—ï¼šç„¡æ³•è¨»å†Š");
 			}
 		} catch (Exception e) {
-			return new BasicRes(500, "µù¥U¥¢±Ñ¡G" + e.getMessage());
+			return new BasicRes(500, "æ–°å¢å“¡å·¥å¤±æ•—ï¼š" + e.getMessage());
 		}
 
 	}
 
-	// §ó·s­û¤u¸ê®Æ
+	// æ›´æ–°å“¡å·¥è³‡æ–™
 	@Override
 	public BasicRes updateStaff(UpdateStaffReq req) {
 
-		// 1. ¨¾§b
+		// 1. é˜²å‘†
 
 		if (req.getName() == null || req.getName().trim().isEmpty()) {
-			return new BasicRes(400, "­×§ï­û¤u¸ê®Æ¥¢±Ñ¡G©m¦W®æ¦¡¤£¥¿½T");
+			return new BasicRes(400, "ä¿®æ”¹å“¡å·¥è³‡æ–™å¤±æ•—ï¼šå§“åæ ¼å¼ä¸æ­£ç¢º");
 		}
 
 		if (req.getPhone() == null || req.getPhone().trim().isEmpty()) {
-			return new BasicRes(400, "­×§ï­û¤u¸ê®Æ¥¢±Ñ¡G¹q¸Ü®æ¦¡¤£¥¿½T");
+			return new BasicRes(400, "ä¿®æ”¹å“¡å·¥è³‡æ–™å¤±æ•—ï¼šé›»è©±æ ¼å¼ä¸æ­£ç¢º");
 		}
-		
+
 		if (req.getAuthorization() == null || req.getAuthorization().trim().isEmpty()) {
-            return new BasicRes(400, "§ó·s¥¢±Ñ¡GÅv­­¤£¥¿½T");
-        }
-		
-		//2.°õ¦æsql
-		int result = staffDao.updateStaff( req.getName(), req.getPhone(), req.getAuthorization(),req.getStaffNumber());
-        if (result > 0) {
-            return new BasicRes(200, "§ó·s¦¨¥\");
-        } else {
-            return new BasicRes(500, "§ó·s¥¢±Ñ¡G¥¼§ä¨ì¹ïÀ³ªº­û¤u");
-        }
-		
+			return new BasicRes(400, "æ›´æ–°å¤±æ•—ï¼šæ¬Šé™ä¸æ­£ç¢º");
+		}
+
+		if (req.getEmail() == null || req.getEmail().trim().isEmpty()) {
+			return new BasicRes(400, "æ–°å¢å“¡å·¥å¤±æ•—ï¼šE-mailä¸æ­£ç¢º");
+		}
+
+		// 2.åŸ·è¡Œsql
+		int result = staffDao.updateStaff(req.getName(), req.getPhone(), req.getAuthorization(), req.getEmail(),
+				req.getStaffNumber());
+		if (result > 0) {
+			return new BasicRes(200, "æ›´æ–°æˆåŠŸ");
+		} else {
+			return new BasicRes(500, "æ›´æ–°å¤±æ•—ï¼šæœªæ‰¾åˆ°å°æ‡‰çš„å“¡å·¥");
+		}
 
 	}
 
-	
-	
+	// å›å‚³æ‰€æœ‰å“¡å·¥è³‡æ–™
+	@Override
+	public AllStaffInfoRes searchAllstaff() {
+
+		try {
+			// å¾è³‡æ–™åº«ä¸­ç²å–æ‰€æœ‰å“¡å·¥
+			List<Staff> staffData = staffDao.allStaffInfo();
+			return new AllStaffInfoRes(200, "æœå°‹æˆåŠŸ", staffData);
+		} catch (Exception e) {
+			// åœ¨å‡ºéŒ¯æ™‚è¿”å›å¤±æ•—æ¶ˆæ¯
+			return new AllStaffInfoRes(500, "æœå°‹å¤±æ•—ï¼š" + e.getMessage(), null);
+		}
+	}
+
+	// åˆªé™¤å“¡å·¥
+	@Override
+	public BasicRes deleteStaff(String staffNumber) {
+
+		if (staffNumber == null || staffNumber.trim().isEmpty()) {
+			return new BasicRes(400, "åˆªé™¤å“¡å·¥å¤±æ•—ï¼šå“¡å·¥ç·¨è™Ÿæ ¼å¼ä¸æ­£ç¢º");
+		}
+
+		try {
+			int result = staffDao.deleteStaff(staffNumber);
+			if (result > 0) {
+				return new BasicRes(200, "åˆªé™¤å“¡å·¥æˆåŠŸ");
+			} else {
+				return new BasicRes(400, "åˆªé™¤å“¡å·¥å¤±æ•—ï¼šæœªæ‰¾åˆ°å°æ‡‰çš„å“¡å·¥");
+			}
+		} catch (Exception e) {
+			return new BasicRes(500, "åˆªé™¤å“¡å·¥å¤±æ•—ï¼š" + e.getMessage());
+		}
+	}
+
+	// å“¡å·¥ç™»å…¥
+	@Override
+	public BasicRes loginStaff(LoginStaffReq req) {
+
+		// 1.é˜²å‘†
+		if (req.getStaffNumber() == null || req.getStaffNumber().trim().isEmpty()) {
+			return new BasicRes(400, "ç™»å…¥å¤±æ•—ï¼šå¸³è™Ÿæ ¼å¼ä¸æ­£ç¢º");
+		}
+		
+		if (req.getPwd() == null || req.getPwd().trim().isEmpty()) {
+			return new BasicRes(400, "ç™»å…¥å¤±æ•—ï¼šå¯†ç¢¼æ ¼å¼ä¸æ­£ç¢º");
+		}
+
+		// 2. æª¢æŸ¥å“¡å·¥æ˜¯å¦å·²å­˜åœ¨
+		if (staffDao.staffNumberExists(req.getStaffNumber()) > 0) {
+
+			// 3.ç¢ºèªå¯†ç¢¼æ˜¯å¦æ­£ç¢º
+			String pwd = staffDao.CheckLogin(req.getStaffNumber());
+
+			if (pwd == null || pwd.isEmpty()) {
+	            return new BasicRes(400, "ç™»å…¥å¤±æ•—ï¼šæ²’æœ‰æ­¤å“¡å·¥ç·¨è™Ÿ");
+	        }
+
+			// 4.æ¯”å°å¯†ç¢¼
+			if (passwordEncoder.matches(req.getPwd(), pwd)) {
+				// ç™»å…¥æˆåŠŸ
+				return new LoginStaffRes(200, "ç™»å…¥æˆåŠŸ", req.getStaffNumber());
+			} else {
+				// å¯†ç¢¼éŒ¯èª¤
+				return new BasicRes(400, "ç™»å…¥å¤±æ•—ï¼šå¯†ç¢¼éŒ¯èª¤");
+			}
+
+		} else {
+			return new BasicRes(400, "ç™»å…¥å¤±æ•—ï¼šæ­¤å“¡å·¥ç·¨è™Ÿå°šæœªè¨»å†Š");
+		}
+
+	}
+
+	//æŠ“å“¡å·¥è³‡æ–™
+	@Override
+	public BasicRes getStaffInfo(String staffNumber) {
+		
+		
+			Optional<Staff> staffOpt = staffDao.findByStaffNumber(staffNumber);
+
+			if (staffOpt.isEmpty()) {
+				return new BasicRes(400, "æŸ¥è©¢å¤±æ•—ï¼šè©²å“¡å·¥ç·¨è™Ÿä¸å­˜åœ¨");
+			}
+
+			// å–å¾—å“¡å·¥è³‡æ–™
+			Staff  staff = staffOpt.get();
+			// å› ç‚ºå¯†ç¢¼ä¹Ÿæœƒå›å‚³ æ‰€ä»¥è¨­å®šä»–æˆä¸é¡¯ç¤º
+			staff.setPwd("********");
+
+			// å›å‚³æœƒå“¡è©³ç´°è³‡è¨Š
+			return new StaffInfoRes(200, "æŸ¥è©¢æˆåŠŸ", staff);
+		
+	}
+
 }

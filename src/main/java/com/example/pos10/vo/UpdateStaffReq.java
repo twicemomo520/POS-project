@@ -9,6 +9,8 @@ public class UpdateStaffReq {
 	private String phone;
 
 	private String authorization;
+	
+	private String email;
 
 	public String getStaffNumber() {
 		return staffNumber;
@@ -40,6 +42,14 @@ public class UpdateStaffReq {
 
 	public void setAuthorization(String authorization) {
 		this.authorization = authorization;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 	

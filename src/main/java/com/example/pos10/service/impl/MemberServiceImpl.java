@@ -16,6 +16,8 @@ import com.example.pos10.repository.MemberDao;
 import com.example.pos10.service.ifs.MemberService;
 import com.example.pos10.vo.BasicRes;
 import com.example.pos10.vo.CheckLoginRes;
+import com.example.pos10.vo.ForgotPasswordReq;
+import com.example.pos10.vo.ForgotPasswordRes;
 import com.example.pos10.vo.LoginMemberReq;
 import com.example.pos10.vo.LoginMemberRes;
 import com.example.pos10.vo.MemberInfoRes;
@@ -27,145 +29,171 @@ public class MemberServiceImpl implements MemberService {
 	@Autowired
 	private MemberDao memberDao;
 
+	@Autowired
+	private EmailService emailService;
+
 	private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-	// µù¥U·|­û
+	// è¨»å†Šæœƒå“¡
 	@Override
 	public BasicRes registerMember(RegisterMemberReq req) {
 
-		// 1. ¨¾§b
+		// 1. é˜²å‘†
 		if (req.getName() == null || req.getName().trim().isEmpty()) {
-			return new BasicRes(400, "µù¥U¥¢±Ñ¡G©m¦W®æ¦¡¤£¥¿½T");
+			return new BasicRes(400, "è¨»å†Šå¤±æ•—ï¼šå§“åæ ¼å¼ä¸æ­£ç¢º");
 		}
 
 		if (req.getPhone() == null || req.getPhone().trim().isEmpty()) {
-			return new BasicRes(400, "µù¥U¥¢±Ñ¡G¹q¸Ü®æ¦¡¤£¥¿½T");
+			return new BasicRes(400, "è¨»å†Šå¤±æ•—ï¼šé›»è©±æ ¼å¼ä¸æ­£ç¢º");
 		}
 
 		if (req.getPwd() == null || req.getPwd().trim().isEmpty()) {
-			return new BasicRes(400, "µù¥U¥¢±Ñ¡G±K½X®æ¦¡¤£¥¿½T");
+			return new BasicRes(400, "è¨»å†Šå¤±æ•—ï¼šå¯†ç¢¼æ ¼å¼ä¸æ­£ç¢º");
 		}
 
-		// 2. ÀË¬d·|­û¬O§_¤w¦s¦b
+		if (req.getEmail() == null || req.getEmail().trim().isEmpty()) {
+			return new BasicRes(400, "è¨»å†Šå¤±æ•—ï¼šE-mailæ ¼å¼ä¸æ­£ç¢º");
+		}
+
+		// 2. æª¢æŸ¥æœƒå“¡æ˜¯å¦å·²å­˜åœ¨
 		if (memberDao.phoneExists(req.getPhone()) > 0) {
-			return new BasicRes(400, "µù¥U¥¢±Ñ¡G¸Ó¹q¸Ü¸¹½X¤w³Qµù¥U");
+			return new BasicRes(400, "è¨»å†Šå¤±æ•—ï¼šè©²é›»è©±è™Ÿç¢¼å·²è¢«è¨»å†Š");
 		}
 
-		// 3. ·s·|­û¸ê®Æ
+		// 3. æ–°æœƒå“¡è³‡æ–™
 		String name = req.getName().trim();
 		String phone = req.getPhone().trim();
 		LocalDate birthday = req.getBirthday();
-		// ¹w³]0
+		String email = req.getEmail();
+		// é è¨­0
 		int totalSpendingAmount = 0;
-		// ¼È®É¼g1
+		// æš«æ™‚å¯«1
 		String memberLevel = "1";
 
-		// ±K½X¥[±K
+		// å¯†ç¢¼åŠ å¯†
 		String encryptedPassword = passwordEncoder.encode(req.getPwd());
 		req.setPwd(encryptedPassword);
 
 		String pwd = encryptedPassword;
 
-		// 4. ·s¼W·|­û
+		// 4. æ–°å¢æœƒå“¡
 		try {
-			int result = memberDao.insertMember(pwd, name, phone, birthday, totalSpendingAmount, memberLevel);
+			int result = memberDao.insertMember(pwd, name, phone, birthday, email, totalSpendingAmount, memberLevel);
 			if (result > 0) {
-				return new BasicRes(200, "µù¥U¦¨¥\");
+				return new BasicRes(200, "è¨»å†ŠæˆåŠŸ");
 			} else {
-				return new BasicRes(500, "µù¥U¥¢±Ñ¡GµLªkµù¥U");
+				return new BasicRes(500, "è¨»å†Šå¤±æ•—ï¼šç„¡æ³•è¨»å†Š");
 			}
 		} catch (Exception e) {
-			return new BasicRes(500, "µù¥U¥¢±Ñ¡G" + e.getMessage());
+			return new BasicRes(500, "è¨»å†Šå¤±æ•—ï¼š" + e.getMessage());
 		}
 	}
 
-	// µn¤J·|­û
+	// ç™»å…¥æœƒå“¡
 	@Override
 	public BasicRes loginMember(LoginMemberReq req) {
 
-		// 1.¨¾§b
+		// 1.é˜²å‘†
 		if (req.getPhone() == null || req.getPhone().trim().isEmpty()) {
-			return new BasicRes(400, "µn¤J¥¢±Ñ¡G¹q¸Ü®æ¦¡¤£¥¿½T");
+			return new BasicRes(400, "ç™»å…¥å¤±æ•—ï¼šé›»è©±æ ¼å¼ä¸æ­£ç¢º");
 		}
 
-		// 2. ÀË¬d·|­û¬O§_¤w¦s¦b
+		// 2. æª¢æŸ¥æœƒå“¡æ˜¯å¦å·²å­˜åœ¨
 		if (memberDao.phoneExists(req.getPhone()) > 0) {
 
-			// 3.½T»{±K½X¬O§_¥¿½T
+			// 3.ç¢ºèªå¯†ç¢¼æ˜¯å¦æ­£ç¢º
 			// CheckLoginRes checkLoginRes
 			// result[0] = member_id
 			// result[1] = pwd
 			List<Object[]> results = memberDao.CheckLogin(req.getPhone());
 			if (results.isEmpty()) {
-				return new BasicRes(400, "µn¤J¥¢±Ñ¡G¦¹¹q¸Ü¸¹½X¨S¦³µù¥U¹L");
+				return new BasicRes(400, "ç™»å…¥å¤±æ•—ï¼šæ­¤é›»è©±è™Ÿç¢¼æ²’æœ‰è¨»å†Šé");
 			}
-			Object[] result = results.get(0); // Àò¨ú²Ä¤@¦æµ²ªG
+			Object[] result = results.get(0); // ç²å–ç¬¬ä¸€è¡Œçµæœ
 
-			int memberId = ((Number) result[0]).intValue(); // Âà´« member_id
-			String pwd = (String) result[1]; // Âà´«±K½X
+			int memberId = ((Number) result[0]).intValue(); // è½‰æ› member_id
+			String pwd = (String) result[1]; // è½‰æ›å¯†ç¢¼
 
 			CheckLoginRes checkLoginRes = new CheckLoginRes(memberId, pwd);
 
-			// ¤ñ¹ï±K½X
+			// æ¯”å°å¯†ç¢¼
 			if (passwordEncoder.matches(req.getPwd(), checkLoginRes.getPwd())) {
-				// µn¤J¦¨¥\
-				return new LoginMemberRes(200, "µn¤J¦¨¥\", checkLoginRes.getMemberId());
+				// ç™»å…¥æˆåŠŸ
+				return new LoginMemberRes(200, "ç™»å…¥æˆåŠŸ", checkLoginRes.getMemberId());
 			} else {
-				// ±K½X¿ù»~
-				return new BasicRes(400, "µn¤J¥¢±Ñ¡G±K½X¿ù»~");
+				// å¯†ç¢¼éŒ¯èª¤
+				return new BasicRes(400, "ç™»å…¥å¤±æ•—ï¼šå¯†ç¢¼éŒ¯èª¤");
 			}
 
 		} else {
-			return new BasicRes(400, "µn¤J¥¢±Ñ¡G¦¹¹q¸Ü¸¹½X¨S¦³µù¥U¹L");
+			return new BasicRes(400, "ç™»å…¥å¤±æ•—ï¼šæ­¤é›»è©±è™Ÿç¢¼æ²’æœ‰è¨»å†Šé");
 		}
 
 	}
 
-	// §ì·|­û¸ê®Æ
+	// æŠ“æœƒå“¡è³‡æ–™
 	@Override
 	public BasicRes getMemberInfo(int memberId) {
 
 		Optional<Member> memberOpt = memberDao.findByMemberId(memberId);
 
 		if (memberOpt.isEmpty()) {
-			return new BasicRes(400, "¬d¸ß¥¢±Ñ¡G¸Ó·|­ûID¤£¦s¦b");
+			return new BasicRes(400, "æŸ¥è©¢å¤±æ•—ï¼šè©²æœƒå“¡IDä¸å­˜åœ¨");
 		}
 
-		// ¨ú±o·|­û¸ê®Æ
+		// å–å¾—æœƒå“¡è³‡æ–™
 		Member member = memberOpt.get();
-		// ¦]¬°±K½X¤]·|¦^¶Ç ©Ò¥H³]©w¥L¦¨¤£Åã¥Ü(¦]¬°Ãi±o³Ğ¤@­Ó·sªº¨S¦³±K½Xªºclass)
+		// å› ç‚ºå¯†ç¢¼ä¹Ÿæœƒå›å‚³ æ‰€ä»¥è¨­å®šä»–æˆä¸é¡¯ç¤º
 		member.setPwd("********");
 
-		// ¦^¶Ç·|­û¸Ô²Ó¸ê°T
-		return new MemberInfoRes(200, "¬d¸ß¦¨¥\", member);
+		// å›å‚³æœƒå“¡è©³ç´°è³‡è¨Š
+		return new MemberInfoRes(200, "æŸ¥è©¢æˆåŠŸ", member);
 	}
 
-	// §Ñ°O±K½X (¿é¤J¤â¾÷¤§«á·|²£¥Í6¦ì¼ÆÅçÃÒ½X ÅçÃÒ¦¨¥\ ¥i¥H­×§ï±K½X)
+	// å¿˜è¨˜å¯†ç¢¼ (è¼¸å…¥æ‰‹æ©Ÿä¹‹å¾Œæœƒç”¢ç”Ÿ6ä½æ•¸é©—è­‰ç¢¼ é©—è­‰æˆåŠŸ å¯ä»¥ä¿®æ”¹å¯†ç¢¼)
 	@Override
-	public BasicRes forgotPassword(String phone) {
+	public BasicRes forgotPassword(ForgotPasswordReq req) {
 
-		// 1.¨¾§b
-		if (phone == null || phone.trim().isEmpty()) {
-			return new BasicRes(400, "ÅçÃÒ½Xµo°e¥¢±Ñ¡G¹q¸Ü®æ¦¡¤£¥¿½T");
+		// 1.é˜²å‘†
+		if (req.getPhone() == null || req.getPhone().isEmpty()) {
+			return new BasicRes(400, "é©—è­‰ç¢¼ç™¼é€å¤±æ•—ï¼šé›»è©±æ ¼å¼ä¸æ­£ç¢º");
+		}
+		
+		if (req.getEmail() == null || req.getEmail().isEmpty()) {
+			return new BasicRes(400, "é©—è­‰ç¢¼ç™¼é€å¤±æ•—ï¼šE-mailæ ¼å¼ä¸æ­£ç¢º");
 		}
 
-		System.out.println("¹q¸Ü¦b³o: " + phone);
-		// 2. ÀË¬d·|­û¬O§_¤w¦s¦b
-		if (memberDao.phoneExists(phone) > 0) {
+		System.out.println("é›»è©±åœ¨é€™: " + req.getPhone());
+		// 2. æª¢æŸ¥æœƒå“¡æ˜¯å¦å·²å­˜åœ¨
+		if (memberDao.phoneExists(req.getPhone()) > 0) {
 
-			// 3. ²£¥ÍÅçÃÒ½X©M®É¶¡(´N²£¥Í­n¥Îªº¸Ü¥i¥H¥Î ¦ı§Ú¨S¥Î)
+			// 3. ç”¢ç”Ÿé©—è­‰ç¢¼å’Œæ™‚é–“(å°±ç”¢ç”Ÿè¦ç”¨çš„è©±å¯ä»¥ç”¨ ä½†æˆ‘æ²’ç”¨)
 			Random random = new Random();
-			int code = random.nextInt(999999) + 1; // ¥Í¦¨½d³ò¬O1¨ì999999
-			String verificationCode = String.format("%06d", code); // ½T«O¸É¨¬6¦ì¡A«e­±¤£¨¬ªº¸É0
+			int code = random.nextInt(999999) + 1; // ç”Ÿæˆç¯„åœæ˜¯1åˆ°999999
+			String verificationCode = String.format("%06d", code); // ç¢ºä¿è£œè¶³6ä½ï¼Œå‰é¢ä¸è¶³çš„è£œ0
 
-			// 5¤ÀÄÁ¤§«á
+			// 5åˆ†é˜ä¹‹å¾Œ
 			LocalDateTime expiry = LocalDateTime.now().plusMinutes(5);
 
-			memberDao.updateVerificationCode(verificationCode, expiry, phone);
+			memberDao.updateVerificationCode(verificationCode, expiry, req.getPhone());
 
-			return new BasicRes(200, "ÅçÃÒ½Xµo°e¦¨¥\");
+			// 4. ç™¼é€é›»å­éƒµä»¶
+
+			// ç¢ºèªæ‰‹æ©Ÿå’Œä¿¡ç®±æ˜¯åŒä¸€å€‹äºº
+			if (memberDao.checkEmail(req.getPhone(), req.getEmail()) > 0) {
+
+				try {
+					emailService.sendVerificationEmail(req.getEmail(), verificationCode);
+				} catch (Exception e) {
+					return new BasicRes(500, "é©—è­‰ç¢¼ç™¼é€å¤±æ•—ï¼šéƒµä»¶ç™¼é€å¤±æ•—");
+				}
+			}else {
+				return new BasicRes(400, "é©—è­‰ç¢¼ç™¼é€å¤±æ•—ï¼šæŸ¥ç„¡è©²é›»è©±å’ŒE-mailå°æ‡‰çš„å¸³è™Ÿ");
+			}
+
+			return new ForgotPasswordRes(200, "é©—è­‰ç¢¼ç™¼é€æˆåŠŸ",verificationCode,expiry);
 		} else {
-			return new BasicRes(400, "ÅçÃÒ½Xµo°e¥¢±Ñ¡G¸Ó¹q¸Ü¸¹½X©|¥¼µù¥U");
+			return new BasicRes(400, "é©—è­‰ç¢¼ç™¼é€å¤±æ•—ï¼šè©²é›»è©±è™Ÿç¢¼å°šæœªè¨»å†Š");
 		}
 
 	}
@@ -173,18 +201,29 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public BasicRes resetPassword(LoginMemberReq req) {
 
-		// 1.¨¾§b
+		// 1.é˜²å‘†
 		if (req.getPwd() == null || req.getPwd().trim().isEmpty()) {
-			return new BasicRes(400, "¥¢±Ñ¡G±K½X®æ¦¡¤£¥¿½T");
+			return new BasicRes(400, "å¤±æ•—ï¼šå¯†ç¢¼æ ¼å¼ä¸æ­£ç¢º");
+		}
+		
+		if (req.getPhone() == null || req.getPhone().trim().isEmpty()) {
+			return new BasicRes(400, "å¤±æ•—ï¼šæ‰‹æ©Ÿæ ¼å¼ä¸æ­£ç¢º");
 		}
 
-		// ±K½X¥[±K
-		String encryptedPassword = passwordEncoder.encode(req.getPwd());
-		String newPwd = encryptedPassword;
-		memberDao.retsetPassword(newPwd, req.getPhone());
-		
+		if (memberDao.phoneExists(req.getPhone()) > 0) {
+			
+			// å¯†ç¢¼åŠ å¯†
+			String encryptedPassword = passwordEncoder.encode(req.getPwd());
+			String newPwd = encryptedPassword;
+			memberDao.retsetPassword(newPwd, req.getPhone());
 
-		return new BasicRes(200, "±K½X­×§ï¦¨¥\");
+			return new BasicRes(200, "å¯†ç¢¼ä¿®æ”¹æˆåŠŸ");
+			
+		}else {
+			return new BasicRes(400, "å¯†ç¢¼ä¿®æ”¹å¤±æ•—");
+		}
+		
+		
 	}
 
 }

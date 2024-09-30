@@ -5,8 +5,8 @@ public class RegisterStaffReq {
 	private String pwd;
 	private String name;
 	private String phone;
-//	private String authorization;
-	
+	private String authorization;
+	private String email;
 
 	public String getPwd() {
 		return pwd;
@@ -32,14 +32,20 @@ public class RegisterStaffReq {
 		this.phone = phone;
 	}
 
-//	public String getAuthorization() {
-//		return authorization;
-//	}
-//
-//	public void setAuthorization(String authorization) {
-//		this.authorization = authorization;
-//	}
-	
-	
-	
+	public String getAuthorization() {
+		return authorization;
+	}
+
+	public void setAuthorization(String authorization) {
+		this.authorization = authorization;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 }
