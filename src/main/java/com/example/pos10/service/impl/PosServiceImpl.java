@@ -23,7 +23,7 @@ import com.example.pos10.vo.BasicRes;
 import com.example.pos10.vo.CreateCbReq;
 import com.example.pos10.vo.CreateCgReq;
 import com.example.pos10.vo.CreateReq;
-import com.example.pos10.vo.JoinOrderVo;
+import com.example.pos10.vo.JoinOrderHistoryVo;
 import com.example.pos10.vo.PosStatisticsReq;
 import com.example.pos10.vo.PosStatisticsRes;
 
@@ -68,7 +68,7 @@ public class PosServiceImpl implements PosService{
 		System.out.println(startDate);
 		System.out.println(endDate);
 		
-		List<JoinOrderVo>searchRes = orderDetailHistoryDao.selectDate(startDate, endDate);
+		List<JoinOrderHistoryVo>searchRes = orderDetailHistoryDao.searchOrderDetailHistory(startDate, endDate);
 		
 		return new PosStatisticsRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(), searchRes);
 	}

@@ -16,9 +16,6 @@ public class MenuItems {
 	@Column(name="meal_name")
 	private String mealName;
 
-	@Column(name="meal_description")
-	private String mealDescription;
-
 	@NotNull(message="Category id cannot be null !")
 	@Column(name="category_id")
 	private int categoryId;
@@ -34,9 +31,6 @@ public class MenuItems {
 	@Column(name="available")
 	private boolean available;
 
-	@Column(name="featured")
-	private boolean featured;
-
 	@Column(name="picture_name")
 	private String pictureName;
 
@@ -44,25 +38,16 @@ public class MenuItems {
 		super();
 	}
 
-	public MenuItems(String mealName, String mealDescription, int categoryId, int workstationId, int price) {
+	public MenuItems(@NotBlank(message = "Meal name cannot be null or empty !!") String mealName,
+			@NotNull(message = "Category id cannot be null !") int categoryId,
+			@NotNull(message = "Workstation id cannot be null !") int workstationId,
+			@NotNull(message = "Price cannot be null !") int price, boolean available, String pictureName) {
 		super();
 		this.mealName = mealName;
-		this.mealDescription = mealDescription;
-		this.categoryId = categoryId;
-		this.workstationId = workstationId;
-		this.price = price;
-	}
-	
-	public MenuItems(String mealName, String mealDescription, int categoryId, int workstationId, int price,
-			boolean available, boolean featured, String pictureName) {
-		super();
-		this.mealName = mealName;
-		this.mealDescription = mealDescription;
 		this.categoryId = categoryId;
 		this.workstationId = workstationId;
 		this.price = price;
 		this.available = available;
-		this.featured = featured;
 		this.pictureName = pictureName;
 	}
 
@@ -70,32 +55,49 @@ public class MenuItems {
 		return mealName;
 	}
 
-	public String getMealDescription() {
-		return mealDescription;
+	public void setMealName(String mealName) {
+		this.mealName = mealName;
 	}
 
 	public int getCategoryId() {
 		return categoryId;
 	}
 
+	public void setCategoryId(int categoryId) {
+		this.categoryId = categoryId;
+	}
+
 	public int getWorkstationId() {
 		return workstationId;
+	}
+
+	public void setWorkstationId(int workstationId) {
+		this.workstationId = workstationId;
 	}
 
 	public int getPrice() {
 		return price;
 	}
 
+	public void setPrice(int price) {
+		this.price = price;
+	}
+
 	public boolean isAvailable() {
 		return available;
 	}
 
-	public boolean isFeatured() {
-		return featured;
+	public void setAvailable(boolean available) {
+		this.available = available;
 	}
 
 	public String getPictureName() {
 		return pictureName;
 	}
+
+	public void setPictureName(String pictureName) {
+		this.pictureName = pictureName;
+	}
+
 	
 }

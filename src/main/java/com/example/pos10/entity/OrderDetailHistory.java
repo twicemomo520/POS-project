@@ -24,6 +24,10 @@ public class OrderDetailHistory {
 	@Column(name = "order_id")
 	private String orderId;
 	
+	@NotBlank(message = "Order meal Id cannot be null or empty")
+	@Column(name = "order_meal_id")
+	private String orderMealId;
+	
 	
 	@NotBlank(message = "Combo name cannot be null or empty")
 	@Column(name = "combo_name")
@@ -73,11 +77,12 @@ public class OrderDetailHistory {
 	}
 
 
-	public OrderDetailHistory(int id, String orderId, String comboName, String mealDetail, int workstationId, int quantity, //
-			int price, String mealStatus, String tableNumber, LocalDateTime orderTime, Boolean checkout) {
+	public OrderDetailHistory(int id,String orderId,String orderMealId,String comboName,String mealDetail,//
+			int workstationId, int quantity, int price,String mealStatus,String tableNumber,LocalDateTime orderTime, Boolean checkout) {
 		super();
 		this.id = id;
 		this.orderId = orderId;
+		this.orderMealId = orderMealId;
 		this.comboName = comboName;
 		this.mealDetail = mealDetail;
 		this.workstationId = workstationId;
@@ -107,6 +112,16 @@ public class OrderDetailHistory {
 
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
+	}
+
+
+	public String getOrderMealId() {
+		return orderMealId;
+	}
+
+
+	public void setOrderMealId(String orderMealId) {
+		this.orderMealId = orderMealId;
 	}
 
 
@@ -198,7 +213,6 @@ public class OrderDetailHistory {
 	public void setCheckout(Boolean checkout) {
 		this.checkout = checkout;
 	}
-
 
 	
 
