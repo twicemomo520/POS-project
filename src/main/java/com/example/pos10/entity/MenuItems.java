@@ -99,5 +99,4 @@ public class MenuItems {
 		this.pictureName = pictureName;
 	}
 
-	
 }
