@@ -4,6 +4,7 @@ import com.example.pos10.vo.BasicRes;
 import com.example.pos10.vo.CreateCbReq;
 import com.example.pos10.vo.DeleteCbReq;
 import com.example.pos10.vo.SearchCbReq;
+import com.example.pos10.vo.SearchCbRes;
 import com.example.pos10.vo.UpdateCbReq;
 
 public interface ComboService {
@@ -14,7 +15,7 @@ public interface ComboService {
 	
 	public BasicRes deleteCombo(DeleteCbReq req);
 	
-	public BasicRes searchCombo(SearchCbReq req);
+	public SearchCbRes searchCombo(SearchCbReq req);
 	
 
 }

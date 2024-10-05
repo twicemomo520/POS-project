@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import com.example.pos10.entity.ComboItems;
 import com.example.pos10.entity.MenuItems;
@@ -14,6 +15,7 @@ import com.example.pos10.entity.OrderDetailHistory;
 import com.example.pos10.entity.OrderHistory;
 import com.example.pos10.vo.JoinOrderHistoryVo;
 
+@Repository
 public interface OrderDetailHistoryDao extends JpaRepository<OrderDetailHistory, Integer>{
 	
 	 @Query(value = "select new com.example.pos10.vo.JoinOrderHistoryVo"

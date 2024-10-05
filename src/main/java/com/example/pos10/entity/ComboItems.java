@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "combo_items")
@@ -15,9 +16,11 @@ public class ComboItems {
 	@Column(name = "combo_name")
 	private String comboName;
 
+	@NotBlank(message="Combo detail cannot be null or empty !!")
 	@Column(name = "combo_detail")
 	private String comboDetail;
 
+	@NotNull(message="Discount amount cannot be null !!")
 	@Column(name = "discount_amount")
 	private int discountAmount;
 
