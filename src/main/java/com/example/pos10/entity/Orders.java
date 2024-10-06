@@ -34,9 +34,15 @@ public class Orders {
     @Column(name = "combo_name")
     private String comboName;
 
-    @Column(name = "meal_detail")
-    private String mealDetail;
-
+//    @Column(name = "meal_detail")
+//    private String mealDetail;
+    
+    @Column(name = "meal_name")
+    private String mealName;
+    
+    @Column(name = "options")
+    private String options;
+    
     @Column(name = "workstation_id")
     private Integer workstationId;
 
@@ -59,15 +65,16 @@ public class Orders {
 		super();
 	}
 
-	public Orders(Integer id, String orderId, String orderMealId, String comboName, String mealDetail,
-			Integer workstationId, Integer price, String mealStatus, String tableNumber, LocalDateTime orderTime,
-			Boolean checkout) {
+	public Orders(Integer id, String orderId, String orderMealId,String comboName, String mealName,
+			String options, Integer workstationId, Integer price, String mealStatus, String tableNumber,
+			LocalDateTime orderTime, Boolean checkout) {
 		super();
 		this.id = id;
 		this.orderId = orderId;
 		this.orderMealId = orderMealId;
 		this.comboName = comboName;
-		this.mealDetail = mealDetail;
+		this.mealName = mealName;
+		this.options = options;
 		this.workstationId = workstationId;
 		this.price = price;
 		this.mealStatus = mealStatus;
@@ -92,8 +99,12 @@ public class Orders {
 		return comboName;
 	}
 
-	public String getMealDetail() {
-		return mealDetail;
+	public String getMealName() {
+		return mealName;
+	}
+
+	public String getOptions() {
+		return options;
 	}
 
 	public Integer getWorkstationId() {
@@ -119,7 +130,5 @@ public class Orders {
 	public Boolean getCheckout() {
 		return checkout;
 	}
-    
-    
     
 }
