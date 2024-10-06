@@ -1,27 +1,25 @@
 package com.example.pos10.service.impl;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.pos10.entity.Member;
 import com.example.pos10.entity.Staff;
 import com.example.pos10.repository.StaffDao;
 import com.example.pos10.service.ifs.StaffService;
 import com.example.pos10.vo.AllStaffInfoRes;
 import com.example.pos10.vo.BasicRes;
-import com.example.pos10.vo.CheckLoginRes;
-import com.example.pos10.vo.LoginMemberRes;
+import com.example.pos10.vo.ForgotPasswordRes;
 import com.example.pos10.vo.LoginStaffReq;
 import com.example.pos10.vo.LoginStaffRes;
-import com.example.pos10.vo.MemberInfoRes;
 import com.example.pos10.vo.RegisterStaffReq;
+import com.example.pos10.vo.StaffForgotPasswordReq;
 import com.example.pos10.vo.StaffInfoRes;
 import com.example.pos10.vo.UpdateStaffReq;
 
@@ -30,6 +28,9 @@ public class StaffServiceImpl implements StaffService {
 
 	@Autowired
 	private StaffDao staffDao;
+
+	@Autowired
+	private EmailService emailService;
 
 	private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -82,7 +83,7 @@ public class StaffServiceImpl implements StaffService {
 		// 預設0 最小權限
 		String authorization = req.getAuthorization();
 		if (authorization == null || authorization.trim().isEmpty()) {
-			authorization = "0";
+			return new BasicRes(400, "新增員工失敗：授權設定不正確");
 		}
 
 		String email = req.getEmail();
@@ -180,7 +181,7 @@ public class StaffServiceImpl implements StaffService {
 		if (req.getStaffNumber() == null || req.getStaffNumber().trim().isEmpty()) {
 			return new BasicRes(400, "登入失敗：帳號格式不正確");
 		}
-		
+
 		if (req.getPwd() == null || req.getPwd().trim().isEmpty()) {
 			return new BasicRes(400, "登入失敗：密碼格式不正確");
 		}
@@ -192,8 +193,8 @@ public class StaffServiceImpl implements StaffService {
 			String pwd = staffDao.CheckLogin(req.getStaffNumber());
 
 			if (pwd == null || pwd.isEmpty()) {
-	            return new BasicRes(400, "登入失敗：沒有此員工編號");
-	        }
+				return new BasicRes(400, "登入失敗：沒有此員工編號");
+			}
 
 			// 4.比對密碼
 			if (passwordEncoder.matches(req.getPwd(), pwd)) {
@@ -210,25 +211,97 @@ public class StaffServiceImpl implements StaffService {
 
 	}
 
-	//抓員工資料
+	// 抓員工資料
 	@Override
 	public BasicRes getStaffInfo(String staffNumber) {
-		
-		
-			Optional<Staff> staffOpt = staffDao.findByStaffNumber(staffNumber);
 
-			if (staffOpt.isEmpty()) {
-				return new BasicRes(400, "查詢失敗：該員工編號不存在");
+		Optional<Staff> staffOpt = staffDao.findByStaffNumber(staffNumber);
+
+		if (staffOpt.isEmpty()) {
+			return new BasicRes(400, "查詢失敗：該員工編號不存在");
+		}
+
+		// 取得員工資料
+		Staff staff = staffOpt.get();
+		// 因為密碼也會回傳 所以設定他成不顯示
+		staff.setPwd("********");
+
+		// 回傳會員詳細資訊
+		return new StaffInfoRes(200, "查詢成功", staff);
+
+	}
+
+	// 更新密碼
+	@Override
+	public BasicRes resetPassword(LoginStaffReq req) {
+
+		// 1.防呆
+		if (req.getPwd() == null || req.getPwd().trim().isEmpty()) {
+			return new BasicRes(400, "失敗：密碼格式不正確");
+		}
+
+		if (staffDao.staffNumberExists(req.getStaffNumber()) > 0) {
+
+			// 密碼加密
+			String encryptedPassword = passwordEncoder.encode(req.getPwd());
+			String newPwd = encryptedPassword;
+			staffDao.resetPassword(newPwd, req.getStaffNumber());
+
+			return new BasicRes(200, "密碼修改成功");
+
+		} else {
+			return new BasicRes(400, "密碼修改失敗");
+		}
+
+	}
+
+	// 忘記密碼
+	@Override
+	public BasicRes forgotPassword(StaffForgotPasswordReq req) {
+
+		// 1.防呆
+		if (req.getStaffNumber() == null || req.getStaffNumber().isEmpty()) {
+			return new BasicRes(400, "驗證碼發送失敗：帳號格式不正確");
+		}
+
+		if (req.getEmail() == null || req.getEmail().isEmpty()) {
+			return new BasicRes(400, "驗證碼發送失敗：E-mail格式不正確");
+		}
+
+		// 2. 檢查員工是否已存在
+
+		if (staffDao.staffNumberExists(req.getStaffNumber()) > 0) {
+
+			
+			// 確認員工編號和信箱是同一個人
+			if (staffDao.checkEmail(req.getStaffNumber(), req.getEmail()) > 0) {
+				
+				// 3. 產生驗證碼和時間
+				Random random = new Random();
+				int code = random.nextInt(999999) + 1; // 生成範圍是1到999999
+				String verificationCode = String.format("%06d", code); // 確保補足6位，前面不足的補0
+
+				// 30秒之後
+				LocalDateTime expiry = LocalDateTime.now().plusSeconds(30);
+
+				staffDao.updateVerificationCode(verificationCode, expiry, req.getStaffNumber());
+				
+				try {
+					// 發送電子郵件
+					emailService.sendVerificationEmail(req.getEmail(), verificationCode);
+
+					return new ForgotPasswordRes(200, "驗證碼發送成功", verificationCode, expiry);
+				} catch (Exception e) {
+					return new BasicRes(500, "驗證碼發送失敗：郵件發送失敗");
+				}
+			} else {
+				return new BasicRes(400, "驗證碼發送失敗：查無該員工編號和E-mail對應的帳號");
 			}
 
-			// 取得員工資料
-			Staff  staff = staffOpt.get();
-			// 因為密碼也會回傳 所以設定他成不顯示
-			staff.setPwd("********");
+		} else {
+			return new BasicRes(400, "驗證碼發送失敗：查無此帳號");
+		}
 
-			// 回傳會員詳細資訊
-			return new StaffInfoRes(200, "查詢成功", staff);
-		
 	}
 
 }

@@ -163,11 +163,10 @@ public class MemberServiceImpl implements MemberService {
 			return new BasicRes(400, "驗證碼發送失敗：E-mail格式不正確");
 		}
 
-		System.out.println("電話在這: " + req.getPhone());
 		// 2. 檢查會員是否已存在
 		if (memberDao.phoneExists(req.getPhone()) > 0) {
 
-			// 3. 產生驗證碼和時間(就產生要用的話可以用 但我沒用)
+			// 3. 產生驗證碼和時間
 			Random random = new Random();
 			int code = random.nextInt(999999) + 1; // 生成範圍是1到999999
 			String verificationCode = String.format("%06d", code); // 確保補足6位，前面不足的補0

@@ -1,5 +1,6 @@
 package com.example.pos10.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,14 +20,14 @@ public interface StaffDao extends JpaRepository<Staff, String> {
 	// 確認電話是否註冊過
 	@Query(value = "SELECT COUNT(*) FROM staff WHERE phone = :phone", nativeQuery = true)
 	public int phoneExists(@Param("phone") String phone);
-	
+
 	// 確認員工編號是否註冊過
-		@Query(value = "SELECT COUNT(*) FROM staff WHERE staff_number = :staffNumber", nativeQuery = true)
-		public int staffNumberExists(@Param("staffNumber") String staffNumber);
-		
-		 //用員工編號抓密碼
-	    @Query(value = "SELECT  pwd from staff WHERE staff_number = :staffNumber " , nativeQuery = true)
-	    public String CheckLogin(@Param("staffNumber") String staffNumber);
+	@Query(value = "SELECT COUNT(*) FROM staff WHERE staff_number = :staffNumber", nativeQuery = true)
+	public int staffNumberExists(@Param("staffNumber") String staffNumber);
+
+	// 用員工編號抓密碼
+	@Query(value = "SELECT  pwd from staff WHERE staff_number = :staffNumber ", nativeQuery = true)
+	public String CheckLogin(@Param("staffNumber") String staffNumber);
 
 	// 回傳全部員工
 	@Query(value = "SELECT * FROM staff ", nativeQuery = true)
@@ -54,20 +55,31 @@ public interface StaffDao extends JpaRepository<Staff, String> {
 			@Param("authorization") String authorization, @Param("email") String email,
 			@Param("staffNumber") String staffNumber);
 
-	//刪除員工資料
+	// 刪除員工資料
 	@Modifying
 	@Transactional
 	@Query(value = "DELETE FROM staff WHERE staff_number = :staffNumber", nativeQuery = true)
 	public int deleteStaff(@Param("staffNumber") String staffNumber);
+
+	// 抓員工資料
+	@Query(value = "SELECT * FROM staff WHERE staff_number = :staffNumber", nativeQuery = true)
+	public Optional<Staff> findByStaffNumber(@Param("staffNumber") String staffNumber);
+
+	// 更新密碼
+	@Modifying
+	@Transactional
+	@Query(value = " UPDATE staff SET pwd = :pwd WHERE staff_number = :staffNember", nativeQuery = true)
+	public int resetPassword(@Param("pwd") String pwd, @Param("staffNember") String staffNember);
+
+	// 產生驗證碼
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE staff  SET verification_code = :verificationCode, verification_code_expiry = :expiry WHERE staff_number = :staffNember", nativeQuery = true)
+	public int updateVerificationCode(@Param("verificationCode") String verificationCode,
+			@Param("expiry") LocalDateTime expiry, @Param("staffNember") String staffNember);
 	
-	
-	//抓員工資料
-    @Query(value = "SELECT * FROM staff WHERE staff_number = :staffNumber", nativeQuery = true)
-    public Optional<Staff> findByStaffNumber(@Param("staffNumber") String staffNumber);
-	
-	
-	
-	
-	
+	//確認輸入的員工編號和email是同一個人
+    @Query(value = "SELECT COUNT(*) FROM staff WHERE staff_number = :staffNember AND email = :email", nativeQuery = true)
+    public int checkEmail(@Param("staffNember") String staffNember, @Param("email") String email);
 
 }

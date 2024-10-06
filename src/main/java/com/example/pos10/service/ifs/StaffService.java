@@ -4,6 +4,7 @@ import com.example.pos10.vo.AllStaffInfoRes;
 import com.example.pos10.vo.BasicRes;
 import com.example.pos10.vo.LoginStaffReq;
 import com.example.pos10.vo.RegisterStaffReq;
+import com.example.pos10.vo.StaffForgotPasswordReq;
 import com.example.pos10.vo.UpdateStaffReq;
 
 public interface StaffService  {
@@ -19,4 +20,8 @@ public interface StaffService  {
 	public BasicRes loginStaff(LoginStaffReq req);
 	
 	public BasicRes getStaffInfo(String  staffNumber);
+	
+	public BasicRes resetPassword(LoginStaffReq req);
+	
+	public BasicRes forgotPassword(StaffForgotPasswordReq req);
 }
