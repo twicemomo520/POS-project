@@ -1,4 +1,4 @@
-package com.example.POS.project.service.impl;
+package com.example.pos10.service.impl;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -9,14 +9,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.POS.project.constant.ResMessage;
-import com.example.POS.project.entity.BusinessHours;
-import com.example.POS.project.entity.TableManagement;
-import com.example.POS.project.repository.BusinessHoursDao;
-import com.example.POS.project.repository.ReservationManagementDao;
-import com.example.POS.project.service.ifs.ReservationManagementService;
-import com.example.POS.project.vo.AvailableTimeSlot;
-import com.example.POS.project.vo.ReservationManagementRes;
+import com.example.pos10.constants.ResMessage;
+import com.example.pos10.entity.BusinessHours;
+import com.example.pos10.entity.TableManagement;
+import com.example.pos10.repository.BusinessHoursDao;
+import com.example.pos10.repository.ReservationManagementDao;
+import com.example.pos10.service.ifs.ReservationManagementService;
+import com.example.pos10.vo.AvailableTimeSlot;
+import com.example.pos10.vo.ReservationManagementRes;
 
 
 @Service

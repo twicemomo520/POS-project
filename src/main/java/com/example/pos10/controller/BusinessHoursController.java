@@ -1,9 +1,9 @@
-package com.example.POS.project.controller;
+package com.example.pos10.controller;
 
-import com.example.POS.project.service.ifs.BusinessHoursService;
-import com.example.POS.project.vo.BusinessHoursReq;
-import com.example.POS.project.vo.BusinessHoursRes;
-import com.example.POS.project.entity.BusinessHours;
+import com.example.pos10.service.ifs.BusinessHoursService;
+import com.example.pos10.vo.BusinessHoursReq;
+import com.example.pos10.vo.BusinessHoursRes;
+import com.example.pos10.entity.BusinessHours;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

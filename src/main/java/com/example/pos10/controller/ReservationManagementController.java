@@ -1,11 +1,11 @@
-package com.example.POS.project.controller;
+package com.example.pos10.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.POS.project.service.ifs.ReservationManagementService;
-import com.example.POS.project.vo.ReservationManagementRes;
+import com.example.pos10.service.ifs.ReservationManagementService;
+import com.example.pos10.vo.ReservationManagementRes;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

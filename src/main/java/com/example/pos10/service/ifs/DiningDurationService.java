@@ -1,11 +1,11 @@
-package com.example.POS.project.service.ifs;
+package com.example.pos10.service.ifs;
 
 import java.time.LocalTime;
 import java.util.List;
 
-import com.example.POS.project.entity.DiningDuration;
-import com.example.POS.project.vo.DiningDurationReq;
-import com.example.POS.project.vo.DiningDurationRes;
+import com.example.pos10.entity.DiningDuration;
+import com.example.pos10.vo.DiningDurationReq;
+import com.example.pos10.vo.DiningDurationRes;
 
 public interface DiningDurationService {
 

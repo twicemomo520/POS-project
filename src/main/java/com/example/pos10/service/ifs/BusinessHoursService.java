@@ -1,8 +1,8 @@
-package com.example.POS.project.service.ifs;
+package com.example.pos10.service.ifs;
 
-import com.example.POS.project.entity.BusinessHours;
-import com.example.POS.project.vo.BusinessHoursReq;
-import com.example.POS.project.vo.BusinessHoursRes;
+import com.example.pos10.entity.BusinessHours;
+import com.example.pos10.vo.BusinessHoursReq;
+import com.example.pos10.vo.BusinessHoursRes;
 
 import java.util.List;
 

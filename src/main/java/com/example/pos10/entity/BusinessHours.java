@@ -1,4 +1,4 @@
-package com.example.POS.project.entity;
+package com.example.pos10.entity;
 
 import java.time.LocalTime;
 

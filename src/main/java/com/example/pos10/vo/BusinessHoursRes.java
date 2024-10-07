@@ -1,8 +1,8 @@
-package com.example.POS.project.vo;
+package com.example.pos10.vo;
 
 import java.time.LocalTime;
 import java.util.List;
-import com.example.POS.project.entity.BusinessHours;
+import com.example.pos10.entity.BusinessHours;
 
 public class BusinessHoursRes {
 

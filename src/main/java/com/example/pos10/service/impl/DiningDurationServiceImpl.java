@@ -1,4 +1,4 @@
-package com.example.POS.project.service.impl;
+package com.example.pos10.service.impl;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -11,14 +11,14 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.POS.project.constant.ResMessage;
-import com.example.POS.project.entity.BusinessHours;
-import com.example.POS.project.entity.DiningDuration;
-import com.example.POS.project.repository.BusinessHoursDao;
-import com.example.POS.project.repository.DiningDurationDao;
-import com.example.POS.project.service.ifs.DiningDurationService;
-import com.example.POS.project.vo.DiningDurationReq;
-import com.example.POS.project.vo.DiningDurationRes;
+import com.example.pos10.constants.ResMessage;
+import com.example.pos10.entity.BusinessHours;
+import com.example.pos10.entity.DiningDuration;
+import com.example.pos10.repository.BusinessHoursDao;
+import com.example.pos10.repository.DiningDurationDao;
+import com.example.pos10.service.ifs.DiningDurationService;
+import com.example.pos10.vo.DiningDurationReq;
+import com.example.pos10.vo.DiningDurationRes;
 
 
 @Service
