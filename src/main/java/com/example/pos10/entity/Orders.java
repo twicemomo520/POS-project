@@ -11,7 +11,6 @@ import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
-
 @Entity
 @Table(name = "orders")
 @IdClass(value = OrdersId.class)
