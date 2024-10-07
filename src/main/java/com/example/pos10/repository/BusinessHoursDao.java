@@ -1,6 +1,6 @@
-package com.example.POS.project.repository;
+package com.example.pos10.repository;
 
-import com.example.POS.project.entity.BusinessHours;
+import com.example.pos10.entity.BusinessHours;
 
 import java.time.LocalTime;
 import java.util.List;

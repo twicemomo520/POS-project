@@ -1,4 +1,4 @@
-package com.example.POS.project.repository;
+package com.example.pos10.repository;
 
 import java.util.List;
 
@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.example.POS.project.entity.Reservation;
-import com.example.POS.project.entity.TableManagement;
+import com.example.pos10.entity.Reservation;
+import com.example.pos10.entity.TableManagement;
 
 @Repository
 public interface TableManagementDao extends JpaRepository <TableManagement, String> {

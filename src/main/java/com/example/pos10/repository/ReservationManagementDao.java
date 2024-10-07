@@ -1,4 +1,4 @@
-package com.example.POS.project.repository;
+package com.example.pos10.repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.example.POS.project.entity.ReservationManagement;
-import com.example.POS.project.entity.TableManagement;
+import com.example.pos10.entity.ReservationManagement;
+import com.example.pos10.entity.TableManagement;
 
 @Repository
 public interface ReservationManagementDao extends JpaRepository<ReservationManagement, Integer> {

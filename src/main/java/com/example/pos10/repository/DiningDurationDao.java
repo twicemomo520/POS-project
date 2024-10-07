@@ -1,4 +1,4 @@
-package com.example.POS.project.repository;
+package com.example.pos10.repository;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.example.POS.project.entity.BusinessHours;
-import com.example.POS.project.entity.DiningDuration;
+import com.example.pos10.entity.BusinessHours;
+import com.example.pos10.entity.DiningDuration;
 
 public interface DiningDurationDao extends JpaRepository <DiningDuration, Integer> {
 
