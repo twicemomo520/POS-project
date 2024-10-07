@@ -24,6 +24,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Autowired
     private TableManagementDao tableManagementDao;
+    
+    @Autowired
+    private EmailService emailService;
 
     // 1. 儲存訂位
     @Override
