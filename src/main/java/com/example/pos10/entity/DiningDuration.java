@@ -1,4 +1,4 @@
-package com.example.POS.project.entity;
+package com.example.pos10.entity;
 
 import java.util.ArrayList;
 import java.util.List;
