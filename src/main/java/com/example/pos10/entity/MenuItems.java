@@ -12,7 +12,6 @@ import javax.validation.constraints.NotNull;
 public class MenuItems {
 	
 	@Id
-	@NotBlank(message="Meal name cannot be null or empty !!")
 	@Column(name="meal_name")
 	private String mealName;
 
@@ -38,10 +37,21 @@ public class MenuItems {
 		super();
 	}
 
-	public MenuItems(@NotBlank(message = "Meal name cannot be null or empty !!") String mealName,
-			@NotNull(message = "Category id cannot be null !") int categoryId,
-			@NotNull(message = "Workstation id cannot be null !") int workstationId,
-			@NotNull(message = "Price cannot be null !") int price, boolean available, String pictureName) {
+	public MenuItems(String mealName) {
+		super();
+		this.mealName = mealName;
+	}
+	
+	public MenuItems(String mealName, int categoryId, int workstationId, int price) {
+		super();
+		this.mealName = mealName;
+		this.categoryId = categoryId;
+		this.workstationId = workstationId;
+		this.price = price;
+	}
+	
+	public MenuItems(String mealName, int categoryId, int workstationId, int price,//
+			boolean available, String pictureName) {
 		super();
 		this.mealName = mealName;
 		this.categoryId = categoryId;
@@ -55,48 +65,24 @@ public class MenuItems {
 		return mealName;
 	}
 
-	public void setMealName(String mealName) {
-		this.mealName = mealName;
-	}
-
 	public int getCategoryId() {
 		return categoryId;
-	}
-
-	public void setCategoryId(int categoryId) {
-		this.categoryId = categoryId;
 	}
 
 	public int getWorkstationId() {
 		return workstationId;
 	}
 
-	public void setWorkstationId(int workstationId) {
-		this.workstationId = workstationId;
-	}
-
 	public int getPrice() {
 		return price;
-	}
-
-	public void setPrice(int price) {
-		this.price = price;
 	}
 
 	public boolean isAvailable() {
 		return available;
 	}
 
-	public void setAvailable(boolean available) {
-		this.available = available;
-	}
-
 	public String getPictureName() {
 		return pictureName;
 	}
-
-	public void setPictureName(String pictureName) {
-		this.pictureName = pictureName;
-	}
-
+	
 }

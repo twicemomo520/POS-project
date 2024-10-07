@@ -22,6 +22,12 @@ public class Categories {
 	public Categories() {
 		super();
 	}
+	
+	public Categories(int categoryId, String category) {
+		super();
+		this.categoryId = categoryId;
+		this.category = category;
+	}
 
 	public Categories(String category) {
 		super();
@@ -34,6 +40,14 @@ public class Categories {
 
 	public String getCategory() {
 		return category;
+	}
+
+	public void setCategoryId(int categoryId) {
+		this.categoryId = categoryId;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
 	}
 	
 }

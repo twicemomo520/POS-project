@@ -1,5 +1,7 @@
 package com.example.pos10.repository;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,18 +20,64 @@ public interface MenuItemsDao extends JpaRepository<MenuItems, String> {
     @Query(value = "SELECT COUNT(1) FROM menu_items WHERE meal_name = :mealName", nativeQuery = true)
     public int existsByMealName(@Param("mealName") String mealName);
 	
+    @Query(value = "select * from menu_items", nativeQuery = true)
+    public List<MenuItems> selectAll();
+    
 	// 新增資料的SQL語法
 	@Modifying
 	@Transactional
 	@Query(value = "insert into menu_items "
-			+ " (meal_name, mea_description, category_id, workstation_id, price) values"
-			+ " (:mealName :mealDescription :categoryId :workstationId :price)", //
+			+ " (meal_name, category_id, workstation_id, price, available, picture_name) values"
+			+ " (:mealName, :categoryId, :workstationId, :price, :available, :pictureName)", //
 			nativeQuery = true)
 	public int insert(//
 			@Param("mealName") String mealName, //
-			@Param("mealDescription") String mealDescription, //
 			@Param("categoryId") int categoryId, //
 			@Param("workstationId") int workstationId, //
-			@Param("price") int price);
+			@Param("price") int price, //
+			@Param("available") boolean available, //
+			@Param("pictureName") String pictureName);
+	
+	// 編輯資料
+	@Modifying
+	@Transactional
+	@Query(value = "update menu_items "
+			+ " set "
+			+ " category_id = :categoryId, "
+			+ " workstation_id = :workstationId, "
+			+ " price = :price, "
+			+ " available = :available, "
+			+ " picture_name = :pictureName "
+			+ " where "
+			+ " meal_name = :mealName", nativeQuery = true)
+	public int updateMenu(//
+			@Param("mealName") String mealName, //
+			@Param("categoryId") int categoryId, //
+			@Param("workstationId") int workstationId, //
+			@Param("price") int price, //
+			@Param("available") boolean available, //
+			@Param("pictureName") String pictureName);
 
+	// 刪除資料
+	@Modifying
+	@Transactional
+	@Query(value = "delete from menu_items where meal_name = :mealName", nativeQuery = true)
+	public int deleteMenuByMealName(@Param("mealName") String mealName);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
