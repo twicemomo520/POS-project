@@ -34,10 +34,10 @@ public class TableManagement {
     @Column (name = "table_status", nullable = false)
     private TableStatus tableStatus;
     
-//    @ManyToOne
-//    @JoinColumn (name = "reservation_id")
-//    private Reservation reservation;
-//    
+    @ManyToOne
+    @JoinColumn (name = "reservation_id")
+    private Reservation reservation;
+    
     public TableManagement () {
 		super ();
 	}
@@ -47,7 +47,7 @@ public class TableManagement {
 		this.tableNumber = tableNumber;
 		this.tableCapacity = tableCapacity;
 		this.tableStatus = tableStatus;
-//		this.reservation = reservation;
+		this.reservation = reservation;
 	}
 
 	public String getTableNumber () {
@@ -74,11 +74,11 @@ public class TableManagement {
         this.tableStatus = tableStatus;
     }
 
-//	public Reservation getReservation () {
-//		return reservation;
-//	}
-//
-//	public void setReservation (Reservation reservation) {
-//		this.reservation = reservation;
-//	}
+	public Reservation getReservation () {
+		return reservation;
+	}
+
+	public void setReservation (Reservation reservation) {
+		this.reservation = reservation;
+	}
 }
