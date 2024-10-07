@@ -20,6 +20,27 @@ public class EmailService {
         message.setFrom("密碼重置信件<ru8ru812345@gmail.com>");  // 確保郵件的發件人
         mailSender.send(message);
     }
+    
+    // 訂位確認信
+    public void sendReservationConfirmationEmail(String to, String customerName, String reservationDate, String reservationTime, int people) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("訂位建立成功");
+
+        String text = "訂位建立成功\n\n" +
+                      customerName + "您好，\n\n" +
+                      "提醒您已成功建立一筆即將到來的訂位。\n\n" +
+                      "訂位保留時間為 10 分鐘，遲到即取消，還請留意時間！\n" +
+                      "如需取消，請致電店家。\n\n" +
+                      "訂位日期: " + reservationDate + "\n" +
+                      "訂位時間: " + reservationTime + "\n" +
+                      "訂位人數: " + people + " 人\n\n" +
+                      "感謝您的光臨！";
+
+        message.setText(text);
+        message.setFrom("訂位確認<ru8ru812345@gmail.com>");  // 替換為你的發件人電子郵件
+        mailSender.send(message);
+    }
 }
 
 
