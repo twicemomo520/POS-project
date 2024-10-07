@@ -10,9 +10,8 @@ public class CreateCbReq extends ComboItems {
 		super();
 	}
 
-	public CreateCbReq(@NotBlank(message = "Combo name cannot be null or empty !!") String comboName,
-			String comboDetail, int discountAmount, String comDescription) {
-		super(comboName, comboDetail, discountAmount, comDescription);
+	public CreateCbReq(String comboName, String comboDetail, int discountAmount) {
+		super(comboName, comboDetail, discountAmount);
 	}
 	
 	

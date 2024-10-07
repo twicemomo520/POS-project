@@ -6,7 +6,7 @@ import com.example.pos10.entity.OrderDetailHistory;
 import com.example.pos10.entity.OrderHistory;
 
 public class PosStatisticsRes extends BasicRes{
-	private List<JoinOrderVo> joinOrderList;
+	private List<JoinOrderHistoryVo> joinOrderList;
 	
 	
 	public PosStatisticsRes() {
@@ -17,16 +17,16 @@ public class PosStatisticsRes extends BasicRes{
 		super(code, message);
 	}
 	
-	public PosStatisticsRes(int code, String message, List<JoinOrderVo> joinOrderList) {
+	public PosStatisticsRes(int code, String message, List<JoinOrderHistoryVo> joinOrderList) {
 		super(code, message);
 		this.joinOrderList = joinOrderList;
 	}
 
-	public List<JoinOrderVo> getJoinOrderList() {
+	public List<JoinOrderHistoryVo> getJoinOrderList() {
 		return joinOrderList;
 	}
 
-	public void setJoinOrderList(List<JoinOrderVo> joinOrderList) {
+	public void setJoinOrderList(List<JoinOrderHistoryVo> joinOrderList) {
 		this.joinOrderList = joinOrderList;
 	}
 
