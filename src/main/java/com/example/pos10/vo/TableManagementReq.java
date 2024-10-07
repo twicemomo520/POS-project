@@ -1,8 +1,8 @@
-package com.example.POS.project.vo;
+package com.example.pos10.vo;
 
-import com.example.POS.project.constant.ResMessage;
-import com.example.POS.project.entity.Reservation;
-import com.example.POS.project.entity.TableManagement;
+import com.example.pos10.constants.ResMessage;
+import com.example.pos10.entity.Reservation;
+import com.example.pos10.entity.TableManagement;
 
 public class TableManagementReq extends TableManagement {
 

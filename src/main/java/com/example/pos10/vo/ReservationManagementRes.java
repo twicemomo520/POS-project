@@ -1,4 +1,4 @@
-package com.example.POS.project.vo;
+package com.example.pos10.vo;
 
 import java.time.LocalTime;
 import java.util.List;

@@ -1,14 +1,14 @@
-package com.example.POS.project.controller;
+package com.example.pos10.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.POS.project.service.ifs.TableManagementService;
-import com.example.POS.project.vo.TableManagementReq;
-import com.example.POS.project.vo.TableManagementRes;
-import com.example.POS.project.constant.ResMessage;
-import com.example.POS.project.entity.TableManagement;
-import com.example.POS.project.entity.TableManagement.TableStatus;
+import com.example.pos10.service.ifs.TableManagementService;
+import com.example.pos10.vo.TableManagementReq;
+import com.example.pos10.vo.TableManagementRes;
+import com.example.pos10.constants.ResMessage;
+import com.example.pos10.entity.TableManagement;
+import com.example.pos10.entity.TableManagement.TableStatus;
 
 import java.util.List;
 

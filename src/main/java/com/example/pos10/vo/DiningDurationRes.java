@@ -1,8 +1,8 @@
-package com.example.POS.project.vo;
+package com.example.pos10.vo;
 
 import java.util.List;
 
-import com.example.POS.project.entity.DiningDuration;
+import com.example.pos10.entity.DiningDuration;
 
 public class DiningDurationRes {
 

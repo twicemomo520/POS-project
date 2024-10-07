@@ -1,9 +1,9 @@
-package com.example.POS.project.service.ifs;
+package com.example.pos10.service.ifs;
 
-import com.example.POS.project.vo.TableManagementReq;
-import com.example.POS.project.vo.TableManagementRes;
-import com.example.POS.project.entity.TableManagement;
-import com.example.POS.project.entity.TableManagement.TableStatus;
+import com.example.pos10.vo.TableManagementReq;
+import com.example.pos10.vo.TableManagementRes;
+import com.example.pos10.entity.TableManagement;
+import com.example.pos10.entity.TableManagement.TableStatus;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.example.POS.project.controller;
+package com.example.pos10.controller;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.POS.project.entity.DiningDuration;
-import com.example.POS.project.service.ifs.DiningDurationService;
-import com.example.POS.project.vo.DiningDurationReq;
-import com.example.POS.project.vo.DiningDurationRes;
+import com.example.pos10.entity.DiningDuration;
+import com.example.pos10.service.ifs.DiningDurationService;
+import com.example.pos10.vo.DiningDurationReq;
+import com.example.pos10.vo.DiningDurationRes;
 
 
 @RestController

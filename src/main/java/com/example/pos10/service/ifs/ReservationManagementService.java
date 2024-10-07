@@ -1,10 +1,10 @@
-package com.example.POS.project.service.ifs;
+package com.example.pos10.service.ifs;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import com.example.POS.project.vo.ReservationManagementRes;
+import com.example.pos10.vo.ReservationManagementRes;
 
 public interface ReservationManagementService {
 
