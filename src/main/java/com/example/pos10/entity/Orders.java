@@ -11,7 +11,6 @@ import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
-
 @Entity
 @Table(name = "orders")
 public class Orders {
@@ -30,7 +29,7 @@ public class Orders {
     
     @Column(name = "combo_name")
     private String comboName;
-    
+
     @Column(name = "meal_name")
     private String mealName;
     
