@@ -9,10 +9,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.pos10.entity.Orders;
-import com.example.pos10.entity.OrdersId;
 
 @Repository
-public interface OrderDao extends  JpaRepository<Orders, OrdersId>{
+public interface OrderDao extends  JpaRepository<Orders, Integer>{
 	
 	@Query(value = "select o from Orders as o"
 			+ " where (o.orderTime between :inputStartDate and :inputEndDate) "

@@ -29,11 +29,7 @@ public class Orders {
     
     @Column(name = "combo_name")
     private String comboName;
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> search_order_status_branch
     @Column(name = "meal_name")
     private String mealName;
     
