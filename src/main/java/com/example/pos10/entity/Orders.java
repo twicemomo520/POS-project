@@ -33,9 +33,6 @@ public class Orders {
     @Column(name = "combo_name")
     private String comboName;
 
-//    @Column(name = "meal_detail")
-//    private String mealDetail;
-    
     @Column(name = "meal_name")
     private String mealName;
     
