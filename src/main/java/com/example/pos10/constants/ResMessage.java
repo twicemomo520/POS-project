@@ -67,6 +67,18 @@ public enum ResMessage {
 	RESERVATION_DATE_CANNOT_BE_IN_PAST (400, "Reservation date cannot be in the past !!!"), // 預約日期不能是過去的時間
 	NO_RESERVED_TIME_SLOTS (400, "No reserved time slots found !!!"), // 找不到可以預約的時間段
 	NO_AVAILABLE_DINING_DURATION (400, "No available dining duration for the selected time range !!!"), // 查詢的時間範圍內已經沒有可用的用餐時段
+	
+	// Reservation
+	INVALID_CUSTOMER_NAME (400, "Customer name cannot be null or empty !!!"), // 顧客姓名不能為 null 或空白
+	INVALID_PHONE_NUMBER_FORMAT (400, "Invalid phone number format !!!"), // 電話號碼格式不正確
+	INVALID_EMAIL_FORMAT (400, "Invalid email address."), // 電子郵件格式不正確
+	INVALID_CUSTOMER_GENDER (400, "Customer gender cannot be null or empty !!!"), // 顧客性別不能為空
+	INVALID_RESERVATION_PEOPLE (400, "Reservation people must be greater than 0 !!!"), // 訂位人數必須大於 0
+	INVALID_RESERVATION_TIME (400, "Reservation time cannot be in the past !!!"), // 訂位時間不能是過去的時間
+	EXCEEDS_TABLE_CAPACITY (400, "The number of people exceeds the table's maximum capacity !!!"), // 表示訂位人數超過了桌位的最大容納量
+	DUPLICATE_RESERVATION (400, "You already have a reservation at the same time !!!"), // 重複的訂位
+	NOT_ENOUGH_TABLE_CAPACITY (400, "Not enough table capacity for the reservation !!!"), // 桌位的總容量無法滿足所需人數
+	NO_RESERVATIONS_FOUND (404, "No reservations found for the provided phone number."), // 根據電話號碼查詢結果為空時，告知使用者系統中未找到符合條件的訂位
 	;
 	
 	

@@ -1,6 +1,8 @@
 package com.example.pos10.entity;
 
 import java.time.LocalTime;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,6 +11,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
@@ -57,6 +61,15 @@ public class Reservation {
     @ManyToOne
     @JoinColumn (name = "reservation_management_id", nullable = false) // 外鍵，連接到 ReservationManagement
     private ReservationManagement reservationManagement;
+    
+    // 與 TableManagement 之間的多對多關係
+    @ManyToMany
+    @JoinTable (
+        name = "reservation_table", // 中間表名
+        joinColumns = @JoinColumn (name = "reservation_id"), // Reservation 的外鍵
+        inverseJoinColumns = @JoinColumn (name = "table_number") // TableManagement 的外鍵，改為 table_number
+    )
+    private List<TableManagement> tables; // 用來儲存分配的桌位
 
     public enum Gender {
         男性, 女性
@@ -66,8 +79,8 @@ public class Reservation {
 		super ();
 	}
 
-	public Reservation (int reservationId, String customerName, String customerPhoneNumber, String customerEmail,
-			Gender customerGender, int reservationPeople, LocalTime reservationTime, ReservationManagement reservationManagement) {
+	public Reservation (int reservationId, String customerName, String customerPhoneNumber, String customerEmail,Gender customerGender, 
+			int reservationPeople, LocalTime reservationTime, ReservationManagement reservationManagement, List<TableManagement> tables) {
 		super ();
 		this.reservationId = reservationId;
 		this.customerName = customerName;
@@ -77,6 +90,7 @@ public class Reservation {
 		this.reservationPeople = reservationPeople;
 		this.reservationTime = reservationTime;
 		this.reservationManagement = reservationManagement;
+		this.tables = tables;
 	}
 
 	public int getReservationId () {
@@ -141,5 +155,13 @@ public class Reservation {
 
 	public void setReservationManagement (ReservationManagement reservationManagement) {
 		this.reservationManagement = reservationManagement;
+	}
+
+	public List <TableManagement> getTables () {
+		return tables;
+	}
+
+	public void setTables (List <TableManagement> tables) {
+		this.tables = tables;
 	}
 }

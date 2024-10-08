@@ -1,9 +1,11 @@
 package com.example.pos10.vo;
 
 import java.time.LocalTime;
+import java.util.List;
 
 import com.example.pos10.entity.Reservation;
 import com.example.pos10.entity.ReservationManagement;
+import com.example.pos10.entity.TableManagement;
 
 public class ReservationReq extends Reservation {
 
@@ -11,10 +13,9 @@ public class ReservationReq extends Reservation {
 		super ();
 	}
 
-	public ReservationReq (int reservationId, String customerName, String customerPhoneNumber, String customerEmail,
-			Gender customerGender, int reservationPeople, LocalTime reservationTime, ReservationManagement reservationManagement) {
+	public ReservationReq (int reservationId, String customerName, String customerPhoneNumber, String customerEmail, Gender customerGender, 
+			int reservationPeople, LocalTime reservationTime, ReservationManagement reservationManagement, List <TableManagement> tables) {
 		super (reservationId, customerName, customerPhoneNumber, customerEmail, customerGender, reservationPeople,
-				reservationTime, reservationManagement);
+				reservationTime, reservationManagement, tables);
 	}
-
 }

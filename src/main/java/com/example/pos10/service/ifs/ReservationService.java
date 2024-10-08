@@ -22,4 +22,7 @@ public interface ReservationService {
 
     // 5. 自動更新桌位狀態
     public void autoUpdateTableStatus (LocalDate currentDate, LocalTime currentTime, LocalTime cutOffTime);
+    
+    // 6. 訂位前一天發送提醒
+    public void sendReservationReminders ();
 }

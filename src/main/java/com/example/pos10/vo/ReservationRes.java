@@ -1,9 +1,12 @@
 package com.example.pos10.vo;
 
+import java.util.List;
+
 public class ReservationRes {
 
     private int code;
     private String message;
+    private List <ReservationReq> reservations;  // 添加這個欄位
     
 	public ReservationRes () {
 		super ();
@@ -12,6 +15,13 @@ public class ReservationRes {
 	public ReservationRes (int code, String message) {
 		this.code = code;
 		this.message = message;
+	}
+
+	public ReservationRes(int code, String message, List <ReservationReq> reservations) {
+		super();
+		this.code = code;
+		this.message = message;
+		this.reservations = reservations;
 	}
 
 	public int getCode() {
@@ -28,5 +38,13 @@ public class ReservationRes {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public List<ReservationReq> getReservations() {
+		return reservations;
+	}
+
+	public void setReservations(List<ReservationReq> reservations) {
+		this.reservations = reservations;
 	}
 }
