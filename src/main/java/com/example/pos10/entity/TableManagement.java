@@ -28,6 +28,7 @@ public class TableManagement {
     public enum TableStatus {
         AVAILABLE, RESERVED, ACTIVE
     }
+    
 
     @Enumerated (EnumType.STRING)
     @NotNull (message = "Table status cannot be null !!!")
