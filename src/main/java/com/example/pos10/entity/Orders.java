@@ -11,10 +11,8 @@ import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
-
 @Entity
 @Table(name = "orders")
-@IdClass(value = OrdersId.class)
 public class Orders {
 	
     @Id
@@ -29,14 +27,9 @@ public class Orders {
     @Column(name = "order_meal_id")
     private String orderMealId;
     
-    @Id
-    @NotBlank(message = "Combo name cannot be null or empty !!")
     @Column(name = "combo_name")
     private String comboName;
 
-//    @Column(name = "meal_detail")
-//    private String mealDetail;
-    
     @Column(name = "meal_name")
     private String mealName;
     

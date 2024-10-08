@@ -71,6 +71,7 @@ public class Reservation {
     )
     private List<TableManagement> tables; // 用來儲存分配的桌位
 
+
     public enum Gender {
         男性, 女性
     }
@@ -78,6 +79,7 @@ public class Reservation {
 	public Reservation () {
 		super ();
 	}
+
 
 	public Reservation (int reservationId, String customerName, String customerPhoneNumber, String customerEmail,Gender customerGender, 
 			int reservationPeople, LocalTime reservationTime, ReservationManagement reservationManagement, List<TableManagement> tables) {
