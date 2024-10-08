@@ -78,7 +78,8 @@ public enum ResMessage {
 	EXCEEDS_TABLE_CAPACITY (400, "The number of people exceeds the table's maximum capacity !!!"), // 表示訂位人數超過了桌位的最大容納量
 	DUPLICATE_RESERVATION (400, "You already have a reservation at the same time !!!"), // 重複的訂位
 	NOT_ENOUGH_TABLE_CAPACITY (400, "Not enough table capacity for the reservation !!!"), // 桌位的總容量無法滿足所需人數
-	NO_RESERVATIONS_FOUND (404, "No reservations found for the provided phone number."), // 根據電話號碼查詢結果為空時，告知使用者系統中未找到符合條件的訂位
+	NO_RESERVATIONS_FOUND (404, "No reservations found for the provided phone number."), // 查詢結果為空時，告知使用者系統中未找到符合條件的訂位
+	INVALID_TABLE_STATUS_FOR_CANCELLATION (400, "The table is not reserved and cannot be canceled."), // 當前桌位狀態不為「預定中」無法進行取消操作
 	;
 	
 	

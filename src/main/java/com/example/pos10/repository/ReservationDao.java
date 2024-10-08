@@ -24,7 +24,7 @@ public interface ReservationDao extends JpaRepository <Reservation, Integer> {
     @Query ("SELECT r FROM Reservation r WHERE r.customerPhoneNumber = :phoneNumber")
     List <Reservation> findByCustomerPhoneNumber (@Param ("phoneNumber") String phoneNumber);
 
-    // 3. 查詢某日期的所有訂位
+    // 3. 查詢某日期的所有訂位（不透過 ReservationManagement）
     @Query ("SELECT r FROM Reservation r WHERE r.reservationManagement.reservationDate = :reservationDate")
     List <Reservation> findAllByReservationDate (@Param ("reservationDate") LocalDate reservationDate);
 
@@ -35,13 +35,12 @@ public interface ReservationDao extends JpaRepository <Reservation, Integer> {
 
     // 5. 自動更新桌位狀態與 10 分鐘保留規則整合
     @Modifying
-    @Query ("UPDATE TableManagement t SET t.tableStatus = " +
-            "CASE " +
-            "  WHEN r.reservationManagement.reservationStarttime <= :cutOffTime AND r.reservationStatus = 'RESERVED' THEN 'AVAILABLE' " +  
-            "  ELSE t.tableStatus " +
-            "END " +
-            "WHERE t.tableNumber IN (SELECT r.tableManagement.tableNumber FROM ReservationManagement r " +
-            "WHERE r.reservationDate = :currentDate AND r.reservationStatus = 'RESERVED')")
-    public void autoUpdateTableStatusToAvailable (@Param ("currentDate") LocalDate currentDate,
-                                                  @Param ("cutOffTime") LocalTime cutOffTime);
+    @Query("UPDATE TableManagement t " +
+           "SET t.tableStatus = CASE " +
+           "   WHEN (SELECT r.reservationStarttime FROM ReservationManagement r WHERE r.tableManagement = t AND r.reservationDate = :currentDate) <= :cutOffTime " +
+           "       AND t.tableStatus = 'RESERVED' THEN 'AVAILABLE' " +
+           "   ELSE t.tableStatus " +
+           "END " +
+           "WHERE t.tableNumber IN (SELECT r.tableManagement.tableNumber FROM ReservationManagement r WHERE r.reservationDate = :currentDate)")
+    public int autoUpdateTableStatusToAvailable(@Param("currentDate") LocalDate currentDate, @Param("cutOffTime") LocalTime cutOffTime);
 }

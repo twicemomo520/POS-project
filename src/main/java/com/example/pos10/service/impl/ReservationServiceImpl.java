@@ -217,15 +217,38 @@ public class ReservationServiceImpl implements ReservationService {
     // 4. 取消訂位
     @Override
     public ReservationRes cancelReservation(String tableNumber) {
-        tableManagementDao.updateTableStatus(tableNumber, "AVAILABLE");  // 使用 updateTableStatus 方法更新桌位狀態為 "可使用"
-        return new ReservationRes(200, "訂位已取消，桌位已釋放");
+        // 1. 驗證桌號是否存在
+        TableManagement table = tableManagementDao.findById(tableNumber).orElse(null);
+        if (table == null) {
+            return new ReservationRes(ResMessage.TABLE_NUMBER_NOT_FOUND.getCode(), ResMessage.TABLE_NUMBER_NOT_FOUND.getMessage());
+        }
+
+        // 2. 檢查桌位當前狀態
+        if (!table.getTableStatus().equals(TableManagement.TableStatus.RESERVED)) {
+            return new ReservationRes(ResMessage.INVALID_TABLE_STATUS_FOR_CANCELLATION.getCode(), ResMessage.INVALID_TABLE_STATUS_FOR_CANCELLATION.getMessage());
+        }
+
+        // 3. 更新桌位狀態為 "AVAILABLE"
+        tableManagementDao.updateTableStatus(tableNumber, "AVAILABLE");  
+
+        // 4. 返回成功訊息
+        return new ReservationRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
     }
 
     // 5. 自動更新桌位狀態（每10分鐘執行一次）
     @Override
     @Scheduled(cron = "0 0/10 * * * ?") // 每10分鐘執行一次
     public void autoUpdateTableStatus(LocalDate currentDate, LocalTime currentTime, LocalTime cutOffTime) {
-        reservationDao.autoUpdateTableStatusToAvailable(currentDate, cutOffTime);
+        // 1. 驗證日期和時間是否為空
+        if (currentDate == null || currentTime == null || cutOffTime == null) {
+            throw new IllegalArgumentException("日期和時間不能為空");
+        }
+
+        // 2. 更新桌位狀態，並獲取更新的桌位數量
+        int updatedTablesCount = reservationDao.autoUpdateTableStatusToAvailable(currentDate, cutOffTime);
+
+        // 3. 記錄更新操作
+        System.out.println("自動更新完成，已更新的桌位數量: " + updatedTablesCount);
     }
 
     // 6. 訂位前一天發送提醒

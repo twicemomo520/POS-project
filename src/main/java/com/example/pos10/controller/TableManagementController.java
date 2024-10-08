@@ -58,26 +58,13 @@ public class TableManagementController {
         return tableManagementService.searchTableStatus (status);
     }
 
-    // 5. 調整桌位容量
-    @PutMapping ("/tableManagement/adjustTableCapacity/{tableNumber}")
-    public TableManagementRes adjustTableCapacity (@PathVariable String tableNumber, @RequestParam int capacity) {
-        return tableManagementService.adjustTableCapacity (tableNumber, capacity);
-    }
-
-    // 6. 分配桌位
-    @GetMapping ("/tableManagement/assignTable")
-    public TableManagementRes assignTable (@RequestParam int customerCount) {
-        return tableManagementService.assignTable (customerCount);
-    }
-
-    // 7. 查詢所有桌位
+    // 5. 查詢所有桌位
     @GetMapping ("/tableManagement/getAllTables")
     public List <TableManagement> getAllTables () {
         return tableManagementService.getAllTables ();
     }
     
-
-	// 8. 更新桌位（桌號或容納人數）
+	// 6. 更新桌位（桌號或容納人數）
 	@PutMapping ("/tableManagement/updateTable")
 	public TableManagementRes updateTable (@RequestParam String oldTableNumber,
 			@RequestParam (required = false) String newTableNumber,
