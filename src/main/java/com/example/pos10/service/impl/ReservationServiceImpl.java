@@ -31,9 +31,6 @@ public class ReservationServiceImpl implements ReservationService {
     private TableManagementDao tableManagementDao;
     
     @Autowired
-    private ReservationManagementDao reservationManagementDao;
-    
-    @Autowired
     private EmailService emailService;
 
     // 1. 儲存訂位
@@ -67,15 +64,16 @@ public class ReservationServiceImpl implements ReservationService {
             return new ReservationRes(ResMessage.INVALID_RESERVATION_PEOPLE.getCode(), ResMessage.INVALID_RESERVATION_PEOPLE.getMessage());
         }
 
-        // 6. 驗證訂位時間
-        if (reservationReq.getReservationTime().isBefore(LocalTime.now())) {
-            return new ReservationRes(ResMessage.INVALID_RESERVATION_TIME.getCode(), ResMessage.INVALID_RESERVATION_TIME.getMessage());
+        // 6. 根據 ReservationManagement 直接確認訂位時間段
+        ReservationManagement reservationManagement = reservationReq.getReservationManagement();
+        if (reservationManagement == null || reservationManagement.getIndexId() == 0) {
+        	return new ReservationRes(ResMessage.NO_RESERVED_TIME_SLOTS.getCode(), ResMessage.NO_RESERVED_TIME_SLOTS.getMessage());
         }
 
-        // 7. 檢查是否有重複訂位（只檢查同一時間的訂位衝突）
-        List <Reservation> existingReservations = reservationDao.findByCustomerPhoneNumber(reservationReq.getCustomerPhoneNumber());
+        // 7. 檢查是否有重複訂位（根據同一電話號碼和相同的時間段）
+        List<Reservation> existingReservations = reservationDao.findByCustomerPhoneNumber(reservationReq.getCustomerPhoneNumber());
         for (Reservation existing : existingReservations) {
-            if (existing.getReservationTime().equals(reservationReq.getReservationTime())) {
+            if (existing.getReservationManagement().equals(reservationManagement)) {
                 return new ReservationRes(ResMessage.DUPLICATE_RESERVATION.getCode(), ResMessage.DUPLICATE_RESERVATION.getMessage());
             }
         }
@@ -108,35 +106,25 @@ public class ReservationServiceImpl implements ReservationService {
             return new ReservationRes(500, "更新桌位狀態時發生錯誤");
         }
 
-     // 10. 儲存 ReservationManagement
-        ReservationManagement reservationManagement = reservationReq.getReservationManagement();
-
-        // 檢查 reservationManagement 是否為 transient 狀態，假如是，先保存它
-        if (reservationManagement.getIndexId() == 0) {
-            reservationManagement = reservationManagementDao.save(reservationManagement);
-        }
-
-        // 11. 儲存訂位資訊
+        // 10. 儲存訂位資訊
         Reservation reservation = new Reservation();
         reservation.setCustomerName(reservationReq.getCustomerName());
         reservation.setCustomerPhoneNumber(reservationReq.getCustomerPhoneNumber());
         reservation.setCustomerEmail(reservationReq.getCustomerEmail());
         reservation.setCustomerGender(reservationReq.getCustomerGender());
         reservation.setReservationPeople(reservationReq.getReservationPeople());
-        reservation.setReservationTime(reservationReq.getReservationTime());
-        reservation.setReservationManagement(reservationManagement); // 設定已保存的 reservationManagement
-        reservation.setTables(selectedTables); // 假設有一個字段儲存這些分配的桌位
+        reservation.setReservationManagement(reservationManagement);  // 設定已選擇的時間段
+        reservation.setTables(selectedTables);
 
-        // 手動儲存訂位，避免使用 CascadeType.PERSIST
         reservationDao.save(reservation);
 
-        // 12. 發送訂位確認信
+        // 11. 發送訂位確認信
         try {
             emailService.sendReservationConfirmationEmail(
                 reservation.getCustomerEmail(),
                 reservation.getCustomerName(),
                 reservation.getReservationManagement().getReservationDate().toString(),
-                reservation.getReservationTime().toString(),
+                reservation.getReservationManagement().getReservationStarttime().toString(),
                 reservation.getReservationPeople()
             );
         } catch (Exception e) {
@@ -175,7 +163,6 @@ public class ReservationServiceImpl implements ReservationService {
                     reservation.getCustomerEmail(),
                     reservation.getCustomerGender(),
                     reservation.getReservationPeople(),
-                    reservation.getReservationTime(),
                     reservation.getReservationManagement(),
                     null
                 );
@@ -218,7 +205,6 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.getCustomerEmail(),
                 reservation.getCustomerGender(),
                 reservation.getReservationPeople(),
-                reservation.getReservationTime(),
                 reservation.getReservationManagement(),
                 null 
             ))
@@ -270,19 +256,23 @@ public class ReservationServiceImpl implements ReservationService {
     @Scheduled(cron = "0 0 8 * * ?")  // 每天早上8點執行一次
     public void sendReservationReminders() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);  // 計算明天的日期
-     // 查詢明天的訂位
+        // 查詢明天的訂位
         List<Reservation> tomorrowReservations = reservationDao.findAllByReservationDate(tomorrow);
 
         // 發送提醒郵件
         tomorrowReservations.forEach(reservation -> {
-            emailService.sendReminderEmail(
-                reservation.getCustomerEmail(),   // 顧客的電子郵件
-                reservation.getCustomerName(),    // 顧客的名字
-                reservation.getReservationManagement().getReservationDate().toString(), // 訂位日期
-                reservation.getReservationTime().toString(), // 訂位時間
-                reservation.getReservationPeople() // 訂位人數
-            );
+            ReservationManagement reservationManagement = reservation.getReservationManagement();
+            if (reservationManagement != null) {
+                emailService.sendReminderEmail(
+                    reservation.getCustomerEmail(),   // 顧客的電子郵件
+                    reservation.getCustomerName(),    // 顧客的名字
+                    reservationManagement.getReservationDate().toString(), // 訂位日期
+                    reservationManagement.getReservationStarttime().toString(), // 訂位開始時間
+                    reservation.getReservationPeople() // 訂位人數
+                );
+            }
         });
+
 
         System.out.println("訂位提醒郵件已發送");
     }

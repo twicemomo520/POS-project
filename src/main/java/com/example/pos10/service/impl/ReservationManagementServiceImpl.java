@@ -77,9 +77,6 @@ public class ReservationManagementServiceImpl implements ReservationManagementSe
                 timeSlot.setEndTime(slotEndTime);
                 timeSlot.setAvailable(!availableTables.isEmpty());
                 availableTimeSlots.add(timeSlot);
-
-                // 每次增加 30 分鐘的間隔
-                currentTime = currentTime.plusMinutes(30);
             }
         }
 
