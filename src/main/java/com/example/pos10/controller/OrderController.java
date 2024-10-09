@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.pos10.service.ifs.OrderService;
 import com.example.pos10.vo.BasicRes;
-import com.example.pos10.vo.InsertAuthorizationReq;
 import com.example.pos10.vo.SearchOrderReq;
 import com.example.pos10.vo.SearchOrderStatusRes;
+import com.example.pos10.vo.SelectInPreparationRes;
 import com.example.pos10.vo.UpdateOrderReq;
 
 @RestController
@@ -32,4 +32,14 @@ public class OrderController {
     	return orderService.updateOrderStatus(req);
     }
 
+    @PostMapping("/pos/selectInPreparation")
+    public SelectInPreparationRes selectInPreparation() {
+    	return orderService.selectInPreparation();
+    }
+    
+    @PostMapping("/pos/updateInPreparation")
+    public BasicRes updateInPreparation(@RequestBody @Valid  UpdateOrderReq req) {
+    	return orderService.updateInPreparation(req);
+    }
+    
 }
