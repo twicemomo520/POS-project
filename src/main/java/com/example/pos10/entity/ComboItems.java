@@ -23,6 +23,10 @@ public class ComboItems {
 	@NotNull(message="Discount amount cannot be null !!")
 	@Column(name = "discount_amount")
 	private int discountAmount;
+	
+	@NotNull(message="Category Id cannot be null !!")
+	@Column(name = "category_id")
+	private int categoryId;
 
 
 	public ComboItems() {
@@ -30,12 +34,15 @@ public class ComboItems {
 	}
 
 
-	public ComboItems(@NotBlank(message = "Combo name cannot be null or empty !!") String comboName, String comboDetail,
-			int discountAmount) {
+	public ComboItems(@NotBlank(message = "Combo name cannot be null or empty !!") String comboName,
+			@NotBlank(message = "Combo detail cannot be null or empty !!") String comboDetail,
+			@NotNull(message = "Discount amount cannot be null !!") int discountAmount,
+			@NotNull(message = "Category Id cannot be null !!") int categoryId) {
 		super();
 		this.comboName = comboName;
 		this.comboDetail = comboDetail;
 		this.discountAmount = discountAmount;
+		this.categoryId = categoryId;
 	}
 
 
@@ -68,5 +75,16 @@ public class ComboItems {
 		this.discountAmount = discountAmount;
 	}
 
+
+	public int getCategoryId() {
+		return categoryId;
+	}
+
+
+	public void setCategoryId(int categoryId) {
+		this.categoryId = categoryId;
+	}
+
+	
 	
 }

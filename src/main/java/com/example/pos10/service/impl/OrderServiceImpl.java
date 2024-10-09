@@ -16,11 +16,13 @@ import com.example.pos10.constants.ResMessage;
 import com.example.pos10.entity.Orders;
 import com.example.pos10.repository.OrderDao;
 import com.example.pos10.service.ifs.OrderService;
+import com.example.pos10.vo.BasicRes;
 import com.example.pos10.vo.MealDetailVo;
 import com.example.pos10.vo.MealVo;
 import com.example.pos10.vo.SearchOrderReq;
 import com.example.pos10.vo.SearchOrderStatusRes;
 import com.example.pos10.vo.SearchOrderStatusVo;
+import com.example.pos10.vo.UpdateOrderReq;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -280,5 +282,15 @@ public class OrderServiceImpl implements OrderService{
 		return new SearchOrderStatusRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(), //
 				preparingOrders, undeliveredOrders, deliveredOrders);
 
+	}
+
+	@Override
+	public BasicRes updateOrderStatus(UpdateOrderReq req) {
+		
+		int id = req.getId();
+		
+		orderDao.updateOrderStatus(id);
+		
+		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
 	}
 }

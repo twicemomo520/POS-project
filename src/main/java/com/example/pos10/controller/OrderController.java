@@ -13,6 +13,7 @@ import com.example.pos10.vo.BasicRes;
 import com.example.pos10.vo.InsertAuthorizationReq;
 import com.example.pos10.vo.SearchOrderReq;
 import com.example.pos10.vo.SearchOrderStatusRes;
+import com.example.pos10.vo.UpdateOrderReq;
 
 @RestController
 @CrossOrigin
@@ -24,6 +25,11 @@ public class OrderController {
     @PostMapping("/pos/searchOrderStatus")
     public SearchOrderStatusRes searchOrderStatus(@RequestBody @Valid  SearchOrderReq req) {
         return orderService.searchOrderStatus(req);
+    }
+    
+    @PostMapping("/pos/updateOrderStatus")
+    public BasicRes searchOrderStatus(@RequestBody @Valid  UpdateOrderReq req) {
+    	return orderService.updateOrderStatus(req);
     }
 
 }
