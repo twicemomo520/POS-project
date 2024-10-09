@@ -57,6 +57,16 @@ public interface MenuItemsDao extends JpaRepository<MenuItems, String> {
 			@Param("price") int price, //
 			@Param("available") boolean available, //
 			@Param("pictureName") String pictureName);
+	
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE menu_items "
+			+ " SET "
+			+ " workstation_id = :workstationId"
+			+ " WHERE "
+			+ " category_id = :categoryId", nativeQuery = true)
+	public int updateMenuWorkStation(@Param("workstationId") int workstationId, //
+			@Param("categoryId") int categoryId);
 
 	// 刪除資料
 	@Modifying

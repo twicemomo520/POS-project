@@ -16,12 +16,12 @@ public enum ResMessage {
 	OPTION_COMBINATION_ALREADY_EXISTS(400, "Option combination already exists !"),//
 	OPTION_COMBINATION_NOT_FOUND(404, "Option combination not found !"),//
 	OPTION_TITLE_NOT_FOUND(404, "Option title not found !"),//
-	ANNOUNCE_NOT_FOUND(400,"Announce not found"),//
-	WORKSTATION_NOT_FOUND(400,"Workstation not found"),//
+	ANNOUNCE_NOT_FOUND(404,"Announce not found"),//
+	WORKSTATION_NOT_FOUND(404,"Workstation not found"),//
 	WORKSTATION_ALREADY_EXISTS(400,"Workstation already exists"),//
 	COMBO_INPUT_CANNOT_BE_NULL_OR_EMPTY(400,"Update combo all input cannot be null or empty"),//
 	COMBO_NAME_EXISTS(400,"Combo name exists"),//
-	COMBO_NAME_NOT_FOUND(400,"Combo name cannot found"), //
+	COMBO_NAME_NOT_FOUND(404,"Combo name cannot found"), //
 	
 	// TableManagement
 	INVALID_TABLE_STATUS (400, "Invalid table status value !!!"), //

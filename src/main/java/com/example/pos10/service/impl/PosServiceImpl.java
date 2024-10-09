@@ -20,6 +20,7 @@ import com.example.pos10.vo.OptionContent;
 import com.example.pos10.vo.UpdateCgReq;
 import com.example.pos10.vo.UpdateMenuReq;
 import com.example.pos10.vo.UpdateOptionPriceReq;
+import com.example.pos10.vo.UpdateWorkstationReq;
 import com.example.pos10.constants.ResMessage;
 import com.example.pos10.entity.MenuItems;
 import com.example.pos10.entity.Options;
@@ -27,6 +28,7 @@ import com.example.pos10.repository.CategoriesDao;
 import com.example.pos10.repository.MenuItemsDao;
 import com.example.pos10.repository.OptionsDao;
 import com.example.pos10.repository.OrderDetailHistoryDao;
+import com.example.pos10.repository.WorkstationDao;
 import com.example.pos10.service.ifs.PosService;
 import com.example.pos10.vo.BasicRes;
 import com.example.pos10.vo.CreateCbReq;
@@ -52,6 +54,9 @@ public class PosServiceImpl implements PosService{
 
 	@Autowired
 	private OptionsDao optionsDao;
+	
+	@Autowired
+	private WorkstationDao workstationDao;
 	
 	@Override
 	public PosStatisticsRes statistics(PosStatisticsReq req) {
@@ -82,7 +87,7 @@ public class PosServiceImpl implements PosService{
 		return new PosStatisticsRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(), searchRes);
 	}
 	
-	// 新增菜單(還沒寫完整)
+	// 新增菜單
 	@Transactional
 	@Override
 	public BasicRes create(CreateReq req) {
@@ -116,27 +121,16 @@ public class PosServiceImpl implements PosService{
 			}
 			
 			// workstationId必須已存在
+			if (workstationDao.countByWorkstationId(workstationId) == 0) {
+				return new BasicRes(ResMessage.WORKSTATION_ID_NOT_FOUND.getCode(), //
+						ResMessage.WORKSTATION_ID_NOT_FOUND.getMessage());
+			}
 			
 			// 存進資料庫
 			menuItemsDao.insert(mealName, categoryId, workstationId, price, //
 					available, pictureName);
 		}
 		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
-
-
-
-		
-//		// 用Jpa的save存進資料庫，定義變數res
-//		MenuItems res = menuItemsDao
-//				.save(new MenuItems(mealName, req.getMealDescription(), categoryId, req.getWorkstationId(), price));
-//		List<Options> optionsList = req.getOptionsList();
-//		// 取出res的categoryId塞進optionsList的每一個cg_id
-//		optionsList.forEach(item -> {
-//			item.setCategoryId(res.getCategoryId());
-//		});
-//
-//		// Jpa 的 saveAll(saveAll是陣列的存法)
-//		optionsDao.saveAll(optionsList);
 	}
 
 	// 新增菜單分類
@@ -220,12 +214,12 @@ public class PosServiceImpl implements PosService{
 					ResMessage.CATEGORYID_NOT_FOUND.getMessage());
 		}
 
-		int workstationId = req.getWorkstationId();
 		// workstation_id必須存在
-//		if() {
-//			return new BasicRes(ResMessage.WORKSTATION_ID_NOT_FOUND.getCode(), //
-//					ResMessage.WORKSTATION_ID_NOT_FOUND.getMessage());
-//		}
+		int workstationId = req.getWorkstationId();
+		if(workstationDao.countByWorkstationId(workstationId) == 0) {
+			return new BasicRes(ResMessage.WORKSTATION_ID_NOT_FOUND.getCode(), //
+					ResMessage.WORKSTATION_ID_NOT_FOUND.getMessage());
+		}
 
 		// price不能小於0
 		int price = req.getPrice();
@@ -358,6 +352,24 @@ public class PosServiceImpl implements PosService{
 	@Override
 	public List<Options> selectCust() {
 		return optionsDao.selectAll();
+	}
+
+	@Transactional
+	@Override
+	public BasicRes updateMenuWorkStation(UpdateWorkstationReq req) {
+		int categoryId = req.getCategoryId();
+		int newWorkId = req.getWorkstationId();
+		
+		 // 記錄 categoryId 和 newWorkId 到日志
+	    System.out.println("接收到的分類 ID: " + categoryId);
+	    System.out.println("接收到的工作檯 ID: " + newWorkId);
+		if (workstationDao.countByWorkstationId(newWorkId) == 0) {
+			return new BasicRes(ResMessage.WORKSTATION_ID_NOT_FOUND.getCode(), //
+					ResMessage.WORKSTATION_ID_NOT_FOUND.getMessage());
+		}
+		
+		menuItemsDao.updateMenuWorkStation(newWorkId, categoryId);
+		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
 	}
 	
 	
