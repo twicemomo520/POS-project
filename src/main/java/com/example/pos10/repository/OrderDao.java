@@ -14,24 +14,24 @@ import org.springframework.stereotype.Repository;
 import com.example.pos10.entity.Orders;
 
 @Repository
-public interface OrderDao extends  JpaRepository<Orders, Integer>{
-	
-	@Query(value = "select o from Orders as o"
-			+ " where (o.orderTime between :inputStartDate and :inputEndDate) "
+public interface OrderDao extends JpaRepository<Orders, Integer> {
+
+	@Query(value = "select o from Orders as o" + " where (o.orderTime between :inputStartDate and :inputEndDate) "
 			+ " and (o.checkout = 0)", nativeQuery = false)
-	public List<Orders>selectOrderDate(
-			@Param("inputStartDate")LocalDateTime startDate,
-			@Param("inputEndDate")LocalDateTime endDate);
-	
+	public List<Orders> selectOrderDate(@Param("inputStartDate") LocalDateTime startDate,
+			@Param("inputEndDate") LocalDateTime endDate);
+
 	@Modifying
 	@Transactional
-	@Query(value = " update orders "
-			+ " set meal_status = '已送達' "
-			+ " where id = :inputId", nativeQuery = true)
-	public void updateOrderStatus(
-			@Param("inputId") int id);
-	
-	
-	
+	@Query(value = " update orders " + " set meal_status = '已送達' " + " where id = :inputId", nativeQuery = true)
+	public void updateOrderStatus(@Param("inputId") int id);
+
+	@Query(value = "select o from Orders as o where o.mealStatus = '準備中' and o.mealName is NOT NULL", nativeQuery = false)
+	public List<Orders> selectInPreparation();
+
+	@Modifying
+	@Transactional
+	@Query(value = " update orders " + " set meal_status = '待送餐點' " + " where id = :inputId", nativeQuery = true)
+	public void updateInPreparation(@Param("inputId") int id);
 
 }
