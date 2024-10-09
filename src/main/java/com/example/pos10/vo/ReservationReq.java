@@ -1,6 +1,5 @@
 package com.example.pos10.vo;
 
-import java.time.LocalTime;
 import java.util.List;
 
 import com.example.pos10.entity.Reservation;
@@ -14,8 +13,8 @@ public class ReservationReq extends Reservation {
 	}
 
 	public ReservationReq (int reservationId, String customerName, String customerPhoneNumber, String customerEmail, Gender customerGender, 
-			int reservationPeople, LocalTime reservationTime, ReservationManagement reservationManagement, List <TableManagement> tables) {
+			int reservationPeople, ReservationManagement reservationManagement, List <TableManagement> tables) {
 		super (reservationId, customerName, customerPhoneNumber, customerEmail, customerGender, reservationPeople,
-				reservationTime, reservationManagement, tables);
+				reservationManagement, tables);
 	}
 }

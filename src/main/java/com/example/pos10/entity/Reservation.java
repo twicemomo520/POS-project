@@ -20,6 +20,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 
@@ -53,11 +55,6 @@ public class Reservation {
     @Column (name = "reservation_people", nullable = false)
     private int reservationPeople;
 
-    @JsonFormat (pattern = "HH:mm:ss")
-    @NotNull (message = "Reservation time cannot be null !!!")
-    @Column (name = "reservation_time", nullable = false)
-    private LocalTime reservationTime;
-
     // 與 ReservationManagement 之間的多對一關係
     @ManyToOne
     @JoinColumn (name = "reservation_management_id", nullable = false) // 外鍵，連接到 ReservationManagement
@@ -83,7 +80,7 @@ public class Reservation {
 
 
 	public Reservation (int reservationId, String customerName, String customerPhoneNumber, String customerEmail,Gender customerGender, 
-			int reservationPeople, LocalTime reservationTime, ReservationManagement reservationManagement, List<TableManagement> tables) {
+			int reservationPeople, ReservationManagement reservationManagement, List<TableManagement> tables) {
 		super ();
 		this.reservationId = reservationId;
 		this.customerName = customerName;
@@ -91,7 +88,6 @@ public class Reservation {
 		this.customerEmail = customerEmail;
 		this.customerGender = customerGender;
 		this.reservationPeople = reservationPeople;
-		this.reservationTime = reservationTime;
 		this.reservationManagement = reservationManagement;
 		this.tables = tables;
 	}
@@ -142,14 +138,6 @@ public class Reservation {
 
 	public void setReservationPeople (int reservationPeople) {
 		this.reservationPeople = reservationPeople;
-	}
-
-	public LocalTime getReservationTime () {
-		return reservationTime;
-	}
-
-	public void setReservationTime (LocalTime reservationTime) {
-		this.reservationTime = reservationTime;
 	}
 
 	public ReservationManagement getReservationManagement () {

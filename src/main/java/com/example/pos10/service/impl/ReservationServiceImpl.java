@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 
 import com.example.pos10.constants.ResMessage;
 import com.example.pos10.entity.Reservation;
+import com.example.pos10.entity.ReservationManagement;
 import com.example.pos10.entity.TableManagement;
 import com.example.pos10.repository.ReservationDao;
+import com.example.pos10.repository.ReservationManagementDao;
 import com.example.pos10.repository.TableManagementDao;
 import com.example.pos10.service.ifs.ReservationService;
 import com.example.pos10.vo.ReservationReq;
@@ -27,6 +29,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Autowired
     private TableManagementDao tableManagementDao;
+    
+    @Autowired
+    private ReservationManagementDao reservationManagementDao;
     
     @Autowired
     private EmailService emailService;
@@ -103,7 +108,15 @@ public class ReservationServiceImpl implements ReservationService {
             return new ReservationRes(500, "更新桌位狀態時發生錯誤");
         }
 
-        // 10. 儲存訂位資訊
+     // 10. 儲存 ReservationManagement
+        ReservationManagement reservationManagement = reservationReq.getReservationManagement();
+
+        // 檢查 reservationManagement 是否為 transient 狀態，假如是，先保存它
+        if (reservationManagement.getIndexId() == 0) {
+            reservationManagement = reservationManagementDao.save(reservationManagement);
+        }
+
+        // 11. 儲存訂位資訊
         Reservation reservation = new Reservation();
         reservation.setCustomerName(reservationReq.getCustomerName());
         reservation.setCustomerPhoneNumber(reservationReq.getCustomerPhoneNumber());
@@ -111,12 +124,13 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setCustomerGender(reservationReq.getCustomerGender());
         reservation.setReservationPeople(reservationReq.getReservationPeople());
         reservation.setReservationTime(reservationReq.getReservationTime());
-        reservation.setReservationManagement(reservationReq.getReservationManagement());
+        reservation.setReservationManagement(reservationManagement); // 設定已保存的 reservationManagement
         reservation.setTables(selectedTables); // 假設有一個字段儲存這些分配的桌位
 
+        // 手動儲存訂位，避免使用 CascadeType.PERSIST
         reservationDao.save(reservation);
 
-        // 11. 發送訂位確認信
+        // 12. 發送訂位確認信
         try {
             emailService.sendReservationConfirmationEmail(
                 reservation.getCustomerEmail(),

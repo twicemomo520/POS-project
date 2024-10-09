@@ -11,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.pos10.entity.Reservation;
-import com.example.pos10.entity.ReservationManagement;
 
 @Repository
 public interface ReservationDao extends JpaRepository <Reservation, Integer> {

@@ -12,7 +12,8 @@ public class ReservationManagementReq extends ReservationManagement{
 		super ();
 	}
 
-	public ReservationManagementReq (int indexId, TableManagement tableManagement, LocalDate reservationDate, LocalTime reservationStarttime) {
-		super (indexId, tableManagement, reservationDate, reservationStarttime);
+	public ReservationManagementReq (int indexId, TableManagement tableManagement, LocalDate reservationDate,
+			LocalTime reservationStarttime, LocalTime reservationEndingTime) {
+		super(indexId, tableManagement, reservationDate, reservationStarttime, reservationEndingTime);
 	}
 }

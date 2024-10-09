@@ -14,6 +14,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 
 @Entity
 @Table (name = "reservation_management")
@@ -30,6 +32,7 @@ public class ReservationManagement {
     private TableManagement tableManagement;
 
     // 預約日期必須是當前或未來的日期，不允許為 null
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @FutureOrPresent (message = "Reservation date must be in the present or future !!!")
     @NotNull (message = "Reservation date cannot be null !!!")
     @Column (name = "reservation_date", nullable = false)
@@ -49,8 +52,9 @@ public class ReservationManagement {
 		super ();
 	}
 
-	public ReservationManagement(int indexId, TableManagement tableManagement, LocalDate reservationDate, LocalTime reservationStarttime) {
-		super ();
+	public ReservationManagement(int indexId, TableManagement tableManagement, LocalDate reservationDate,
+			LocalTime reservationStarttime,LocalTime reservationEndingTime) {
+		super();
 		this.indexId = indexId;
 		this.tableManagement = tableManagement;
 		this.reservationDate = reservationDate;
