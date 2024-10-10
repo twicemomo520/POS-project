@@ -17,7 +17,7 @@ import com.example.pos10.entity.Orders;
 public interface OrderDao extends  JpaRepository<Orders, Integer>{
 	
 	@Query(value = "select o from Orders as o"
-			+ " where (o.orderTime between :inputStartDate and :inputEndDate) "
+			+ " where (:inputStartDate is null or :inputEndDate is null  or o.orderTime between :inputStartDate and :inputEndDate) "
 			+ " and (o.checkout = 0)", nativeQuery = false)
 	public List<Orders>selectOrderDate(
 			@Param("inputStartDate")LocalDateTime startDate,

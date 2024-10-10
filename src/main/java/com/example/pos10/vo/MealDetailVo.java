@@ -3,16 +3,26 @@ package com.example.pos10.vo;
 import java.util.List;
 
 public class MealDetailVo {
+	
+	private int id;
 	private String mealName;
 	private List<String>options;
 	
 	public MealDetailVo() {
 		super();
+
 	}
-	public MealDetailVo(String mealName, List<String> options) {
+	public MealDetailVo(int id, String mealName, List<String> options) {
 		super();
+		this.id = id;
 		this.mealName = mealName;
 		this.options = options;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
 	}
 	public String getMealName() {
 		return mealName;
@@ -26,4 +36,5 @@ public class MealDetailVo {
 	public void setOptions(List<String> options) {
 		this.options = options;
 	}
+
 }
