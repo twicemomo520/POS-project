@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.pos10.service.ifs.CheckoutService;
 import com.example.pos10.vo.BasicRes;
 import com.example.pos10.vo.ConfirmPaymentReq;
-import com.example.pos10.vo.RegisterStaffReq;
 
 @RestController
 @RequestMapping("/api/checkout")
@@ -32,4 +31,5 @@ public class CheckoutController {
 		return checkoutService.confirmPayment(req);
 	}
 
+	
 }

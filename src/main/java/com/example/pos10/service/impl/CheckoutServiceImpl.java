@@ -1,13 +1,16 @@
 package com.example.pos10.service.impl;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import com.example.pos10.repository.CheckoutDao;
@@ -17,9 +20,15 @@ import com.example.pos10.vo.BasicRes;
 import com.example.pos10.vo.CheckoutDetailRes;
 import com.example.pos10.vo.ConfirmPaymentReq;
 
+import ecpay.payment.integration.AllInOne;
+import ecpay.payment.integration.domain.AioCheckOutOneTime;
+
 @Service
 public class CheckoutServiceImpl implements CheckoutService {
 
+	@Autowired
+	private AllInOne all;
+	
 	@Autowired
 	CheckoutDao checkoutDao;
 	
@@ -228,14 +237,48 @@ public class CheckoutServiceImpl implements CheckoutService {
 		
 		
 		//新增checkoutList
-		checkoutListDao.insertCheckoutList(req.getOrderId(), req.getTableNumber(), req.getTotalPrice(), req.getPayType(), req.getCheckout(), req.getCheckoutTime());
+//		checkoutListDao.insertCheckoutList(req.getOrderId(), req.getTableNumber(), req.getTotalPrice(), req.getPayType(), req.getCheckout(), req.getCheckoutTime());
 		
 		//修改此訂單編號的orders為結帳
-		checkoutDao.updateCheckout(req.getOrderId());
+//		checkoutDao.updateCheckout(req.getOrderId());
+		
+		// 假設 req.getCheckoutTime() 返回的是 LocalDateTime
+	    LocalDateTime checkoutTime = req.getCheckoutTime(); 
+
+	    // 格式化日期，根據需要轉換為字符串
+	    String formattedDate = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(checkoutTime);
+		
+//        String formattedDate = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(checkoutTime。;。
+		String totalAmount = String.valueOf(req.getTotalPrice());
+		
+		AioCheckOutOneTime obj = new AioCheckOutOneTime();
+//		obj.setMerchantTradeNo(req.getOrderId());
+		obj.setMerchantTradeNo("TEST123123");
+		obj.setMerchantTradeDate(formattedDate);
+		obj.setTotalAmount(totalAmount);
+		obj.setTradeDesc("測試結帳");
+		obj.setItemName("結帳");
+		//因為外網沒辦法連到我們本地端 所以放棄
+		obj.setReturnURL("http://localhost:8080/api/checkout/callback");
+		obj.setNeedExtraPaidInfo("N");
+		obj.setRedeem("Y");
+		String form = all.aioCheckOut(obj, null);
+		
+		System.out.println("時間是:" + formattedDate);
+		
+		 // 儲存 HTML 表單到文件
+		String filePath = "checkout_form.html"; // 直接使用檔案名稱，將保存在當前工作目錄
+	    try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+	        writer.write(form);
+	        System.out.println("HTML 檔案已成功儲存到：" + filePath);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
 		
 		
-		return new BasicRes(200,"成功");
+		return new BasicRes(200,form);
 	}
+	
 
 	
 }
