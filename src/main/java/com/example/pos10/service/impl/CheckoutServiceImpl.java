@@ -233,27 +233,38 @@ public class CheckoutServiceImpl implements CheckoutService {
 		
 		//起床再+防呆
 		
-		
-		
-		
+		if (req.getOrderId() == null || req.getOrderId().trim().isEmpty()) {
+		    return new BasicRes(400, "結帳失敗: 訂單編號錯誤");
+		}
+
+		if (req.getTableNumber() == null || req.getTableNumber().trim().isEmpty()) {
+		    return new BasicRes(400, "結帳失敗: 桌號錯誤");
+		}
+
+		if (req.getTotalPrice() <= 0) {
+		    return new BasicRes(400, "結帳失敗: 總價錯誤");
+		}
+
+		if (req.getPayType() == null || req.getPayType().trim().isEmpty()) {
+		    return new BasicRes(400, "結帳失敗: 付款方式錯誤");
+		}
+
+
 		//新增checkoutList
-//		checkoutListDao.insertCheckoutList(req.getOrderId(), req.getTableNumber(), req.getTotalPrice(), req.getPayType(), req.getCheckout(), req.getCheckoutTime());
+		checkoutListDao.insertCheckoutList(req.getOrderId(), req.getTableNumber(), req.getTotalPrice(), req.getPayType(), req.getCheckout(), req.getCheckoutTime());
 		
 		//修改此訂單編號的orders為結帳
-//		checkoutDao.updateCheckout(req.getOrderId());
+		checkoutDao.updateCheckout(req.getOrderId());
 		
-		// 假設 req.getCheckoutTime() 返回的是 LocalDateTime
 	    LocalDateTime checkoutTime = req.getCheckoutTime(); 
 
 	    // 格式化日期，根據需要轉換為字符串
 	    String formattedDate = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(checkoutTime);
-		
-//        String formattedDate = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(checkoutTime。;。
 		String totalAmount = String.valueOf(req.getTotalPrice());
 		
 		AioCheckOutOneTime obj = new AioCheckOutOneTime();
-//		obj.setMerchantTradeNo(req.getOrderId());
-		obj.setMerchantTradeNo("TEST123123");
+		obj.setMerchantTradeNo(req.getOrderId());
+//		obj.setMerchantTradeNo("TEST123123");
 		obj.setMerchantTradeDate(formattedDate);
 		obj.setTotalAmount(totalAmount);
 		obj.setTradeDesc("測試結帳");
