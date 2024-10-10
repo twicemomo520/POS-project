@@ -35,19 +35,19 @@ public class Staff {
 	@Column(name = "email")
 	private String email;
 
-	// 礚把计篶硑ㄧ计
+	
 	public Staff() {
 		super();
 	}
 
-	// 把计篶硑ㄧ计
+
 	public Staff(String staffNumber, String pwd, String name, String phone, String authorization, String email) {
 		this.staffNumber = staffNumber;
 		this.pwd = pwd;
 		this.name = name;
 		this.phone = phone;
 		this.authorization = authorization;
-		this.email = email; // 穝糤 email
+		this.email = email; 
 	}
 
 	// Getters and Setters
@@ -91,11 +91,11 @@ public class Staff {
 		this.authorization = authorization;
 	}
 
-	public String getEmail() { // 穝糤 getter
+	public String getEmail() { 
 		return email;
 	}
 
-	public void setEmail(String email) { // 穝糤 setter
+	public void setEmail(String email) { 
 		this.email = email;
 	}
 }

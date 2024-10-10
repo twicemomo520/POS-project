@@ -1,23 +1,30 @@
 package com.example.pos10.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import com.example.pos10.repository.CheckoutDao;
+import com.example.pos10.repository.CheckoutListDao;
 import com.example.pos10.service.ifs.CheckoutService;
 import com.example.pos10.vo.BasicRes;
 import com.example.pos10.vo.CheckoutDetailRes;
+import com.example.pos10.vo.ConfirmPaymentReq;
 
 @Service
 public class CheckoutServiceImpl implements CheckoutService {
 
 	@Autowired
 	CheckoutDao checkoutDao;
+	
+	@Autowired
+	CheckoutListDao checkoutListDao;
 
 	class OrderMeal {
 		private String comboName;
@@ -210,5 +217,26 @@ public class CheckoutServiceImpl implements CheckoutService {
 
 	}
 
+	
+	@Override
+	public BasicRes confirmPayment(ConfirmPaymentReq req) {
+		
+		
+		//起床再+防呆
+		
+		
+		
+		
+		//新增checkoutList
+		checkoutListDao.insertCheckoutList(req.getOrderId(), req.getTableNumber(), req.getTotalPrice(), req.getPayType(), req.getCheckout(), req.getCheckoutTime());
+		
+		//修改此訂單編號的orders為結帳
+		checkoutDao.updateCheckout(req.getOrderId());
+		
+		
+		return new BasicRes(200,"成功");
+	}
+
+	
 }
 
