@@ -39,6 +39,15 @@ public interface CategoriesDao extends JpaRepository<Categories, Integer> {
 	public int updateCg(//
 			@Param("categoryId") int categoryId, //
 			@Param("category") String category);
+	
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE categories "
+			+ " SET workstation_id = :workstationId "
+			+ " WHERE category_id = :categoryId", nativeQuery = true)
+	public int updateWorkIdFromCg(//
+			@Param("categoryId") int categoryId, //
+			@Param("workstationId") int workstationId);
 
 	// 刪除資料(delete)
 	@Modifying

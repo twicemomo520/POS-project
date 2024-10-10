@@ -369,6 +369,7 @@ public class PosServiceImpl implements PosService{
 		}
 		
 		menuItemsDao.updateMenuWorkStation(newWorkId, categoryId);
+		categoriesDao.updateWorkIdFromCg(categoryId, newWorkId);
 		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
 	}
 	
