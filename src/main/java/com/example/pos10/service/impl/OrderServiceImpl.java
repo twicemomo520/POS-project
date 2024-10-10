@@ -39,7 +39,6 @@ public class OrderServiceImpl implements OrderService {
 
 		LocalDate startDateInput = req.getStartDate();
 		LocalDate endDateInput = req.getEndDate();
-<<<<<<< HEAD
 		
 		if (startDateInput == null) {
 			startDateInput = LocalDate.of(1900, 1, 1);
@@ -50,11 +49,7 @@ public class OrderServiceImpl implements OrderService {
 		}
 		
 		LocalDateTime startDate = LocalDateTime.parse(startDateInput + "T00:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-=======
 
-		LocalDateTime startDate = LocalDateTime.parse(startDateInput + "T00:00:00",
-				DateTimeFormatter.ISO_LOCAL_DATE_TIME);
->>>>>>> 69f5840b4d0bc005599628afccb43b30e3a6f1cb
 		LocalDateTime endDate = LocalDateTime.parse(endDateInput + "T23:59:59", DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
 		System.out.println(startDate);
@@ -72,19 +67,13 @@ public class OrderServiceImpl implements OrderService {
 		for (Orders searchOrder : searchOrderList) {
 
 			System.out.println(searchOrder);
-<<<<<<< HEAD
-			
-		    if (searchOrder == null) {
-		        continue;
-		    }
-		    int id = searchOrder.getId();
-=======
 
 			if (searchOrder == null) {
 				continue;
 			}
 
->>>>>>> 69f5840b4d0bc005599628afccb43b30e3a6f1cb
+
+			int id = searchOrder.getId();
 			String tableNumber = searchOrder.getTableNumber();
 			String orderId = searchOrder.getOrderId();
 			String orderMealId = searchOrder.getOrderMealId();
