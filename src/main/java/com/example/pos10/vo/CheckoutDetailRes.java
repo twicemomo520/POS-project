@@ -1,78 +1,31 @@
 package com.example.pos10.vo;
 
-public class CheckoutDetailRes {
+public class CheckoutDetailRes  extends BasicRes{
 
-	private String orderId;
-	private String orderMealId;
-	private String comboName;
-	private String mealName;
-	private String options;
-	private Integer price;
-	private String tableNumber;
-	private Boolean checkout;
+	private Object data;
 
-	public String getOrderId() {
-		return orderId;
+	public CheckoutDetailRes() {
+		super();
 	}
 
-	public void setOrderId(String orderId) {
-		this.orderId = orderId;
+	public CheckoutDetailRes(int code, String message,Object data) {
+		super(code, message);
+		this.data = data;
 	}
 
-	public String getOrderMealId() {
-		return orderMealId;
+	public CheckoutDetailRes(Object data) {
+		super();
+		this.data = data;
 	}
 
-	public void setOrderMealId(String orderMealId) {
-		this.orderMealId = orderMealId;
+	public Object getData() {
+		return data;
 	}
 
-	public String getComboName() {
-		return comboName;
+	public void setData(Object data) {
+		this.data = data;
 	}
-
-	public void setComboName(String comboName) {
-		this.comboName = comboName;
-	}
-
-	public String getMealName() {
-		return mealName;
-	}
-
-	public void setMealName(String mealName) {
-		this.mealName = mealName;
-	}
-
-	public String getOptions() {
-		return options;
-	}
-
-	public void setOptions(String options) {
-		this.options = options;
-	}
-
-	public Integer getPrice() {
-		return price;
-	}
-
-	public void setPrice(Integer price) {
-		this.price = price;
-	}
-
-	public String getTableNumber() {
-		return tableNumber;
-	}
-
-	public void setTableNumber(String tableNumber) {
-		this.tableNumber = tableNumber;
-	}
-
-	public Boolean getCheckout() {
-		return checkout;
-	}
-
-	public void setCheckout(Boolean checkout) {
-		this.checkout = checkout;
-	}
+	
+	
 
 }
