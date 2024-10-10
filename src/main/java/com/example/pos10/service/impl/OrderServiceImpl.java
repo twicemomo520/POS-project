@@ -39,9 +39,17 @@ public class OrderServiceImpl implements OrderService {
 
 		LocalDate startDateInput = req.getStartDate();
 		LocalDate endDateInput = req.getEndDate();
+		
+		if (startDateInput == null) {
+			startDateInput = LocalDate.of(1900, 1, 1);
+		}
 
-		LocalDateTime startDate = LocalDateTime.parse(startDateInput + "T00:00:00",
-				DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+		if (endDateInput == null) {
+			endDateInput = LocalDate.of(2900, 1, 1);
+		}
+		
+		LocalDateTime startDate = LocalDateTime.parse(startDateInput + "T00:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
 		LocalDateTime endDate = LocalDateTime.parse(endDateInput + "T23:59:59", DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
 		System.out.println(startDate);
@@ -64,6 +72,8 @@ public class OrderServiceImpl implements OrderService {
 				continue;
 			}
 
+
+			int id = searchOrder.getId();
 			String tableNumber = searchOrder.getTableNumber();
 			String orderId = searchOrder.getOrderId();
 			String orderMealId = searchOrder.getOrderMealId();
@@ -90,6 +100,7 @@ public class OrderServiceImpl implements OrderService {
 			// 將mealDetail由Map格式轉成MealDetailVo格式
 			// mealDetailVo是從資料庫撈回來的餐點
 			MealDetailVo mealDetailVo = new MealDetailVo();
+			mealDetailVo.setId(id);
 			mealDetailVo.setMealName(mealName);
 			mealDetailVo.setOptions(optionsList);
 

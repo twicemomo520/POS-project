@@ -11,9 +11,11 @@ public class UpdateCbReq extends ComboItems{
 	public UpdateCbReq() {
 		super();
 	}
+	
+	
 
-	public UpdateCbReq(String oldComboName, String comboName, String comboDetail, int discountAmount) {
-		super(comboName, comboDetail, discountAmount);
+	public UpdateCbReq(String oldComboName, String comboName, String comboDetail, int discountAmount, int category_id) {
+		super(comboName, comboDetail, discountAmount, category_id);
 		
 		this.oldComboName = oldComboName;
 	}

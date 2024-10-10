@@ -24,12 +24,13 @@ public interface ComboDao extends JpaRepository<ComboItems, String> {
 	
     @Modifying
     @Transactional
-	@Query(value= "insert into combo_items (combo_name, combo_detail, discount_amount) "
-			+ " values (:inputComboName, :inputComboDetail, :inputDiscountAmount) ", nativeQuery=true)
+	@Query(value= "insert into combo_items (combo_name, combo_detail, discount_amount, category_id) "
+			+ " values (:inputComboName, :inputComboDetail, :inputDiscountAmount, :inputCategoryId) ", nativeQuery=true)
 	public void createCombo(
 			@Param("inputComboName") String comboName,
 			@Param("inputComboDetail") String comboDetail,
-			@Param("inputDiscountAmount") int discountAmount
+			@Param("inputDiscountAmount") int discountAmount,
+			@Param("inputCategoryId") int categoryId
 			);
     
     
@@ -39,12 +40,14 @@ public interface ComboDao extends JpaRepository<ComboItems, String> {
     		+ " set combo_name = :inputComboName, "
     		+ " combo_detail = :inputComboDetail, "
     		+ " discount_amount = :inputDiscountAmount "
+    		+ " catgory_id = :inputCategoryId"
     		+ " where combo_name = :inputOldComboName",  nativeQuery=true)
     public void updateCombo(
     		@Param("inputOldComboName") String oldComboName,
     		@Param("inputComboName") String comboName,
     		@Param("inputComboDetail") String comboDetail,
-    		@Param("inputDiscountAmount") int discountAmount
+    		@Param("inputDiscountAmount") int discountAmount,
+    		@Param("inputCategoryId") int catgoryId
     		);
     
     
