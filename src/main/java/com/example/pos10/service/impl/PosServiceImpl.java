@@ -121,10 +121,10 @@ public class PosServiceImpl implements PosService{
 			}
 			
 			// workstationId必須已存在
-			if (workstationDao.countByWorkstationId(workstationId) == 0) {
-				return new BasicRes(ResMessage.WORKSTATION_ID_NOT_FOUND.getCode(), //
-						ResMessage.WORKSTATION_ID_NOT_FOUND.getMessage());
-			}
+//			if (workstationDao.countByWorkstationId(workstationId) == 0) {
+//				return new BasicRes(ResMessage.WORKSTATION_ID_NOT_FOUND.getCode(), //
+//						ResMessage.WORKSTATION_ID_NOT_FOUND.getMessage());
+//			}
 			
 			// 存進資料庫
 			menuItemsDao.insert(mealName, categoryId, workstationId, price, //
@@ -179,6 +179,7 @@ public class PosServiceImpl implements PosService{
 	}
 
 	// 刪除菜單分類
+	@Transactional
 	@Override
 	public BasicRes deleteCategory(DeleteCgReq req) {
 		// select categoryId，若不存在 count(1)等於零
@@ -189,7 +190,10 @@ public class PosServiceImpl implements PosService{
 		}
 
 		// 刪除菜單分類(delete)
-		categoriesDao.deleteCgById(req.getCategoryId());
+		int categoryId = req.getCategoryId();
+		categoriesDao.deleteCgById(categoryId);
+		menuItemsDao.deleteMenuByCgId(categoryId);
+		optionsDao.deleteOpByCgId(categoryId);
 		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
 	}
 

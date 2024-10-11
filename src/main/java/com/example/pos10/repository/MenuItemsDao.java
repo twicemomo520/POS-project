@@ -74,9 +74,11 @@ public interface MenuItemsDao extends JpaRepository<MenuItems, String> {
 	@Query(value = "delete from menu_items where meal_name = :mealName", nativeQuery = true)
 	public int deleteMenuByMealName(@Param("mealName") String mealName);
 	
-	
-	
-	
+	@Modifying
+	@Transactional
+	@Query(value = "DELETE FROM menu_items "
+			+ " WHERE category_id = :categoryId", nativeQuery = true)
+	public int deleteMenuByCgId(@Param("categoryId") int categoryId);
 	
 	
 	
