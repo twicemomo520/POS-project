@@ -73,6 +73,11 @@ public interface OptionsDao extends JpaRepository<Options, Integer> {
 			@Param("optionTitle") String optionTitle, //
 			@Param("categoryId") int categoryId);
 	
+	@Modifying
+	@Transactional
+	@Query(value = "DELETE FROM options "
+			+ " WHERE cg_id = :categoryId", nativeQuery = true)
+	public int deleteOpByCgId(@Param("categoryId") int categoryId);
 	
 	
 	

@@ -21,6 +21,7 @@ import com.example.pos10.vo.DeleteOptionReq;
 import com.example.pos10.vo.UpdateCgReq;
 import com.example.pos10.vo.UpdateMenuReq;
 import com.example.pos10.vo.UpdateOptionPriceReq;
+import com.example.pos10.vo.UpdateWorkstationReq;
 import com.example.pos10.service.ifs.PosService;
 import com.example.pos10.vo.BasicRes;
 import com.example.pos10.vo.CreateCgReq;
@@ -54,6 +55,11 @@ public class PosController {
 	@PostMapping(value = "menu/update")
 	public BasicRes updateMenu(@Valid @RequestBody UpdateMenuReq req) {
 		return posService.updateMenu(req);
+	}
+	
+	@PostMapping(value = "menu/updateWorkId")
+	public BasicRes updateMenuWorkStation(@Valid @RequestBody UpdateWorkstationReq req) {
+		return posService.updateMenuWorkStation(req);
 	}
 	
 	@PostMapping(value = "menu/delete")

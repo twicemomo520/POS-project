@@ -18,6 +18,7 @@ import com.example.pos10.vo.PosStatisticsRes;
 import com.example.pos10.vo.UpdateCgReq;
 import com.example.pos10.vo.UpdateMenuReq;
 import com.example.pos10.vo.UpdateOptionPriceReq;
+import com.example.pos10.vo.UpdateWorkstationReq;
 
 public interface PosService {
 
@@ -28,6 +29,8 @@ public interface PosService {
 	public BasicRes create(CreateReq req);
 
 	public BasicRes updateMenu(UpdateMenuReq req);
+	
+	public BasicRes updateMenuWorkStation(UpdateWorkstationReq req);
 
 	public BasicRes deleteMenu(DeleteMenuReq req);
 

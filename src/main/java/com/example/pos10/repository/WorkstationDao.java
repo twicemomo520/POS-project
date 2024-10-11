@@ -17,6 +17,9 @@ public interface WorkstationDao extends JpaRepository<Workstation, Integer> {
 
     @Query(value = "SELECT COUNT(*) FROM Workstation WHERE workstation_name = :name", nativeQuery = true)
     public int countByWorkstationName(@Param("name") String name);
+    
+    @Query(value = "SELECT COUNT(1) FROM workstation WHERE workstation_id = :id", nativeQuery = true)
+    public int countByWorkstationId(@Param("id") int id);
 
     @Modifying
     @Transactional
