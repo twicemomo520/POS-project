@@ -21,13 +21,8 @@ public enum ResMessage {
 	WORKSTATION_ALREADY_EXISTS(400,"Workstation already exists"),//
 	COMBO_INPUT_CANNOT_BE_NULL_OR_EMPTY(400,"Update combo all input cannot be null or empty"),//
 	COMBO_NAME_EXISTS(400,"Combo name exists"),//
-<<<<<<< HEAD
-	COMBO_NAME_NOT_FOUND(400,"Combo name cannot found"),
 	NO_ORDERS_FOUND(404,"No orders found"), //
-
-=======
 	COMBO_NAME_NOT_FOUND(404,"Combo name cannot found"), //
->>>>>>> willy-branch2
 	
 	// TableManagement
 	INVALID_TABLE_STATUS (400, "Invalid table status value !!!"), //
