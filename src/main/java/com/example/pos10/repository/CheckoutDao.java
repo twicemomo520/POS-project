@@ -29,4 +29,10 @@ public interface CheckoutDao extends JpaRepository<Orders, Integer> {
     @Query( value= "UPDATE orders SET checkout = 1 WHERE order_id = :orderId" ,nativeQuery = true )
     Integer updateCheckout(@Param( "orderId") String orderId);
     
+    
+    
+    @Query(value = "SELECT order_id,order_meal_id,combo_name,meal_name,options,price,table_number,checkout FROM orders WHERE order_id = :orderId ", nativeQuery = true)
+    List<Object[]> findUnpaidOrdersByOrderId(@Param("orderId") String orderId);
+    
+    
 }

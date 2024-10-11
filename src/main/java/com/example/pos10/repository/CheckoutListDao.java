@@ -1,6 +1,8 @@
 package com.example.pos10.repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -23,5 +25,11 @@ public interface CheckoutListDao extends JpaRepository<CheckoutList, String>{
                               @Param("payType") String payType,
                               @Param("checkout") Boolean checkout,
                               @Param("checkoutTime") LocalDateTime checkoutTime);
+	
+	
+	
+	
+	@Query(value = "SELECT * FROM checkout_list WHERE DATE(checkout_time) = :date", nativeQuery = true)
+	List<CheckoutList> findByCheckoutDate(@Param("date") LocalDate date);
     
 }
