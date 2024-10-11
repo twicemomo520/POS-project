@@ -231,66 +231,67 @@ public class CheckoutServiceImpl implements CheckoutService {
 	public BasicRes confirmPayment(ConfirmPaymentReq req) {
 		
 		
-		//起床再+防呆
-		
+		// 防呆
+
 		if (req.getOrderId() == null || req.getOrderId().trim().isEmpty()) {
-		    return new BasicRes(400, "結帳失敗: 訂單編號錯誤");
+			return new BasicRes(400, "結帳失敗: 訂單編號錯誤");
 		}
 
 		if (req.getTableNumber() == null || req.getTableNumber().trim().isEmpty()) {
-		    return new BasicRes(400, "結帳失敗: 桌號錯誤");
+			return new BasicRes(400, "結帳失敗: 桌號錯誤");
 		}
 
 		if (req.getTotalPrice() <= 0) {
-		    return new BasicRes(400, "結帳失敗: 總價錯誤");
+			return new BasicRes(400, "結帳失敗: 總價錯誤");
 		}
 
 		if (req.getPayType() == null || req.getPayType().trim().isEmpty()) {
-		    return new BasicRes(400, "結帳失敗: 付款方式錯誤");
+			return new BasicRes(400, "結帳失敗: 付款方式錯誤");
 		}
 
+		// 新增checkoutList
+		checkoutListDao.insertCheckoutList(req.getOrderId(), req.getTableNumber(), req.getTotalPrice(),
+				req.getPayType(), req.getCheckout(), req.getCheckoutTime());
 
-		//新增checkoutList
-		checkoutListDao.insertCheckoutList(req.getOrderId(), req.getTableNumber(), req.getTotalPrice(), req.getPayType(), req.getCheckout(), req.getCheckoutTime());
-		
-		//修改此訂單編號的orders為結帳
+		// 修改此訂單編號的orders為結帳
 		checkoutDao.updateCheckout(req.getOrderId());
-		
-	    LocalDateTime checkoutTime = req.getCheckoutTime(); 
 
-	    // 格式化日期，根據需要轉換為字符串
-	    String formattedDate = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(checkoutTime);
-		String totalAmount = String.valueOf(req.getTotalPrice());
-		
-		AioCheckOutOneTime obj = new AioCheckOutOneTime();
-		obj.setMerchantTradeNo(req.getOrderId());
-//		obj.setMerchantTradeNo("TEST123123");
-		obj.setMerchantTradeDate(formattedDate);
-		obj.setTotalAmount(totalAmount);
-		obj.setTradeDesc("測試結帳");
-		obj.setItemName("結帳");
-		//因為外網沒辦法連到我們本地端 所以放棄
-		obj.setReturnURL("http://localhost:8080/api/checkout/callback");
-		obj.setNeedExtraPaidInfo("N");
-		obj.setRedeem("Y");
-		String form = all.aioCheckOut(obj, null);
-		
-		System.out.println("時間是:" + formattedDate);
-		
-		 // 儲存 HTML 表單到文件
-		String filePath = "checkout_form.html"; // 直接使用檔案名稱，將保存在當前工作目錄
-	    try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-	        writer.write(form);
-	        System.out.println("HTML 檔案已成功儲存到：" + filePath);
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
-		
-		
-		return new BasicRes(200,form);
+		if (req.getPayType().equals("信用卡")) {
+
+			LocalDateTime checkoutTime = req.getCheckoutTime();
+
+			// 格式化日期，根據需要轉換為字符串
+			String formattedDate = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(checkoutTime);
+			String totalAmount = String.valueOf(req.getTotalPrice());
+
+			AioCheckOutOneTime obj = new AioCheckOutOneTime();
+			obj.setMerchantTradeNo(req.getOrderId());
+//				obj.setMerchantTradeNo("TEST123123");
+			obj.setMerchantTradeDate(formattedDate);
+			obj.setTotalAmount(totalAmount);
+			obj.setTradeDesc("測試結帳");
+			obj.setItemName("結帳");
+			// 因為外網沒辦法連到我們本地端 所以放棄
+			obj.setReturnURL("http://localhost:8080/api/checkout/callback");
+			obj.setNeedExtraPaidInfo("N");
+			obj.setRedeem("Y");
+			String form = all.aioCheckOut(obj, null);
+
+			// 儲存 HTML 表單到文件
+			String filePath = "checkout_form.html"; // 直接使用檔案名稱，將保存在當前工作目錄
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+				writer.write(form);
+				System.out.println("HTML 檔案已成功儲存到：" + filePath);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			return new BasicRes(200, form);
+
+		}
+
+		return new BasicRes(200, "結帳成功");
 	}
-	
 
-	
 }
 
