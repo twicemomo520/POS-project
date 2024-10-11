@@ -66,7 +66,7 @@ public class TableManagementServiceImpl implements TableManagementService {
 	    }
 	    
 	    // 2. 檢查桌位是否與 Reservation 相關聯
-	    if (table.getReservation() != null) {
+	    if (table.getReservations() != null && !table.getReservations().isEmpty()) {
 	        return new TableManagementRes(ResMessage.TABLE_HAS_RESERVATION_ID.getCode(), ResMessage.TABLE_HAS_RESERVATION_ID.getMessage());
 	    }
 

@@ -1,7 +1,6 @@
 package com.example.pos10.vo;
 
 import com.example.pos10.constants.ResMessage;
-import com.example.pos10.entity.Reservation;
 import com.example.pos10.entity.TableManagement;
 
 public class TableManagementReq extends TableManagement {
@@ -11,8 +10,8 @@ public class TableManagementReq extends TableManagement {
     }
 
     // 帶參數的構造函數，前端傳入的 tableStatus 是 String 型態，通過轉換方法將其轉換為 Enum 型態
-    public TableManagementReq (String tableNumber, int tableCapacity, String tableStatus, Reservation reservation) {
-        super (tableNumber, tableCapacity, convertStringToTableStatus(tableStatus), reservation); 
+    public TableManagementReq (String tableNumber, int tableCapacity, String tableStatus) {
+        super (tableNumber, tableCapacity, convertStringToTableStatus(tableStatus)); 
     }
     
 	// 將字串類型的 tableStatus 轉換為 TableStatus 枚舉

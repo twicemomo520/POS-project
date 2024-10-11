@@ -47,6 +47,6 @@ public interface TableManagementDao extends JpaRepository <TableManagement, Stri
     public List<TableManagement> findAvailableTablesOrderedByCapacity();
 
     // 7. 查詢同一 reservation 的桌位（顯示合併桌位） - 使用 JPQL 查詢
-    @Query ("SELECT t FROM TableManagement t WHERE t.reservation = ?1")
-    public List <TableManagement> findByReservation(Reservation reservation);
+    @Query ("SELECT t FROM TableManagement t JOIN t.reservations r WHERE r = :reservation")
+    public List <TableManagement> findByReservations(Reservation reservation);
 }
