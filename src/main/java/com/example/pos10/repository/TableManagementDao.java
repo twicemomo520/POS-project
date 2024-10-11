@@ -32,26 +32,21 @@ public interface TableManagementDao extends JpaRepository <TableManagement, Stri
     @Transactional
     @Query (value = "UPDATE table_management SET table_status = ?2 WHERE table_number = ?1", nativeQuery = true)
     public int updateTableStatus (String tableNumber, String status);
-
-    // 4. 查詢桌位狀態 - 使用 JPQL
-    // @Query("SELECT t FROM TableManagement t WHERE t.tableStatus = ?1")
-    public List <TableManagement> findByTableStatus (TableManagement.TableStatus tableStatus);
-
-    // 5. 根據狀態和桌位容量查詢 - 使用 JPQL
-    // @Query("SELECT t FROM TableManagement t WHERE t.tableStatus = ?1 AND t.tableCapacity >= ?2")
-    public List <TableManagement> findByTableStatusAndTableCapacityGreaterThanEqual (TableManagement.TableStatus tableStatus, int capacity);
-
-    // 6. 調整桌位容納人數 
-    @Modifying
-    @Query (value = "UPDATE table_management SET table_capacity = ?2 WHERE table_number = ?1", nativeQuery = true)
-    public int adjustTableCapacity (String tableNumber, int capacity);
-
-    // 7. 查詢同一 reservation 的桌位（顯示合併桌位） - 使用 JPQL 查詢
-    @Query ("SELECT t FROM TableManagement t WHERE t.reservation = ?1")
-    public List <TableManagement> findByReservation(Reservation reservation);
     
-    // 8. 更新桌位編號和容納人數
+    // 4. 更新桌位編號和容納人數
     @Modifying
     @Query (value = "UPDATE table_management SET table_number = ?2, table_capacity = ?3 WHERE table_number = ?1", nativeQuery = true)
     public int updateTable (String oldTableNumber, String newTableNumber, int newCapacity);
+
+    // 5. 查詢桌位狀態 - 使用 JPQL (Reservation 表用）
+    // @Query("SELECT t FROM TableManagement t WHERE t.tableStatus = ?1")
+    public List <TableManagement> findByTableStatus (TableManagement.TableStatus tableStatus);
+
+    // 6. 查詢狀態為 "AVAILABLE" 的所有桌位，並根據桌位容量來排序
+    @Query("SELECT t FROM TableManagement t WHERE t.tableStatus = 'AVAILABLE' ORDER BY t.tableCapacity ASC")
+    public List<TableManagement> findAvailableTablesOrderedByCapacity();
+
+    // 7. 查詢同一 reservation 的桌位（顯示合併桌位） - 使用 JPQL 查詢
+    @Query ("SELECT t FROM TableManagement t JOIN t.reservations r WHERE r = :reservation")
+    public List <TableManagement> findByReservations(Reservation reservation);
 }
