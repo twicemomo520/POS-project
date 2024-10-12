@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,12 +14,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.pos10.constants.ResMessage;
+import com.example.pos10.entity.Categories;
+import com.example.pos10.entity.ComboItems;
+import com.example.pos10.entity.MenuItems;
+import com.example.pos10.entity.Options;
 import com.example.pos10.entity.Orders;
 import com.example.pos10.repository.OrderDao;
 import com.example.pos10.service.ifs.OrderService;
 import com.example.pos10.vo.BasicRes;
+import com.example.pos10.vo.ComboDetailVo;
+import com.example.pos10.vo.ComboVo;
 import com.example.pos10.vo.MealDetailVo;
 import com.example.pos10.vo.MealVo;
+import com.example.pos10.vo.OptionItemVo;
+import com.example.pos10.vo.OptionVo;
+import com.example.pos10.vo.OrderMenuRes;
 import com.example.pos10.vo.SearchOrderReq;
 import com.example.pos10.vo.SearchOrderStatusRes;
 import com.example.pos10.vo.SearchOrderStatusVo;
@@ -298,23 +308,28 @@ public class OrderServiceImpl implements OrderService {
 
 		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
 	}
-	
+
 	@Override
 	public SelectInPreparationRes selectInPreparation() {
 		List<Orders> preparingOrders = orderDao.selectInPreparation();
-		if(preparingOrders.isEmpty()){
-			return new SelectInPreparationRes(ResMessage.NO_ORDERS_FOUND.getCode(), ResMessage.NO_ORDERS_FOUND.getMessage());
+		if (preparingOrders.isEmpty()) {
+			return new SelectInPreparationRes(ResMessage.NO_ORDERS_FOUND.getCode(),
+					ResMessage.NO_ORDERS_FOUND.getMessage());
 		}
-		return new SelectInPreparationRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(),preparingOrders);
+		return new SelectInPreparationRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(),
+				preparingOrders);
 	}
 
 	@Override
 	public BasicRes updateInPreparation(UpdateOrderReq req) {
-		
+
 		int id = req.getId();
 
 		orderDao.updateInPreparation(id);
 
 		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
 	}
+
+	/////////// 撈菜單///////////////////////////
+
 }

@@ -11,6 +11,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.example.pos10.entity.Categories;
+import com.example.pos10.entity.ComboItems;
+import com.example.pos10.entity.MenuItems;
+import com.example.pos10.entity.Options;
 import com.example.pos10.entity.Orders;
 
 @Repository
@@ -41,5 +45,6 @@ public interface OrderDao extends  JpaRepository<Orders, Integer>{
 	@Transactional
 	@Query(value = " update orders " + " set meal_status = '待送餐點' " + " where id = :inputId", nativeQuery = true)
 	public void updateInPreparation(@Param("inputId") int id);
+	
 
 }
