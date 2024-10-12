@@ -24,7 +24,6 @@ import com.example.pos10.service.ifs.ReservationService;
 import com.example.pos10.vo.AvailableTimeSlot;
 import com.example.pos10.vo.ReservationReq;
 import com.example.pos10.vo.ReservationRes;
-import com.example.pos10.vo.TableManagementRes;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -264,7 +263,7 @@ public class ReservationServiceImpl implements ReservationService {
         return new ReservationRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
     }
 
- // 4. 根據顧客電話號碼查詢訂位
+    // 4. 根據顧客電話號碼查詢訂位
     @Override
     public ReservationRes findReservationsByPhoneNumber(String phoneNumber) {
         // 1. 驗證電話號碼格式
@@ -330,7 +329,7 @@ public class ReservationServiceImpl implements ReservationService {
             return new ReservationRes(ResMessage.NO_RESERVATIONS_FOUND.getCode(), ResMessage.NO_RESERVATIONS_FOUND.getMessage());
         }
 
-     // 5. 將查詢結果轉換為 ReservationReq 格式
+        // 5. 將查詢結果轉換為 ReservationReq 格式
         List<ReservationReq> reservationReqs = reservations.stream()
             .map(reservation -> new ReservationReq(
                 reservation.getReservationId(),
