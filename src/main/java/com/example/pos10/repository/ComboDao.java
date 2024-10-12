@@ -65,6 +65,7 @@ public interface ComboDao extends JpaRepository<ComboItems, String> {
     		@Param("inputComboName") String comboName
     		);
     
-	
+	@Query( value = " SELECT * FROM combo_items " ,nativeQuery = true)
+	public List<ComboItems> selectAll();
 	
 }

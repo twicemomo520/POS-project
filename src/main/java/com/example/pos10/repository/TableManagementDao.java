@@ -49,4 +49,10 @@ public interface TableManagementDao extends JpaRepository <TableManagement, Stri
     // 7. 查詢同一 reservation 的桌位（顯示合併桌位） - 使用 JPQL 查詢
     @Query ("SELECT t FROM TableManagement t JOIN t.reservations r WHERE r = :reservation")
     public List <TableManagement> findByReservations(Reservation reservation);
+    
+    //8.回傳所有資料
+    @Query(value = " SELECT * FROM table_management  ",nativeQuery = true)
+    public List<TableManagement> selectAll();
+    
+    
 }

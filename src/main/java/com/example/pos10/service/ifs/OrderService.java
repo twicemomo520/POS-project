@@ -19,5 +19,5 @@ public interface OrderService {
 	
 	public BasicRes updateInPreparation(UpdateOrderReq req);
 	
-
+	public OrderMenuRes getOrderMenu();
 }
