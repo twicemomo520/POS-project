@@ -82,6 +82,14 @@ public enum ResMessage {
 	INVALID_TABLE_STATUS_FOR_CANCELLATION (400, "The table is not reserved and cannot be canceled !!!"), // 當前桌位狀態不為「預定中」無法進行取消操作
 	TABLE_NOT_RESERVED (400, "The table is not in a reserved state !!!"), // 桌位當前不處於「預定中」狀態
 	FAILED_TO_UPDATE_TABLE_STATUS (400, "Failed to update the table status to RESERVED or ACTIVE !!!"), // 更新桌位狀態失敗
+	
+	// Waitlist
+	INVALID_WAITLIST_PEOPLE (400, "Waitlist people must be greater than 0 !!!"), // 候位人數必須大於 0
+	INVALID_WAIT_TIME (400, "Wait time cannot be null !!!"), // 候位時間不得為 null
+	DUPLICATE_WAITLIST (400, "You are already on the waitlist !!!"), // 顧客已經在候位列表中
+	NO_WAITLIST_FOUND (404, "No waitlist found for the provided phone number !!!"), // 查詢結果為空時，告知使用者系統中未找到符合條件的候位
+	WAITLIST_ALREADY_CANCELLED (400, "The waitlist entry has already been cancelled !!!"), // 該候位記錄已經取消
+	WAITLIST_ALREADY_CHECKED_IN (400, "The waitlist entry has already been checked in !!!"), // 該候位已經報到	
 	;
 	
 	
