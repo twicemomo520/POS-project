@@ -16,6 +16,8 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// 處理 multipart/form-data (圖片路徑)
+	implementation 'org.springframework.boot:spring-boot-starter-tomcat'
 	//���ҰѼƥ�
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	//security:���F�ϥ�BCryptPasswordEncoder
@@ -29,6 +31,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
 }
 
 tasks.named('test') {

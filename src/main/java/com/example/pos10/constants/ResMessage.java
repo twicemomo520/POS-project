@@ -23,6 +23,7 @@ public enum ResMessage {
 	COMBO_NAME_EXISTS(400,"Combo name exists"),//
 	NO_ORDERS_FOUND(404,"No orders found"), //
 	COMBO_NAME_NOT_FOUND(404,"Combo name cannot found"), //
+	UPLOAD_FAILED(400, "Upload failed"),//
 	
 	// TableManagement
 	INVALID_TABLE_STATUS (400, "Invalid table status value !!!"), //
