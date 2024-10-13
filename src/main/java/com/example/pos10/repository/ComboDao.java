@@ -40,14 +40,12 @@ public interface ComboDao extends JpaRepository<ComboItems, String> {
     		+ " set combo_name = :inputComboName, "
     		+ " combo_detail = :inputComboDetail, "
     		+ " discount_amount = :inputDiscountAmount "
-    		+ " catgory_id = :inputCategoryId"
     		+ " where combo_name = :inputOldComboName",  nativeQuery=true)
     public void updateCombo(
     		@Param("inputOldComboName") String oldComboName,
     		@Param("inputComboName") String comboName,
     		@Param("inputComboDetail") String comboDetail,
-    		@Param("inputDiscountAmount") int discountAmount,
-    		@Param("inputCategoryId") int catgoryId
+    		@Param("inputDiscountAmount") int discountAmount
     		);
     
     

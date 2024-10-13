@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import com.example.pos10.constants.ResMessage;
 import com.example.pos10.entity.ComboItems;
 import com.example.pos10.entity.MenuItems;
-import com.example.pos10.repository.OrderDetailHistoryDao;
+import com.example.pos10.repository.OrdersHistoryDao;
 import com.example.pos10.service.ifs.AnalysisService;
 import com.example.pos10.vo.AnalysisPopularDishes;
 import com.example.pos10.vo.AnalysisReq;
@@ -30,17 +30,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class AnalysisServiceImpl implements AnalysisService{
 	
 	@Autowired
-	private OrderDetailHistoryDao orderDetailHistoryDao;
+	private OrdersHistoryDao ordersHistoryDao;
 	
 	
     public String checkMealType(String mealName) {
         // 查詢套餐表
-		ComboItems comboItems = orderDetailHistoryDao.findComboItems(mealName);
+		ComboItems comboItems = ordersHistoryDao.findComboItems(mealName);
         if (comboItems != null) {
             return "套餐";
         }
         // 查詢單點表
-        MenuItems menuItems = orderDetailHistoryDao.findMenuItems(mealName);
+        MenuItems menuItems = ordersHistoryDao.findMenuItems(mealName);
         if (menuItems != null) {
             return "單點";
         }
@@ -56,6 +56,7 @@ public class AnalysisServiceImpl implements AnalysisService{
 		LocalDate startDateInput = req.getStartDate();
 		LocalDate endDateInput = req.getEndDate();
 		String mealNameInput = req.getMealName();
+		System.out.println("mealNameInput" + mealNameInput);
 		
 		if (startDateInput == null) {
 			startDateInput = LocalDate.of(1900, 1, 1);
@@ -67,9 +68,12 @@ public class AnalysisServiceImpl implements AnalysisService{
 
 		LocalDateTime startDate = LocalDateTime.parse(startDateInput + "T00:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 		LocalDateTime endDate = LocalDateTime.parse(endDateInput + "T23:59:59", DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-		List<JoinOrderHistoryVo>orderDetailHistoryList = orderDetailHistoryDao.searchOrderDetailHistory(startDate, endDate);
+		List<JoinOrderHistoryVo>orderDetailHistoryList = ordersHistoryDao.searchOrderDetailHistory(startDate, endDate);
+		
+		System.out.println(orderDetailHistoryList);
 		
 		String mealType = checkMealType(mealNameInput);
+		System.out.println("mealType" + mealType);
 		
 		
 		
@@ -91,7 +95,7 @@ public class AnalysisServiceImpl implements AnalysisService{
 				
 				if(mealType.equals("套餐")) {
 					String comboName = orderHistoryItem.getComboName();
-					String mealDetail = orderHistoryItem.getMealDetail();
+					String mealDetail = orderHistoryItem.getMealName();
 					if(Objects.equals(comboName, mealNameInput) &&  mealDetail == null) {
 						
 						analysisMealVo.setMealTotalOrders(analysisMealVo.getMealTotalOrders()+1);
@@ -101,25 +105,22 @@ public class AnalysisServiceImpl implements AnalysisService{
 						int price = orderHistoryItem.getPrice();
 						analysisMealVo.setMealTotalRevenue(analysisMealVo.getMealTotalRevenue() +price);
 					}
-					
-					
 				}
 				
 				if(mealType.equals("單點")) {
 					String comboName = orderHistoryItem.getComboName();
-					String mealDetail = orderHistoryItem.getMealDetail();
-					String mealDetailName=null;
-					List<String> mealDetailOptionsList = new ArrayList<>();
-					try {
-						Map<String, List<String>> mealDetailMap = objectMapper.readValue(mealDetail, Map.class);
-			        	 mealDetailName = mealDetailMap.keySet().iterator().next();
-			        	 mealDetailOptionsList = mealDetailMap.get(mealDetailName);
-					}catch (JsonProcessingException e) {
-		                 System.out.println("JSON 解析錯誤: " + e.getMessage());
-		                 e.printStackTrace();
-		             }
+					String mealDetail = orderHistoryItem.getMealName();
+//					List<String> mealDetailOptionsList = new ArrayList<>();
+//					try {
+//						Map<String, List<String>> mealDetailMap = objectMapper.readValue(mealDetail, Map.class);
+//			        	 mealDetailName = mealDetailMap.keySet().iterator().next();
+//			        	 mealDetailOptionsList = mealDetailMap.get(mealDetailName);
+//					}catch (JsonProcessingException e) {
+//		                 System.out.println("JSON 解析錯誤: " + e.getMessage());
+//		                 e.printStackTrace();
+//		             }
 					
-					if((comboName == null) && mealDetailName.equals(mealNameInput)) {
+					if((comboName == null) && mealDetail.equals(mealNameInput)) {
 						
 						analysisMealVo.setMealTotalOrders(analysisMealVo.getMealTotalOrders()+1);
 						
@@ -128,8 +129,6 @@ public class AnalysisServiceImpl implements AnalysisService{
 					}
 				}
 
-				
-						
 			//處理totalRevenue
 			totalRevenue+=orderHistoryItem.getPrice();
 			
@@ -163,24 +162,16 @@ public class AnalysisServiceImpl implements AnalysisService{
 			
 			//第二步 算出每個餐點銷售數量
 			 String comboName = orderHistoryItem.getComboName(); // 假設套餐名作為菜品名
-			 String mealDetail =  orderHistoryItem.getMealDetail();
+			 String singleName =  orderHistoryItem.getMealName();
 			 String mealDetailName = comboName; //儲存菜品名的變數，先賦值為 comboName
 			 List<String> mealDetailOptionsList;
+			 
 			 if (comboName == null) {
-			        	try {
-				        	 Map<String, List<String>> mealDetailMap = objectMapper.readValue(mealDetail, Map.class);
-				             // 獲取第一個 key（因為我們假設只有一個鍵值對）
-				        	 mealDetailName = mealDetailMap.keySet().iterator().next();
-				        	 mealDetailOptionsList = mealDetailMap.get(mealDetailName);
-				 }catch (JsonProcessingException e) {
-	                 System.out.println("JSON 解析錯誤: " + e.getMessage());
-	                 e.printStackTrace();
-	             }
-			        	
+				 mealDetailName = singleName;
 			        	// 檢查 popularDishes 中是否已經有該菜品
 			        	boolean dishExists = false;
 		                for (AnalysisPopularDishes popularDishes : popularDishesList) {
-		                    if (popularDishes.getName().equals(mealDetailName)) {
+		                    if (popularDishes.getName() != null && popularDishes.getName().equals(mealDetailName)) {
 		                        // 如果找到相同的菜品，訂單數量加 1
 		                    	popularDishes.setOrders(popularDishes.getOrders() + 1);
 		                        dishExists = true;
@@ -207,10 +198,11 @@ public class AnalysisServiceImpl implements AnalysisService{
                 			orderMealIdList.add(orderHistoryItem.getOrderMealId());
                 		}
                 		
+                		
                 		//如果有這道菜	    
     		        	//該套餐在orderMealIdList李還沒有出現過才可以數量+1
     	                for (AnalysisPopularDishes popularDishes : popularDishesList) {
-    	                    if (popularDishes.getName().equals(comboName) && !orderMealIdList.contains(orderHistoryItem.getOrderMealId())) {
+    	                    if (popularDishes.getName() != null && popularDishes.getName().equals(comboName) && !orderMealIdList.contains(orderHistoryItem.getOrderMealId())) {
     	                        // 如果找到相同的菜品，訂單數量加 1
     	                    	popularDishes.setOrders(popularDishes.getOrders() + 1);
     	                    	orderMealIdList.add(orderHistoryItem.getOrderMealId());
@@ -219,9 +211,6 @@ public class AnalysisServiceImpl implements AnalysisService{
     	                }                		
                 	}
 
-                
-		        	
-			 
 		}
 	
 		return new AnalysisRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(),//
