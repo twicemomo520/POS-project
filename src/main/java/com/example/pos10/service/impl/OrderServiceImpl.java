@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,6 +29,7 @@ import com.example.pos10.repository.OptionsDao;
 import com.example.pos10.repository.OrderDao;
 import com.example.pos10.repository.TableManagementDao;
 import com.example.pos10.service.ifs.OrderService;
+import com.example.pos10.vo.AddOrderReq;
 import com.example.pos10.vo.BasicRes;
 import com.example.pos10.vo.ComboDetailVo;
 import com.example.pos10.vo.ComboVo;
@@ -487,5 +489,25 @@ public class OrderServiceImpl implements OrderService {
 		return new OrderMenuRes(ResMessage.SUCCESS.getCode(), "成功回傳菜單資料", categoriesList, menuItemList, optionList,
 				comboList, tableNumberList);
 	}
+
+	@Override
+	public BasicRes addOrder(AddOrderReq req) {
+		 // 從 AddOrderReq 中提取訂單列表
+        List<Orders> ordersList = req.getOrdersList();
+        // 驗證資料
+        for (Orders order : ordersList) {
+            if (!"準備中".equals(order.getMealStatus())) {
+                return new BasicRes(400, "餐點狀態必須為 '準備中'");
+            }
+            if (order.getCheckout() != Boolean.FALSE) {
+                return new BasicRes(400, "Checkout 必須為 false");
+            }
+        }
+
+        // 批次儲存所有訂單
+        orderDao.saveAll(ordersList);
+        return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
+	}
+
 
 }

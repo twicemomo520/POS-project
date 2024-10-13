@@ -1,5 +1,7 @@
 package com.example.pos10.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.pos10.service.ifs.OrderService;
+import com.example.pos10.vo.AddOrderReq;
 import com.example.pos10.vo.BasicRes;
 import com.example.pos10.vo.OrderMenuRes;
 import com.example.pos10.vo.SearchOrderReq;
 import com.example.pos10.vo.SearchOrderStatusRes;
 import com.example.pos10.vo.SelectInPreparationRes;
 import com.example.pos10.vo.UpdateOrderReq;
-
+	
 @RestController
 @CrossOrigin
 public class OrderController {
@@ -47,8 +50,12 @@ public class OrderController {
     
     @GetMapping("/pos/getOrderMenu")
     public OrderMenuRes getOrderMenu() {
-        System.out.println("OrderController: /getOrderMenu 被呼叫");
         return orderService.getOrderMenu();
+    }
+    
+    @PostMapping("/pos/addOrder")
+    public BasicRes addOrders(@RequestBody AddOrderReq req) {
+        return orderService.addOrder(req);
     }
     
 }
