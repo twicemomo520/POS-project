@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,9 @@ import com.example.pos10.repository.OrderDao;
 import com.example.pos10.repository.TableManagementDao;
 import com.example.pos10.service.ifs.OrderService;
 import com.example.pos10.vo.BasicRes;
+import com.example.pos10.vo.ComboDetailVo;
 import com.example.pos10.vo.ComboVo;
+import com.example.pos10.vo.DishVo;
 import com.example.pos10.vo.MealDetailVo;
 import com.example.pos10.vo.MealVo;
 import com.example.pos10.vo.OptionItemVo;
@@ -57,14 +60,12 @@ public class OrderServiceImpl implements OrderService {
 
 	@Autowired
 	private OptionsDao optionsDao;
-	
+
 	@Autowired
 	private TableManagementDao tableManagementDao;
-	
+
 	@Autowired
 	private ComboDao comboDao;
-	
-	
 
 	@Override
 	public SearchOrderStatusRes searchOrderStatus(SearchOrderReq req) {
@@ -355,83 +356,136 @@ public class OrderServiceImpl implements OrderService {
 	/////////// 撈菜單///////////////////////////
 	@Override
 	public OrderMenuRes getOrderMenu() {
-		
+
 		List<Categories> categoriesList = categoriesDao.selectAll();
-		
+
+		// 放一個菜單裡面有價格跟工作台的map
+		Map<Integer, Integer> cgIdAndwkId = new HashMap<>();
+
+		// cgID對應的工作檯ID
+		for (Categories data : categoriesList) {
+//			cgIdAndwkId.put(data.getCategoryId(), data.getWorkstationId());
+
+			Integer workstationId = data.getWorkstationId();
+			if (workstationId != null) {
+				cgIdAndwkId.put(data.getCategoryId(), workstationId);
+			}
+
+		}
+
 		List<MenuItems> menuItemList = menuItemsDao.selectAll();
-		
+
+		// 菜單名稱對應的價格
+		Map<String, Integer> mealNameAndPrice = new HashMap<>();
+
+		for (MenuItems data : menuItemList) {
+//			mealNameAndPrice.put(data.getMealName(), data.getPrice());
+
+			String mealName = data.getMealName();
+			Integer price = data.getPrice();
+			if (mealName != null) {
+				mealNameAndPrice.put(mealName, price);
+			}
+
+		}
+
 		List<Options> optionsData = optionsDao.selectAll();
-		
+
 		// 使用 Map 來儲存每個 optionTitle 和 categoryId 的選項
-        Map<String, OptionVo> organizedOptions = new HashMap<>();
+		Map<String, OptionVo> organizedOptions = new HashMap<>();
 
-        for (Options option : optionsData) {
-            String key = option.getCategoryId() + "-" + option.getOptionTitle();
+		for (Options option : optionsData) {
+			String key = option.getCategoryId() + "-" + option.getOptionTitle();
 
-            // 檢查是否已存在該 optionTitle 和 categoryId 的key
-            if (!organizedOptions.containsKey(key)) {
-                List<OptionItemVo> optionItems = new ArrayList<>();
-                
-                OptionVo optionVo = new OptionVo();
-                optionVo.setCategoryId(option.getCategoryId());
-                optionVo.setOptionTitle(option.getOptionTitle());
-                optionVo.setOptionType(option.getOptionType());
-                optionVo.setOptionItems(optionItems);
-                
-                organizedOptions.put(key, optionVo);
-            }
+			// 檢查是否已存在該 optionTitle 和 categoryId 的key
+			if (!organizedOptions.containsKey(key)) {
+				List<OptionItemVo> optionItems = new ArrayList<>();
 
-            // 新增每個選項的內容
-            OptionItemVo item = new OptionItemVo();
-            item.setOptionContent(option.getOptionContent());
-            item.setExtraPrice(option.getExtraPrice());
-            
-            organizedOptions.get(key).getOptionItems().add(item);
-        }
+				OptionVo optionVo = new OptionVo();
+				optionVo.setCategoryId(option.getCategoryId());
+				optionVo.setOptionTitle(option.getOptionTitle());
+				optionVo.setOptionType(option.getOptionType());
+				optionVo.setOptionItems(optionItems);
 
-        // 將 Map 的值轉換為 List
-        List<OptionVo> optionList = new ArrayList<>(organizedOptions.values());
+				organizedOptions.put(key, optionVo);
+			}
 
-        
-        
-        
-        List<ComboVo> comboList = new ArrayList<>();
-        
-        List<ComboItems> comboItems = comboDao.selectAll();
-        
-        for( ComboItems data :  comboItems) {
-        	
-        	ComboVo comboVo = new ComboVo();
-        	
-        	comboVo.setCategoryId(data.getCategoryId());
-        	comboVo.setComboName(data.getComboName());
-        	comboVo.setDiscountAmount(data.getDiscountAmount());
-        	
-//        	System.out.println(data.getComboDetail());
-        	
-//        	JSONArray categoriesArray = new JSONArray(data.getComboDetail());
-//        	System.out.println(categoriesArray.toString()); // 確認 JSONArray 的內容
+			// 新增每個選項的內容
+			OptionItemVo item = new OptionItemVo();
+			item.setOptionContent(option.getOptionContent());
+			item.setExtraPrice(option.getExtraPrice());
 
-        	
-//        	comboVo.setComboDetail(data.getComboDetail());
-        	
-        	
-        	
-        }
+			organizedOptions.get(key).getOptionItems().add(item);
+		}
 
-	   
-	   
-	    
-	    
-	    List<String> tableNumberList = new ArrayList<>();
-	    List<TableManagement>tableData = tableManagementDao.selectAll();
-	    
-	    for ( TableManagement data : tableData  ) {
-	    	tableNumberList.add(data.getTableNumber());
-	    	
-	    }
-	    
-		return new OrderMenuRes(ResMessage.SUCCESS.getCode(),"成功回傳OrderMenuRes",categoriesList,menuItemList,optionList,comboList,tableNumberList);
+		// 將 Map 的值轉換為 List
+		List<OptionVo> optionList = new ArrayList<>(organizedOptions.values());
+
+		List<ComboVo> comboList = new ArrayList<>();
+
+		List<ComboItems> comboItems = comboDao.selectAll();
+
+		for (ComboItems data : comboItems) {
+
+			ComboVo comboVo = new ComboVo();
+
+			comboVo.setCategoryId(data.getCategoryId());
+			comboVo.setComboName(data.getComboName());
+			comboVo.setDiscountAmount(data.getDiscountAmount());
+
+//        	cgIdAndwkId 對應工作臺ID
+//        	mealNameAndPrice 菜單名稱對應價格
+
+			JSONArray categoriesArray = new JSONArray(data.getComboDetail());
+
+			List<ComboDetailVo> comboDetailVoList = new ArrayList<>();
+
+			for (int i = 0; i < categoriesArray.length(); i++) {
+				JSONObject categoryObj = categoriesArray.getJSONObject(i);
+				int categoryId = categoryObj.getInt("categoryId");
+
+				JSONArray dishesArray = categoryObj.getJSONArray("dishes");
+				List<DishVo> dishVoList = new ArrayList<>();
+				// 可以繼續處理 dishesArray 裡的每個 dish
+				for (int j = 0; j < dishesArray.length(); j++) {
+					// 注意：這裡使用 dishesArray.getString(j)，因為 dishesArray 裡是字串而不是 JSONObject
+					String dishName = dishesArray.getString(j);
+
+					DishVo dishVo = new DishVo();
+					dishVo.setDishName(dishName);
+
+					dishVo.setPrice(mealNameAndPrice.get(dishName));
+
+					dishVoList.add(dishVo);
+
+				}
+
+				ComboDetailVo comboDetailVo = new ComboDetailVo();
+
+				comboDetailVo.setCategoryId(categoryId);
+				comboDetailVo.setDishesList(dishVoList);
+
+				comboDetailVo.setWorkstationId(cgIdAndwkId.get(categoryId));
+
+				comboDetailVoList.add(comboDetailVo);
+			}
+
+			comboVo.setComboDetail(comboDetailVoList);
+
+			comboList.add(comboVo);
+
+		}
+
+		List<String> tableNumberList = new ArrayList<>();
+		List<TableManagement> tableData = tableManagementDao.selectAll();
+
+		for (TableManagement data : tableData) {
+			tableNumberList.add(data.getTableNumber());
+
+		}
+
+		return new OrderMenuRes(ResMessage.SUCCESS.getCode(), "成功回傳菜單資料", categoriesList, menuItemList, optionList,
+				comboList, tableNumberList);
 	}
 
 }
