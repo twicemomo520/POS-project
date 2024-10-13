@@ -11,20 +11,19 @@ import org.springframework.stereotype.Repository;
 
 import com.example.pos10.entity.ComboItems;
 import com.example.pos10.entity.MenuItems;
-import com.example.pos10.entity.OrderDetailHistory;
-import com.example.pos10.entity.OrderHistory;
+import com.example.pos10.entity.OrdersHistory;
+import com.example.pos10.entity.CheckoutListHistory;
 import com.example.pos10.vo.JoinOrderHistoryVo;
 
 @Repository
-public interface OrderDetailHistoryDao extends JpaRepository<OrderDetailHistory, Integer>{
+public interface OrdersHistoryDao extends JpaRepository<OrdersHistory, Integer>{
 	
 	 @Query(value = "select new com.example.pos10.vo.JoinOrderHistoryVo"
-	 		+ " (od.id, od.orderId, od.orderMealId, od.comboName, od.mealDetail, od.workstationId, "
-	 		+ " od.quantity, od.price, od.mealStatus, od.tableNumber, od.orderTime, od.checkout, "
-	 		+ " o.totalPrice, o.payType, o.checkoutTime, o.memberAccount) "
-//	 		+ " SUM(od.price) as totalRevenue,  COUNT(od.orderId) as totalOrders)"
-	 		+ " from OrderDetailHistory as od  "
-	 		+ " join OrderHistory as o on od.orderId = o.orderId "
+	 		+ " (od.id, od.orderId, od.orderMealId, od.comboName, od.mealName, od.options, od.workstationId, "
+	 		+ " od.price, od.mealStatus, od.tableNumber, od.orderTime, od.checkout, "
+	 		+ " o.checkoutTime) "
+	 		+ " from OrdersHistory as od  "
+	 		+ " join CheckoutListHistory as o on od.orderId = o.orderId "
 	 		+ " where (:inputStartDate is null or :inputEndDate is null or o.checkoutTime between :inputStartDate and :inputEndDate)"
 	 		+ " order by o.checkoutTime ASC ",  nativeQuery = false)
 	 public List<JoinOrderHistoryVo> searchOrderDetailHistory(

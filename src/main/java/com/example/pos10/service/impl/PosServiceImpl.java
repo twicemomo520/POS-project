@@ -27,8 +27,8 @@ import com.example.pos10.entity.Options;
 import com.example.pos10.repository.CategoriesDao;
 import com.example.pos10.repository.MenuItemsDao;
 import com.example.pos10.repository.OptionsDao;
-import com.example.pos10.repository.OrderDetailHistoryDao;
 import com.example.pos10.repository.WorkstationDao;
+import com.example.pos10.repository.OrdersHistoryDao;
 import com.example.pos10.service.ifs.PosService;
 import com.example.pos10.vo.BasicRes;
 import com.example.pos10.vo.CreateCbReq;
@@ -42,7 +42,7 @@ import com.example.pos10.vo.PosStatisticsRes;
 public class PosServiceImpl implements PosService{
 	
 	@Autowired
-	private OrderDetailHistoryDao orderDetailHistoryDao;
+	private OrdersHistoryDao orderDetailHistoryDao;
 //	@Autowired
 //	private OrderHistoryDao orderHistoryDao;
 	
@@ -377,10 +377,7 @@ public class PosServiceImpl implements PosService{
 		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
 	}
 	
-	
-	
-	
-	
+		
 	
 	
 	

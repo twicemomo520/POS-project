@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "orders")
@@ -17,7 +18,7 @@ public class Orders {
 	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotBlank(message = "Id cannot be null or empty")
+    //@NotNull(message = "Id cannot be null!")
     @Column(name = "id")
     private Integer id;
     
