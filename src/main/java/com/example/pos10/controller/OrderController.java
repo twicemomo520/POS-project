@@ -4,12 +4,15 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.pos10.service.ifs.OrderService;
 import com.example.pos10.vo.BasicRes;
+import com.example.pos10.vo.OrderMenuRes;
 import com.example.pos10.vo.SearchOrderReq;
 import com.example.pos10.vo.SearchOrderStatusRes;
 import com.example.pos10.vo.SelectInPreparationRes;
@@ -40,6 +43,12 @@ public class OrderController {
     @PostMapping("/pos/updateInPreparation")
     public BasicRes updateInPreparation(@RequestBody @Valid  UpdateOrderReq req) {
     	return orderService.updateInPreparation(req);
+    }
+    
+    @GetMapping("/pos/getOrderMenu")
+    public OrderMenuRes getOrderMenu() {
+        System.out.println("OrderController: /getOrderMenu 被呼叫");
+        return orderService.getOrderMenu();
     }
     
 }

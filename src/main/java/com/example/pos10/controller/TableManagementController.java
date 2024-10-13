@@ -1,18 +1,22 @@
 package com.example.pos10.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.pos10.constants.ResMessage;
+import com.example.pos10.entity.TableManagement;
 import com.example.pos10.service.ifs.TableManagementService;
 import com.example.pos10.vo.TableManagementReq;
 import com.example.pos10.vo.TableManagementRes;
-import com.example.pos10.constants.ResMessage;
-import com.example.pos10.entity.TableManagement;
-import com.example.pos10.entity.TableManagement.TableStatus;
-
-import java.util.List;
-
-import javax.validation.Valid;
 
 
 @RestController

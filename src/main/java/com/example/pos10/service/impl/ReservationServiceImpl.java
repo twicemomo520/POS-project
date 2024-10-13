@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -132,8 +134,9 @@ public class ReservationServiceImpl implements ReservationService {
         return availableStartTimes;
     }
 
- // 1. 儲存訂位
+    // 3. 儲存訂位
     @Override
+    @Transactional
     public ReservationRes saveReservation(ReservationReq reservationReq) {
         // 1. 驗證顧客姓名
         if (reservationReq.getCustomerName() == null || reservationReq.getCustomerName().isEmpty()) {
@@ -259,47 +262,51 @@ public class ReservationServiceImpl implements ReservationService {
 
         return new ReservationRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
     }
-//
-//    // 2. 根據顧客電話號碼查詢訂位
-//    @Override
-//    public ReservationRes findReservationsByPhoneNumber(String phoneNumber) {
-//        // 1. 驗證電話號碼格式
-//        if (phoneNumber == null || !phoneNumber.matches("\\d{10}")) {
-//            return new ReservationRes(ResMessage.INVALID_PHONE_NUMBER_FORMAT.getCode(), ResMessage.INVALID_PHONE_NUMBER_FORMAT.getMessage());
-//        }
-//
-//        // 2. 查詢訂位
-//        List <Reservation> reservations = reservationDao.findByCustomerPhoneNumber(phoneNumber);
-//
-//        // 3. 檢查查詢結果是否為空
-//        if (reservations.isEmpty()) {
-//            return new ReservationRes(ResMessage.NO_RESERVATIONS_FOUND.getCode(), ResMessage.NO_RESERVATIONS_FOUND.getMessage());
-//        }
-//
-//        // 4. 將查詢結果轉換為 ReservationReq 格式
-//        List <ReservationReq> reservationReqs = reservations.stream()
-//            .map(reservation -> {
-//                if (reservation.getReservationManagement() == null) {
-//                    throw new IllegalStateException("ReservationManagement 不應為空");
-//                }
-//                return new ReservationReq(
-//                    reservation.getReservationId(),
-//                    reservation.getCustomerName(),
-//                    reservation.getCustomerPhoneNumber(),
-//                    reservation.getCustomerEmail(),
-//                    reservation.getCustomerGender(),
-//                    reservation.getReservationPeople(),
-//                    reservation.getReservationManagement(),
-//                    null
-//                );
-//            })
-//            .collect(Collectors.toList());
-//
-//        // 5. 回傳成功結果與查詢到的資料
-//        return new ReservationRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(), reservationReqs);
-//    }
 
-    // 3. 查詢當天的所有訂位
+    // 4. 根據顧客電話號碼查詢訂位
+    @Override
+    public ReservationRes findReservationsByPhoneNumber(String phoneNumber) {
+        // 1. 驗證電話號碼格式
+        if (phoneNumber == null || (!phoneNumber.matches("\\d{10}") && !phoneNumber.matches("\\d{3}"))) {
+            return new ReservationRes(ResMessage.INVALID_PHONE_NUMBER_FORMAT.getCode(), ResMessage.INVALID_PHONE_NUMBER_FORMAT.getMessage());
+        }
+
+        List<Reservation> reservations;
+
+        // 2. 如果輸入的是三碼，則查詢結尾為這三碼的所有電話號碼
+        if (phoneNumber.length() == 3) {
+            reservations = reservationDao.findByCustomerPhoneNumberEndingWith(phoneNumber);
+        } else {
+            // 3. 否則查詢完整的電話號碼
+            reservations = reservationDao.findByCustomerPhoneNumber(phoneNumber);
+        }
+
+        // 4. 檢查查詢結果是否為空
+        if (reservations.isEmpty()) {
+            return new ReservationRes(ResMessage.NO_RESERVATIONS_FOUND.getCode(), ResMessage.NO_RESERVATIONS_FOUND.getMessage());
+        }
+
+        // 5. 將查詢結果轉換為 ReservationReq 格式
+        List<ReservationReq> reservationReqs = reservations.stream()
+            .map(reservation -> new ReservationReq(
+                reservation.getReservationId(),
+                reservation.getCustomerName(),
+                reservation.getCustomerPhoneNumber(),
+                reservation.getCustomerEmail(),
+                reservation.getCustomerGender(),
+                reservation.getReservationPeople(),
+                reservation.getReservationDate(),
+                reservation.getReservationStartTime(),
+                reservation.getReservationEndingTime(),
+                reservation.getTables()
+            ))
+            .collect(Collectors.toList());
+
+        // 6. 回傳成功結果與查詢到的資料
+        return new ReservationRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(), reservationReqs);
+    }
+
+    // 5. 查詢當天的所有訂位
     @Override
     public ReservationRes findReservationsByDate (LocalDate reservationDate) {
     	// 1. 驗證日期是否為空
@@ -322,7 +329,7 @@ public class ReservationServiceImpl implements ReservationService {
             return new ReservationRes(ResMessage.NO_RESERVATIONS_FOUND.getCode(), ResMessage.NO_RESERVATIONS_FOUND.getMessage());
         }
 
-     // 5. 將查詢結果轉換為 ReservationReq 格式
+        // 5. 將查詢結果轉換為 ReservationReq 格式
         List<ReservationReq> reservationReqs = reservations.stream()
             .map(reservation -> new ReservationReq(
                 reservation.getReservationId(),
@@ -342,8 +349,9 @@ public class ReservationServiceImpl implements ReservationService {
         return new ReservationRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(), reservationReqs);
     }
 
- // 4. 取消訂位並更新桌位狀態
+    // 6. 取消訂位並更新桌位狀態
     @Override
+    @Transactional
     public ReservationRes cancelReservation(int reservationId) {
         // 1. 透過 reservationId 查詢對應的 Reservation
         Reservation reservation = reservationDao.findById(reservationId).orElse(null);
@@ -376,47 +384,95 @@ public class ReservationServiceImpl implements ReservationService {
         // 5. 返回成功訊息
         return new ReservationRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
     }
-//
-//    // 5. 自動更新桌位狀態（每10分鐘執行一次）
-//    @Override
-//    @Scheduled(cron = "0 0/10 * * * ?") // 每10分鐘執行一次
-//    public void autoUpdateTableStatus(LocalDate currentDate, LocalTime currentTime, LocalTime cutOffTime) {
-//        // 1. 驗證日期和時間是否為空
-//        if (currentDate == null || currentTime == null || cutOffTime == null) {
-//            throw new IllegalArgumentException("日期和時間不能為空");
-//        }
-//
-//        // 2. 更新桌位狀態，並獲取更新的桌位數量
-//        int updatedTablesCount = reservationDao.autoUpdateTableStatusToAvailable(currentDate, cutOffTime);
-//
-//        // 3. 記錄更新操作
-//        System.out.println("自動更新完成，已更新的桌位數量: " + updatedTablesCount);
-//    }
-//
-//    // 6. 訂位前一天發送提醒
-//    @Override
-//    @Scheduled(cron = "0 0 8 * * ?")  // 每天早上8點執行一次
-//    public void sendReservationReminders() {
-//        LocalDate tomorrow = LocalDate.now().plusDays(1);  // 計算明天的日期
-//        // 查詢明天的訂位
-//        List<Reservation> tomorrowReservations = reservationDao.findAllByReservationDate(tomorrow);
-//
-//        // 發送提醒郵件
-//        tomorrowReservations.forEach(reservation -> {
-//            ReservationManagement reservationManagement = reservation.getReservationManagement();
-//            if (reservationManagement != null) {
-//                emailService.sendReminderEmail(
-//                    reservation.getCustomerEmail(),   // 顧客的電子郵件
-//                    reservation.getCustomerName(),    // 顧客的名字
-//                    reservationManagement.getReservationDate().toString(), // 訂位日期
-//                    reservationManagement.getReservationStarttime().toString(), // 訂位開始時間
-//                    reservation.getReservationPeople() // 訂位人數
-//                );
-//            }
-//        });
-//
-//
-//        System.out.println("訂位提醒郵件已發送");
-//    }
 
+    // 7. 自動更新桌位狀態（每10分鐘執行一次）
+    @Override
+    @Scheduled(cron = "0 0/10 * * * ?") // 每10分鐘執行一次
+    @Transactional
+    public ReservationRes autoUpdateTableStatus(LocalDate currentDate, LocalTime currentTime) {
+        // 1. 獲取當前日期和時間
+        currentDate = LocalDate.now();
+        currentTime = LocalTime.now();
+        
+        // 2. 計算cutOffTime（設定為當前時間的 10 分鐘前）
+        LocalTime cutOffTime = currentTime.minusMinutes(10);
+
+        System.out.println("自動更新啟動，當前時間：" + currentDate + " " + currentTime + "，cutOffTime：" + cutOffTime);
+        
+        // 3. 使用 Dao 查找已預訂但過期的桌號
+        List<String> reservedTables = reservationDao.findReservedTables(currentDate, cutOffTime);
+        System.out.println("過期桌號列表: " + reservedTables);
+        
+        if (reservedTables.isEmpty()) {
+            return new ReservationRes(ResMessage.TABLE_STATUS_IS_NOT_AVAILABLE.getCode(), 
+                                      ResMessage.TABLE_STATUS_IS_NOT_AVAILABLE.getMessage());
+        }
+
+        // 4. 更新這些桌號的狀態為 "AVAILABLE"
+        int updatedTablesCount = reservationDao.updateTableStatusToAvailable(reservedTables);
+        
+        // 查找並刪除與這些桌位關聯的過期訂位
+        for (String tableNumber : reservedTables) {
+        	List<Integer> reservationIds = reservationDao.findReservationIdsByTableNumber(tableNumber);
+            reservationDao.deleteByReservationIds(reservationIds);
+        }
+
+        // 6. 返回更新結果
+        if (updatedTablesCount > 0) {
+            return new ReservationRes(ResMessage.SUCCESS.getCode(), 
+                                      ResMessage.SUCCESS.getMessage() + " 已更新的桌位數量: " + updatedTablesCount);
+        } else {
+            return new ReservationRes(ResMessage.TABLE_STATUS_IS_NOT_AVAILABLE.getCode(), 
+                                      ResMessage.TABLE_STATUS_IS_NOT_AVAILABLE.getMessage());
+        }
+    }
+    
+    // 8. 手動報到更新桌位狀態
+    @Override
+    @Transactional // 確保資料庫的更新操作在事務中執行
+    public ReservationRes manualCheckIn(String tableNumber) {
+        // 1. 檢查桌號是否存在
+    	 TableManagement table = tableManagementDao.findById(tableNumber).orElse(null);
+ 	    if (table == null) {
+ 	        return new ReservationRes(ResMessage.TABLE_NUMBER_NOT_FOUND.getCode(), ResMessage.TABLE_NUMBER_NOT_FOUND.getMessage());
+ 	    }
+
+        // 2. 確保桌位處於 RESERVED 狀態
+        if (!table.getTableStatus().equals(TableManagement.TableStatus.RESERVED)) {
+        	return new ReservationRes(ResMessage.INVALID_STATUS_TRANSITION.getCode(), ResMessage.INVALID_STATUS_TRANSITION.getMessage());
+        }
+       
+        // 3. 更新桌位狀態為 ACTIVE
+        int updatedCount = reservationDao.manualCheckIn(tableNumber);
+        if (updatedCount == 0) {
+        	 return new ReservationRes(ResMessage.FAILED_TO_UPDATE_TABLE_STATUS.getCode(), //
+             		ResMessage.FAILED_TO_UPDATE_TABLE_STATUS.getMessage());
+        }
+
+        return new ReservationRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
+    }
+
+    // 9. 訂位前一天發送提醒
+    @Override
+    @Scheduled(cron = "0 0 * * * ?")  // 每小時整點執行一次
+    public void sendReservationReminders() {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);  // 計算明天的日期
+        
+        // 查詢明天的訂位
+        List<Reservation> tomorrowReservations = reservationDao.findAllByReservationDate(tomorrow);
+
+        // 發送提醒郵件
+        tomorrowReservations.forEach(reservation -> {
+            // 直接從 Reservation 中獲取資料，無需再透過 ReservationManagement
+            emailService.sendReminderEmail(
+                reservation.getCustomerEmail(),   // 顧客的電子郵件
+                reservation.getCustomerName(),    // 顧客的名字
+                reservation.getReservationDate().toString(), // 訂位日期
+                reservation.getReservationStartTime().toString(), // 訂位開始時間
+                reservation.getReservationPeople() // 訂位人數
+            );
+        });
+
+        System.out.println("訂位提醒郵件已發送");
+    }
 }

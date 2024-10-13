@@ -60,6 +60,24 @@ public class EmailService {
         message.setFrom("訂位提醒<com2100927@gmail.com>");
         mailSender.send(message);
     }
+    
+    // 候位通知信
+    public void sendWaitlistNotificationEmail(String to, String customerName, int waitListPeople) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("候位通知");
+
+        String text = "候位通知\n\n" +
+                      customerName + "您好，\n\n" +
+                      "我們很高興地通知您，您的候位已經可以入座！\n\n" +
+                      "候位人數: " + waitListPeople + " 人\n" +
+                      "請儘快到達餐廳以避免等待時間過長。\n\n" +
+                      "感謝您的耐心等候，期待您的光臨！";
+
+        message.setText(text);
+        message.setFrom("候位通知<com2100927@gmail.com>");  // 替換為你的發件人電子郵件
+        mailSender.send(message);
+    }
 }
 
 

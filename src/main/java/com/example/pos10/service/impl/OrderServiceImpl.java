@@ -9,16 +9,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.pos10.constants.ResMessage;
+import com.example.pos10.entity.Categories;
+import com.example.pos10.entity.ComboItems;
+import com.example.pos10.entity.MenuItems;
+import com.example.pos10.entity.Options;
 import com.example.pos10.entity.Orders;
+import com.example.pos10.entity.TableManagement;
+import com.example.pos10.repository.CategoriesDao;
+import com.example.pos10.repository.ComboDao;
+import com.example.pos10.repository.MenuItemsDao;
+import com.example.pos10.repository.OptionsDao;
 import com.example.pos10.repository.OrderDao;
+import com.example.pos10.repository.TableManagementDao;
 import com.example.pos10.service.ifs.OrderService;
 import com.example.pos10.vo.BasicRes;
+import com.example.pos10.vo.ComboVo;
 import com.example.pos10.vo.MealDetailVo;
 import com.example.pos10.vo.MealVo;
+import com.example.pos10.vo.OptionItemVo;
+import com.example.pos10.vo.OptionVo;
+import com.example.pos10.vo.OrderMenuRes;
 import com.example.pos10.vo.SearchOrderReq;
 import com.example.pos10.vo.SearchOrderStatusRes;
 import com.example.pos10.vo.SearchOrderStatusVo;
@@ -34,12 +49,29 @@ public class OrderServiceImpl implements OrderService {
 	@Autowired
 	private OrderDao orderDao;
 
+	@Autowired
+	private CategoriesDao categoriesDao;
+
+	@Autowired
+	private MenuItemsDao menuItemsDao;
+
+	@Autowired
+	private OptionsDao optionsDao;
+	
+	@Autowired
+	private TableManagementDao tableManagementDao;
+	
+	@Autowired
+	private ComboDao comboDao;
+	
+	
+
 	@Override
 	public SearchOrderStatusRes searchOrderStatus(SearchOrderReq req) {
 
 		LocalDate startDateInput = req.getStartDate();
 		LocalDate endDateInput = req.getEndDate();
-		
+
 		if (startDateInput == null) {
 			startDateInput = LocalDate.of(1900, 1, 1);
 		}
@@ -47,8 +79,9 @@ public class OrderServiceImpl implements OrderService {
 		if (endDateInput == null) {
 			endDateInput = LocalDate.of(2900, 1, 1);
 		}
-		
-		LocalDateTime startDate = LocalDateTime.parse(startDateInput + "T00:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+		LocalDateTime startDate = LocalDateTime.parse(startDateInput + "T00:00:00",
+				DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
 		LocalDateTime endDate = LocalDateTime.parse(endDateInput + "T23:59:59", DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
@@ -71,7 +104,6 @@ public class OrderServiceImpl implements OrderService {
 			if (searchOrder == null) {
 				continue;
 			}
-
 
 			int id = searchOrder.getId();
 			String tableNumber = searchOrder.getTableNumber();
@@ -298,23 +330,108 @@ public class OrderServiceImpl implements OrderService {
 
 		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
 	}
-	
+
 	@Override
 	public SelectInPreparationRes selectInPreparation() {
 		List<Orders> preparingOrders = orderDao.selectInPreparation();
-		if(preparingOrders.isEmpty()){
-			return new SelectInPreparationRes(ResMessage.NO_ORDERS_FOUND.getCode(), ResMessage.NO_ORDERS_FOUND.getMessage());
+		if (preparingOrders.isEmpty()) {
+			return new SelectInPreparationRes(ResMessage.NO_ORDERS_FOUND.getCode(),
+					ResMessage.NO_ORDERS_FOUND.getMessage());
 		}
-		return new SelectInPreparationRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(),preparingOrders);
+		return new SelectInPreparationRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(),
+				preparingOrders);
 	}
 
 	@Override
 	public BasicRes updateInPreparation(UpdateOrderReq req) {
-		
+
 		int id = req.getId();
 
 		orderDao.updateInPreparation(id);
 
 		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
 	}
+
+	/////////// 撈菜單///////////////////////////
+	@Override
+	public OrderMenuRes getOrderMenu() {
+		
+		List<Categories> categoriesList = categoriesDao.selectAll();
+		
+		List<MenuItems> menuItemList = menuItemsDao.selectAll();
+		
+		List<Options> optionsData = optionsDao.selectAll();
+		
+		// 使用 Map 來儲存每個 optionTitle 和 categoryId 的選項
+        Map<String, OptionVo> organizedOptions = new HashMap<>();
+
+        for (Options option : optionsData) {
+            String key = option.getCategoryId() + "-" + option.getOptionTitle();
+
+            // 檢查是否已存在該 optionTitle 和 categoryId 的key
+            if (!organizedOptions.containsKey(key)) {
+                List<OptionItemVo> optionItems = new ArrayList<>();
+                
+                OptionVo optionVo = new OptionVo();
+                optionVo.setCategoryId(option.getCategoryId());
+                optionVo.setOptionTitle(option.getOptionTitle());
+                optionVo.setOptionType(option.getOptionType());
+                optionVo.setOptionItems(optionItems);
+                
+                organizedOptions.put(key, optionVo);
+            }
+
+            // 新增每個選項的內容
+            OptionItemVo item = new OptionItemVo();
+            item.setOptionContent(option.getOptionContent());
+            item.setExtraPrice(option.getExtraPrice());
+            
+            organizedOptions.get(key).getOptionItems().add(item);
+        }
+
+        // 將 Map 的值轉換為 List
+        List<OptionVo> optionList = new ArrayList<>(organizedOptions.values());
+
+        
+        
+        
+        List<ComboVo> comboList = new ArrayList<>();
+        
+        List<ComboItems> comboItems = comboDao.selectAll();
+        
+        for( ComboItems data :  comboItems) {
+        	
+        	ComboVo comboVo = new ComboVo();
+        	
+        	comboVo.setCategoryId(data.getCategoryId());
+        	comboVo.setComboName(data.getComboName());
+        	comboVo.setDiscountAmount(data.getDiscountAmount());
+        	
+//        	System.out.println(data.getComboDetail());
+        	
+//        	JSONArray categoriesArray = new JSONArray(data.getComboDetail());
+//        	System.out.println(categoriesArray.toString()); // 確認 JSONArray 的內容
+
+        	
+//        	comboVo.setComboDetail(data.getComboDetail());
+        	
+        	
+        	
+        }
+
+	   
+	   
+	    
+	    
+	    List<String> tableNumberList = new ArrayList<>();
+	    List<TableManagement>tableData = tableManagementDao.selectAll();
+	    
+	    for ( TableManagement data : tableData  ) {
+	    	tableNumberList.add(data.getTableNumber());
+	    	
+	    }
+	    
+		return new OrderMenuRes(ResMessage.SUCCESS.getCode(),"成功回傳OrderMenuRes",categoriesList,menuItemList,optionList,comboList,tableNumberList);
+	}
+
 }
