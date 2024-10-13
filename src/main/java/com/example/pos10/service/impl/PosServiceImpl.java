@@ -1,5 +1,7 @@
 package com.example.pos10.service.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -9,19 +11,10 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.example.pos10.entity.Categories;
-import com.example.pos10.vo.CreateOptionReq;
-import com.example.pos10.vo.DeleteCgReq;
-import com.example.pos10.vo.DeleteMenuReq;
-import com.example.pos10.vo.DeleteOptionReq;
-import com.example.pos10.vo.OptionContent;
-import com.example.pos10.vo.UpdateCgReq;
-import com.example.pos10.vo.UpdateMenuReq;
-import com.example.pos10.vo.UpdateOptionPriceReq;
-import com.example.pos10.vo.UpdateWorkstationReq;
 import com.example.pos10.constants.ResMessage;
+import com.example.pos10.entity.Categories;
 import com.example.pos10.entity.MenuItems;
 import com.example.pos10.entity.Options;
 import com.example.pos10.repository.CategoriesDao;
@@ -31,12 +24,20 @@ import com.example.pos10.repository.OrderDetailHistoryDao;
 import com.example.pos10.repository.WorkstationDao;
 import com.example.pos10.service.ifs.PosService;
 import com.example.pos10.vo.BasicRes;
-import com.example.pos10.vo.CreateCbReq;
 import com.example.pos10.vo.CreateCgReq;
+import com.example.pos10.vo.CreateOptionReq;
 import com.example.pos10.vo.CreateReq;
+import com.example.pos10.vo.DeleteCgReq;
+import com.example.pos10.vo.DeleteMenuReq;
+import com.example.pos10.vo.DeleteOptionReq;
 import com.example.pos10.vo.JoinOrderHistoryVo;
+import com.example.pos10.vo.OptionContent;
 import com.example.pos10.vo.PosStatisticsReq;
 import com.example.pos10.vo.PosStatisticsRes;
+import com.example.pos10.vo.UpdateCgReq;
+import com.example.pos10.vo.UpdateMenuReq;
+import com.example.pos10.vo.UpdateOptionPriceReq;
+import com.example.pos10.vo.UpdateWorkstationReq;
 
 @Service
 public class PosServiceImpl implements PosService{
@@ -90,46 +91,82 @@ public class PosServiceImpl implements PosService{
 	// 新增菜單
 	@Transactional
 	@Override
-	public BasicRes create(CreateReq req) {
+	public BasicRes create(CreateReq req, List<MultipartFile> files) {
 		List<MenuItems> menuItems = req.getMenuList();
-		
-		for(MenuItems item : menuItems) {
-			String mealName = item.getMealName();
-			int categoryId = item.getCategoryId();
-			int workstationId = item.getWorkstationId();
-			boolean available = item.isAvailable();
-			String pictureName = item.getPictureName();
-			
-			// 若資料庫找到一樣的mealName數量大於0，表示mealName存在於資料庫
-			if (menuItemsDao.existsByMealName(mealName) > 0) {
-				// 返回菜單已存在的錯誤訊息
-				return new BasicRes(ResMessage.MEAL_NAME_EXISTS.getCode(), ResMessage.MEAL_NAME_EXISTS.getMessage());
-			}
-			
-			// 欲新增的categoryId必須已存在
-			if (categoriesDao.optionExists(categoryId) == 0) {
-				// 若不存在返回錯誤訊息
-				return new BasicRes(ResMessage.CATEGORYID_NOT_FOUND.getCode(),
-						ResMessage.CATEGORYID_NOT_FOUND.getMessage());
-			}
-			
-			// price 不得小於0
-			int price = item.getPrice();
-			if (price < 0) {
-				return new BasicRes(ResMessage.PRICE_CANNOT_BE_NEGATIVE.getCode(), //
-						ResMessage.PRICE_CANNOT_BE_NEGATIVE.getMessage());
-			}
-			
-			// workstationId必須已存在
-//			if (workstationDao.countByWorkstationId(workstationId) == 0) {
-//				return new BasicRes(ResMessage.WORKSTATION_ID_NOT_FOUND.getCode(), //
-//						ResMessage.WORKSTATION_ID_NOT_FOUND.getMessage());
-//			}
-			
-			// 存進資料庫
-			menuItemsDao.insert(mealName, categoryId, workstationId, price, //
-					available, pictureName);
-		}
+
+	    // 設定圖片儲存位置
+	    String uploadDir = System.getProperty("user.dir") + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "static" + File.separator + "images";;
+	    File dir = new File(uploadDir);
+	    if (!dir.exists()) {
+	    	boolean created = dir.mkdirs(); // 嘗試創建目錄
+	        if (created) {
+	            System.out.println("目錄創建成功");
+	        } else {
+	            System.out.println("無法創建目錄");
+	        }
+	    }
+	    
+	    File uploadDirFile = new File(uploadDir);
+	    if (uploadDirFile.canWrite()) {
+	        System.out.println("上傳目錄有寫入權限");
+	    } else {
+	        System.out.println("上傳目錄沒有寫入權限");
+	    }
+	    
+	    System.out.println("目錄路徑: " + uploadDir);
+	    System.out.println("當前工作目錄: " + System.getProperty("user.dir"));
+	    
+	    for (int i = 0; i < menuItems.size(); i++) {
+	    	MenuItems item = menuItems.get(i);
+	        MultipartFile file = files.get(i); // 獲取對應的檔案
+	        
+	     // 生成唯一的圖片名稱
+	        String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+	        File destinationFile = new File(dir, filename);
+	        String imagePath = "/images/" + filename;
+	        
+	        try {
+	            // 將圖片儲存到伺服器
+	            file.transferTo(destinationFile);
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            return new BasicRes(ResMessage.UPLOAD_FAILED.getCode(), "圖片上傳失敗" + e.getMessage());
+	        }
+
+	        // 設定圖片名稱
+	        item.setPictureName(imagePath);
+	        for(MenuItems mItem : menuItems) {
+	        	String mealName = mItem.getMealName();
+	        	int categoryId = mItem.getCategoryId();
+	        	int workstationId = mItem.getWorkstationId();
+	        	boolean available = mItem.isAvailable();
+	        	String pictureName = mItem.getPictureName();
+	        	
+	        	// 若資料庫找到一樣的mealName數量大於0，表示mealName存在於資料庫
+	        	if (menuItemsDao.existsByMealName(mealName) > 0) {
+	        		// 返回菜單已存在的錯誤訊息
+	        		return new BasicRes(ResMessage.MEAL_NAME_EXISTS.getCode(), ResMessage.MEAL_NAME_EXISTS.getMessage());
+	        	}
+	        	
+	        	// 欲新增的categoryId必須已存在
+	        	if (categoriesDao.optionExists(categoryId) == 0) {
+	        		// 若不存在返回錯誤訊息
+	        		return new BasicRes(ResMessage.CATEGORYID_NOT_FOUND.getCode(),
+	        				ResMessage.CATEGORYID_NOT_FOUND.getMessage());
+	        	}
+	        	
+	        	// price 不得小於0
+	        	int price = item.getPrice();
+	        	if (price < 0) {
+	        		return new BasicRes(ResMessage.PRICE_CANNOT_BE_NEGATIVE.getCode(), //
+	        				ResMessage.PRICE_CANNOT_BE_NEGATIVE.getMessage());
+	        	}
+	        	
+	        	// 存進資料庫
+	        	menuItemsDao.insert(mealName, categoryId, workstationId, price, //
+	        			available, pictureName);
+	        }
+	    }
 		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
 	}
 

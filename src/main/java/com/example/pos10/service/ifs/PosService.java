@@ -2,6 +2,8 @@ package com.example.pos10.service.ifs;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.pos10.entity.Categories;
 import com.example.pos10.entity.MenuItems;
 import com.example.pos10.entity.Options;
@@ -26,7 +28,7 @@ public interface PosService {
 
 	public List<MenuItems> selectMenu();
 
-	public BasicRes create(CreateReq req);
+	public BasicRes create(CreateReq req, List<MultipartFile> files);
 
 	public BasicRes updateMenu(UpdateMenuReq req);
 	

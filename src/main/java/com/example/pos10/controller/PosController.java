@@ -5,29 +5,33 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.pos10.entity.Categories;
 import com.example.pos10.entity.MenuItems;
 import com.example.pos10.entity.Options;
+import com.example.pos10.service.ifs.PosService;
+import com.example.pos10.vo.BasicRes;
+import com.example.pos10.vo.CreateCgReq;
 import com.example.pos10.vo.CreateOptionReq;
+import com.example.pos10.vo.CreateReq;
 import com.example.pos10.vo.DeleteCgReq;
 import com.example.pos10.vo.DeleteMenuReq;
 import com.example.pos10.vo.DeleteOptionReq;
+import com.example.pos10.vo.PosStatisticsReq;
+import com.example.pos10.vo.PosStatisticsRes;
 import com.example.pos10.vo.UpdateCgReq;
 import com.example.pos10.vo.UpdateMenuReq;
 import com.example.pos10.vo.UpdateOptionPriceReq;
 import com.example.pos10.vo.UpdateWorkstationReq;
-import com.example.pos10.service.ifs.PosService;
-import com.example.pos10.vo.BasicRes;
-import com.example.pos10.vo.CreateCgReq;
-import com.example.pos10.vo.CreateReq;
-import com.example.pos10.vo.PosStatisticsReq;
-import com.example.pos10.vo.PosStatisticsRes;
 
 
 @RestController
@@ -47,9 +51,11 @@ public class PosController {
 		return posService.selectMenu();
 	}
 	
-	@PostMapping(value = "menu/create")
-	public BasicRes create(@Valid @RequestBody CreateReq req) {
-		return posService.create(req);
+	@PostMapping(value = "menu/create", consumes = {"multipart/form-data"})
+	public BasicRes create(//
+			@Valid @ModelAttribute CreateReq req, //
+			@RequestParam("files") List<MultipartFile> files) {
+		return posService.create(req, files);
 	}
 
 	@PostMapping(value = "menu/update")
