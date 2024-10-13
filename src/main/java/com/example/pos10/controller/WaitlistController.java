@@ -49,9 +49,8 @@ public class WaitlistController {
     }
 
     // 6. 自動通知顧客
-    @PostMapping("/waitlist/notifyAvailableTables")
-    public WaitlistRes notifyAvailableTables() {
-        // 呼叫服務層發送通知並返回結果
-        return waitlistService.sendNotificationsForAvailableTables();
+    @PostMapping("/waitlist/sendNotificationsForAvailableTables")
+    public void sendNotificationsForAvailableTables() {
+        waitlistService.sendNotificationsForAvailableTables();
     }
 }

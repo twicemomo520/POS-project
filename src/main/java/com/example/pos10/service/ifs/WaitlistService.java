@@ -21,5 +21,5 @@ public interface WaitlistService {
     public WaitlistRes manualCheckIn(int waitlistId);
 
     // 6. 自動通知顧客
-    public WaitlistRes sendNotificationsForAvailableTables();
+    public void sendNotificationsForAvailableTables();
 }

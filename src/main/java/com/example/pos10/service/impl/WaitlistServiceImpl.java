@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -272,7 +273,8 @@ public class WaitlistServiceImpl implements WaitlistService {
     
     // 6. 自動通知顧客
     @Override
-    public WaitlistRes sendNotificationsForAvailableTables() {
+    @Scheduled(cron = "0 */5 * * * ?") // 每五分鐘執行一次
+    public void sendNotificationsForAvailableTables() {
         // 1. 獲取所有候位顧客
         List<Waitlist> waitlists = waitlistDao.findAllWaitlists();
 
@@ -304,7 +306,7 @@ public class WaitlistServiceImpl implements WaitlistService {
             }
         }
 
-        // 返回通知結果
-        return new WaitlistRes(ResMessage.SUCCESS.getCode(), "成功發送通知！共發送 " + notificationCount + " 封郵件。");
+        // 可以在這裡記錄發送通知的數量，例如使用日誌記錄
+        System.out.println("成功發送通知！共發送 " + notificationCount + " 封郵件。");
     }
 }
