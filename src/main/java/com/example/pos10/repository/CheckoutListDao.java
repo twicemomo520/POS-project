@@ -31,5 +31,9 @@ public interface CheckoutListDao extends JpaRepository<CheckoutList, String>{
 	
 	@Query(value = "SELECT * FROM checkout_list WHERE DATE(checkout_time) = :date", nativeQuery = true)
 	List<CheckoutList> findByCheckoutDate(@Param("date") LocalDate date);
+	
+	
+	@Query( value = " SELECT * FROM checkout_list",nativeQuery = true )
+	List<CheckoutList> selectAll();
     
 }

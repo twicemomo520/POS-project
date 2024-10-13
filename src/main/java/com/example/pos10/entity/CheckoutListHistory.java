@@ -22,25 +22,31 @@ public class CheckoutListHistory {
 	@Column(name = "order_id")
 	private String orderId;
 	
+	
 	@NotBlank(message = "Table number cannot be null or empty")
 	@Column(name = "table_number")
 	private String tableNumber;
+	
 
-	@NotBlank(message = "Total price cannot be null or empty")
+	@NotNull
 	@Column(name = "total_price")
-	private int totalPrice;
+	private Integer totalPrice;
+	
 	
 	@NotBlank(message = "Pay type cannot be null or empty")
 	@Column(name = "pay_type")
 	private String payType;
 	
-	@NotBlank(message = "Checkout cannot be null or empty")
+	
+	@NotNull
 	@Column(name = "checkout")
-	private boolean checkout;
+	private Boolean checkout;
+	
 
 	@NotNull(message = "Checkout time cannot be null ")
 	@Column(name = "checkout_time")
 	private LocalDateTime checkoutTime;
+	
 	
 
 	public CheckoutListHistory() {
@@ -49,7 +55,7 @@ public class CheckoutListHistory {
 
 	public CheckoutListHistory(@NotBlank(message = "Order Id cannot be null or empty") String orderId,
 			@NotBlank(message = "Table number cannot be null or empty") String tableNumber,
-			@NotBlank(message = "Total price cannot be null or empty") int totalPrice,
+			@NotBlank(message = "Total price cannot be null or empty") Integer totalPrice,
 			@NotBlank(message = "Pay type cannot be null or empty") String payType,
 			@NotBlank(message = "Checkout cannot be null or empty") boolean checkout,
 			@NotNull(message = "Checkout time cannot be null ") LocalDateTime checkoutTime) {

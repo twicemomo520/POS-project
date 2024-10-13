@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.pos10.service.ifs.CheckoutListSchedulerService;
 import com.example.pos10.service.ifs.CheckoutService;
 import com.example.pos10.vo.BasicRes;
 import com.example.pos10.vo.ConfirmPaymentReq;
@@ -22,6 +24,9 @@ public class CheckoutController {
 
 	@Autowired
 	private CheckoutService checkoutService;
+	
+	@Autowired
+	private CheckoutListSchedulerService checkoutListSchedulerService;
 
 	@GetMapping("/details/{tableNumber}")
 	public BasicRes getCheckoutDetails(@PathVariable String tableNumber) {
@@ -51,6 +56,11 @@ public class CheckoutController {
 		// 調用 service 層的方法來獲取結帳詳細資訊
 		return checkoutService.searchCheckoutDetailByOrderId(orderId);
 	}
-
+	
+	
+	@GetMapping("/scheduled")
+    public BasicRes manualUpdateHistory() {
+        return checkoutListSchedulerService.manualUpdateHistory();
+    }
 	
 }

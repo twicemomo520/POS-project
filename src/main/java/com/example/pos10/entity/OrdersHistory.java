@@ -15,52 +15,41 @@ import javax.validation.constraints.NotBlank;
 @Table(name = "orders_history")
 public class OrdersHistory {
 	
-	@NotBlank(message = "Id cannot be null or empty")
 	@Id
 	@Column(name = "id")
 	private Integer id;
 	
-	@NotBlank(message = "Order Id cannot be null or empty")
 	@Column(name = "order_id")
 	private String orderId;
 	
-	@NotBlank(message = "Order meal Id cannot be null or empty")
 	@Column(name = "order_meal_id")
 	private String orderMealId;
 	
-	@NotBlank(message = "Combo name cannot be null or empty")
     @Column(name = "combo_name")
     private String comboName;
 	
 	
-	@NotBlank(message = "Combo name cannot be null or empty")
 	@Column(name = "meal_name")
 	private String mealName;
 	
-	@NotBlank(message = "Options cannot be null or empty")
     @Column(name = "options")
     private String options;
 	
-	@NotBlank(message = "Workstation id cannot be null or empty")
 	@Column(name = "workstation_id")
 	private Integer workstationId;
 
 	
-	@Min (value = 0, message = "Price must be greater than 0 !!!")
 	@Column(name = "price")
 	private Integer price;
 	
-	@NotBlank(message = "Meal status cannot be null or empty")
 	@Column (name = "meal_status")
 	private String mealStatus;
 	
 	
-	@NotBlank(message = "Table number cannot be null or empty")
 	@Column(name = "table_number")
 	private String tableNumber;
 	
 	
-	@NotBlank(message = "Order time cannot be null or empty")
 	@Column(name = "order_time")
 	private LocalDateTime orderTime;
 	
