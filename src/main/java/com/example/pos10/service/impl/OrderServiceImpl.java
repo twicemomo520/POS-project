@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -124,12 +125,11 @@ public class OrderServiceImpl implements OrderService {
 			}
 			// 將mealDetail由String轉成Map格式
 			List<String> optionsList = new ArrayList<>();
-			try {
-				optionsList = objectMapper.readValue(options, new TypeReference<List<String>>() {
-				});
-				System.out.println(optionsList);
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
+			if (options != null && !options.isEmpty()) {
+			    optionsList = Arrays.asList(options.split(","));
+			} else {
+			    // 处理 options 为 null 的情况
+			    System.out.println("Options is null or empty");
 			}
 
 			// 將mealDetail由Map格式轉成MealDetailVo格式
