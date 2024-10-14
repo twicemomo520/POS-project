@@ -299,7 +299,7 @@ public class CheckoutServiceImpl implements CheckoutService {
 	public SearchCheckoutListRes searchCheckoutList(LocalDate searchDate) {
 		
 
-		List<CheckoutList> checkoutList = checkoutListDao.findByCheckoutDate(searchDate);
+		List<CheckoutList> checkoutList = checkoutListDao.findAllByCheckoutDate(searchDate);
 
 		if (checkoutList.isEmpty()) {
 			return new SearchCheckoutListRes(400, "沒有該日期資料", null);
