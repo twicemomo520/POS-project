@@ -24,4 +24,7 @@ public interface StaffService  {
 	public BasicRes resetPassword(LoginStaffReq req);
 	
 	public BasicRes forgotPassword(StaffForgotPasswordReq req);
+	
+	public BasicRes updateFirstLogin(String  staffNumber);
+	
 }
