@@ -27,8 +27,8 @@ public class BusinessHoursServiceImpl implements BusinessHoursService {
    	private DiningDurationDao diningDurationDao;
 
     // 1. 新增或更新營業時間
-@Override
-public BusinessHoursRes addOrUpdateBusinessHours(BusinessHoursReq businessHoursReq) {
+    @Override
+	public BusinessHoursRes addOrUpdateBusinessHours(BusinessHoursReq businessHoursReq) {
     // 1. 檢查營業時間是否為空
     if (businessHoursReq.getOpeningTime() == null || businessHoursReq.getClosingTime() == null) {
         return new BusinessHoursRes(ResMessage.INVALID_OPENING_AND_CLOSING_TIME.getCode(), 

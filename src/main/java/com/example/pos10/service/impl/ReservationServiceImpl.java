@@ -43,7 +43,10 @@ public class ReservationServiceImpl implements ReservationService {
     // 1. 查詢可用的桌位並儲存
     @Override
     public ReservationRes generateAndFindAvailableTables(LocalDate reservationDate, int diningDuration, int reservationPeople) {
-        // 查詢當天的營業時段
+        // 設定清潔時間
+        int cleaningTime = 5; // 清潔時間 5 分鐘
+
+        // 1. 查詢當天的營業時段
         String dayOfWeek = reservationDate.getDayOfWeek().toString();
         List<BusinessHours> businessHoursList = businessHoursDao.findBusinessHoursByDayAndStore(1, dayOfWeek);
 
@@ -54,28 +57,53 @@ public class ReservationServiceImpl implements ReservationService {
 
         List<AvailableTimeSlot> availableTimeSlots = new ArrayList<>();
 
-        // 遍歷每個營業時段，計算出可用的時間段
+        // 2. 遍歷每個營業時段，計算出可用的時間段
         for (BusinessHours businessHours : businessHoursList) {
             LocalTime openingTime = businessHours.getOpeningTime();
             LocalTime closingTime = businessHours.getClosingTime();
             LocalTime currentTime = openingTime;
 
             while (currentTime.isBefore(closingTime)) {
-                LocalTime slotEndTime = currentTime.plusMinutes(diningDuration);
-
-                // 確保結束時間不超過營業結束時間
-                if (slotEndTime.isAfter(closingTime)) {
+                LocalTime slotEndTime = currentTime.plusMinutes(diningDuration); // 計算用餐結束時間
+                
+                // 確保結束時間加上清潔時間不超過營業結束時間
+                if (slotEndTime.plusMinutes(cleaningTime).isAfter(closingTime)) {
                     break;
                 }
 
                 // 查詢該時間段內的可用桌位
                 List<TableManagement> availableTables = reservationDao.findAvailableTables(reservationDate, currentTime, slotEndTime);
 
-                // 計算可用桌位的總容量
-                int totalCapacity = availableTables.stream()
-                                                   .filter(table -> table.getTableStatus() == TableManagement.TableStatus.AVAILABLE)
-                                                   .mapToInt(TableManagement::getTableCapacity)
-                                                   .sum();
+                // 加入日誌輸出可用桌位的數量
+                System.out.println("當前檢查的時間段：" + currentTime + " 到 " + slotEndTime);
+                System.out.println("可用桌位數量：" + availableTables.size());
+
+                int totalCapacity = 0;
+                boolean timeSlotAvailable = true;
+
+                // 檢查桌位的預約狀態
+                for (TableManagement table : availableTables) {
+                    List<Reservation> overlappingReservations = reservationDao.findReservationsForTable(table.getTableNumber(), reservationDate);
+                    for (Reservation reservation : overlappingReservations) {
+                        LocalTime reservedStart = reservation.getReservationStartTime();
+                        LocalTime reservedEnd = reservation.getReservationEndingTime();
+
+                        // 如果新預約時間與已存在的預約時間重疊，則標記為不可用
+                        if (currentTime.isBefore(reservedEnd) && slotEndTime.isAfter(reservedStart)) {
+                            timeSlotAvailable = false;
+                            break;
+                        }
+                    }
+
+                    // 計算可用桌位的容量
+                    if (timeSlotAvailable) {
+                        totalCapacity += table.getTableCapacity(); // 如果沒有重疊，增加可用容量
+                    }
+                }
+
+                // 加入日誌輸出當前可用桌位容量和此時間段可用狀態
+                System.out.println("當前可用桌位容量：" + totalCapacity);
+                System.out.println("此時間段可用狀態：" + timeSlotAvailable);
 
                 // 檢查是否有足夠的桌位可供分配
                 boolean isAvailable = totalCapacity >= reservationPeople;
@@ -84,26 +112,26 @@ public class ReservationServiceImpl implements ReservationService {
                 AvailableTimeSlot timeSlot = new AvailableTimeSlot();
                 timeSlot.setStartTime(currentTime);
                 timeSlot.setEndTime(slotEndTime);
-                timeSlot.setAvailable(isAvailable);  // 如果有足夠的容量則設定為可用
+                timeSlot.setAvailable(isAvailable && timeSlotAvailable);  // 如果有足夠的容量且時間不重疊則設定為可用
 
                 availableTimeSlots.add(timeSlot);
 
-                // 更新當前時間段
-                currentTime = currentTime.plusMinutes(diningDuration);
+                // 更新當前時間段，加上用餐時間和清潔時間
+                currentTime = slotEndTime.plusMinutes(cleaningTime);
             }
         }
 
-        // 如果沒有可用的時間段
+        // 3. 如果沒有可用的時間段
         if (availableTimeSlots.isEmpty()) {
             return new ReservationRes(ResMessage.NO_RESERVED_TIME_SLOTS.getCode(),
                                       ResMessage.NO_RESERVED_TIME_SLOTS.getMessage());
         }
 
-        // 返回可用時間段的結果
+        // 4. 返回可用時間段的結果
         return new ReservationRes(ResMessage.SUCCESS.getCode(),
                                   ResMessage.SUCCESS.getMessage(), availableTimeSlots, null);
     }
-
+    
     // 2. 計算可用的開始時間段 (設定階段需要查看）
     @Override
     public List <LocalTime> calculateAvailableStartTimes (LocalTime openingTime, LocalTime closingTime, int diningDuration) {
@@ -145,7 +173,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 2. 驗證電話號碼格式
         String phoneNumber = reservationReq.getCustomerPhoneNumber();
-        if (phoneNumber == null || !phoneNumber.matches("\\d{10}")) { // 假設是10位數字
+        if (phoneNumber == null || !phoneNumber.matches("\\d{10}")) {
             return new ReservationRes(ResMessage.INVALID_PHONE_NUMBER_FORMAT.getCode(), ResMessage.INVALID_PHONE_NUMBER_FORMAT.getMessage());
         }
 
@@ -167,64 +195,85 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // 6. 確認選擇的訂位時間段
-        if (reservationReq.getReservationDate() == null || reservationReq.getReservationStartTime() == null || reservationReq.getReservationEndingTime() == null) {
-            return new ReservationRes(ResMessage.NO_RESERVED_TIME_SLOTS.getCode(), ResMessage.NO_RESERVED_TIME_SLOTS.getMessage());
-        }
+        LocalDate reservationDate = reservationReq.getReservationDate();
+        LocalTime reservationStartTime = reservationReq.getReservationStartTime();
+        LocalTime reservationEndTime = reservationReq.getReservationEndingTime();
 
-        // 7. 檢查是否有重複訂位（根據同一電話號碼和相同的時間段）
-        List<Reservation> existingReservations = reservationDao.findByCustomerPhoneNumber(reservationReq.getCustomerPhoneNumber());
-        for (Reservation existing : existingReservations) {
-            if (existing.getReservationDate().equals(reservationReq.getReservationDate())
-                    && existing.getReservationStartTime().equals(reservationReq.getReservationStartTime())) {
-                return new ReservationRes(ResMessage.DUPLICATE_RESERVATION.getCode(), ResMessage.DUPLICATE_RESERVATION.getMessage());
-            }
-        }
+        // 7. 查詢當天所有預約
+        List<Reservation> existingReservations = reservationDao.findAllByReservationDate(reservationDate);
 
-        // 檢查是否有足夠的總容量可供分配
-        List<TableManagement> availableTables = tableManagementDao.findAvailableTablesOrderedByCapacity(); // 查詢所有狀態為 "AVAILABLE" 的桌位
-        int totalAvailableCapacity = availableTables.stream().mapToInt(TableManagement::getTableCapacity).sum();
-        if (totalAvailableCapacity < people) {
-            return new ReservationRes(ResMessage.NOT_ENOUGH_TABLE_CAPACITY.getCode(), ResMessage.NOT_ENOUGH_TABLE_CAPACITY.getMessage());
-        }
-
-        // 8. 自動分配桌位
+        // 8. 查詢可用桌位
+        List<TableManagement> availableTables = tableManagementDao.findAvailableTablesOrderedByCapacity();
         List<TableManagement> selectedTables = new ArrayList<>();
+        List<TableManagement> mergeableTables = new ArrayList<>();
         int totalCapacity = 0;
 
-        // 8.1 優先選擇符合人數的桌位
-        for (TableManagement table : availableTables) {
-            if (table.getTableCapacity() == people) {
-                selectedTables.add(table);
-                totalCapacity += table.getTableCapacity();
-                break; // 找到符合人數的桌位後停止
-            }
-        }
+        System.out.println("開始分配桌位，預約人數：" + reservationReq.getReservationPeople());
+        System.out.println("查詢到的可用桌位：");
 
-        // 8.2 如果沒有符合的桌位，則選擇大於人數的桌位
-        if (totalCapacity < people) {
-            for (TableManagement table : availableTables) {
-                if (table.getTableCapacity() > people) {
+        for (TableManagement table : availableTables) {
+            System.out.println("桌位：" + table.getTableNumber() + " 容量：" + table.getTableCapacity());
+
+            // 檢查此桌位是否有其他預約與新預約時間重疊
+            boolean hasOverlap = existingReservations.stream()
+            	    .filter(existing -> existing.getTables().contains(table))
+            	    .anyMatch(existing ->
+            	        (existing.getReservationStartTime().isBefore(reservationEndTime) && 
+            	         existing.getReservationEndingTime().isAfter(reservationStartTime)) ||
+            	        (existing.getReservationEndingTime().equals(reservationStartTime) || 
+            	         existing.getReservationStartTime().equals(reservationEndTime))
+            	    );
+
+            System.out.println("正在檢查桌位：" + table.getTableNumber() + 
+                    " 預約時間：" + reservationStartTime + " 到 " + reservationEndTime + 
+                    " 是否重疊：" + hasOverlap);
+
+            // 8-1. 如果沒有重疊，並且此桌位容量 >= 訂位人數
+            if (!hasOverlap) {
+                // 8-1-1. 確保只選擇最小符合條件的桌位
+                if (table.getTableCapacity() == reservationReq.getReservationPeople()) {
                     selectedTables.add(table);
                     totalCapacity += table.getTableCapacity();
-                    if (totalCapacity >= people) {
-                        break; // 當總容量滿足人數需求後停止分配
-                    }
+                    System.out.println("找到完全匹配的桌位：" + table.getTableNumber());
+                    break; // 完全匹配，直接退出
+                } else if (table.getTableCapacity() > reservationReq.getReservationPeople()) {
+                    selectedTables.add(table); // 大於則加入選擇
+                    totalCapacity += table.getTableCapacity();
+                    System.out.println("找到大於預約人數的桌位：" + table.getTableNumber());
+                    break; // 找到合適的桌位後停止查找
+                } else {
+                    // 如果桌位容量小於預約人數，則考慮併桌的邏輯
+                    mergeableTables.add(table);
+                    System.out.println("桌位 " + table.getTableNumber() + " 容量不足，加入併桌列表");
                 }
             }
         }
 
-        // 8.3 如果仍然沒有滿足需求，則選擇剩餘的桌位
-        if (totalCapacity < people) {
-            for (TableManagement table : availableTables) {
-                selectedTables.add(table);
+        // 8-2. 若未找到完全匹配或大於的桌位，則考慮併桌
+        if (totalCapacity < reservationReq.getReservationPeople()) {
+            System.out.println("進行併桌分配...");
+            for (TableManagement table : mergeableTables) {
                 totalCapacity += table.getTableCapacity();
-                if (totalCapacity >= people) {
-                    break; // 當總容量滿足人數需求後停止分配
+                selectedTables.add(table); // 將併桌加入選擇
+                System.out.println("併桌：" + table.getTableNumber() + " 當前總容量：" + totalCapacity);
+
+                // 如果已經達到或超過預約人數，則停止查找
+                if (totalCapacity >= reservationReq.getReservationPeople()) {
+                    break;
                 }
             }
         }
 
-        // 9. 更新已分配的桌位狀態為 "RESERVED"
+        // 9. 檢查是否有足夠的桌位可供分配
+        if (totalCapacity < reservationReq.getReservationPeople()) {
+            System.out.println("桌位容量不足，無法滿足預約需求。");
+            return new ReservationRes(ResMessage.NOT_ENOUGH_TABLE_CAPACITY.getCode(),
+                                      ResMessage.NOT_ENOUGH_TABLE_CAPACITY.getMessage());
+        }
+
+        System.out.println("分配成功的桌位：" + selectedTables.stream().map(TableManagement::getTableNumber).collect(Collectors.joining(", ")));
+        
+        // 10. 更新已分配的桌位狀態為 "RESERVED"
         try {
             selectedTables.forEach(table -> {
                 tableManagementDao.updateTableStatus(table.getTableNumber(), "RESERVED");
@@ -233,21 +282,22 @@ public class ReservationServiceImpl implements ReservationService {
             return new ReservationRes(500, "更新桌位狀態時發生錯誤");
         }
 
-        // 10. 儲存訂位資訊
+        // 儲存訂位資訊
         Reservation reservation = new Reservation();
         reservation.setCustomerName(reservationReq.getCustomerName());
         reservation.setCustomerPhoneNumber(reservationReq.getCustomerPhoneNumber());
         reservation.setCustomerEmail(reservationReq.getCustomerEmail());
-        reservation.setCustomerGender(reservationReq.getCustomerGender());
+        reservation.setCustomerGender(reservationReq.getCustomerGender()); // 加入性別資料
         reservation.setReservationPeople(reservationReq.getReservationPeople());
-        reservation.setReservationDate(reservationReq.getReservationDate());  // 設定已選擇的日期
-        reservation.setReservationStartTime(reservationReq.getReservationStartTime());  // 設定已選擇的開始時間
-        reservation.setReservationEndingTime(reservationReq.getReservationEndingTime());  // 設定已選擇的結束時間
+        reservation.setReservationDate(reservationDate);
+        reservation.setReservationStartTime(reservationStartTime);
+        reservation.setReservationEndingTime(reservationEndTime);
         reservation.setTables(selectedTables); // 儲存選擇的桌位
 
+        // 儲存到資料庫
         reservationDao.save(reservation);
 
-        // 11. 發送訂位確認信
+        // 發送訂位確認信
         try {
             emailService.sendReservationConfirmationEmail(
                 reservation.getCustomerEmail(),
@@ -475,4 +525,5 @@ public class ReservationServiceImpl implements ReservationService {
 
         System.out.println("訂位提醒郵件已發送");
     }
+
 }

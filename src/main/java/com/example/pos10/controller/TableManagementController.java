@@ -1,8 +1,11 @@
 package com.example.pos10.controller;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,13 +51,13 @@ public class TableManagementController {
     }
 
 
-    // 3. 更新桌位狀態
-    @PutMapping("/tableManagement/updateTableStatus/{tableNumber}")
-    public TableManagementRes updateTableStatus(@PathVariable String tableNumber, @RequestParam String status) {
-        // 將 status 轉換成大寫來匹配枚舉
-        String upperCaseStatus = status.toUpperCase();
-        return tableManagementService.updateTableStatus(tableNumber, upperCaseStatus);
-    }
+//    // 3. 更新桌位狀態
+//    @PutMapping("/tableManagement/updateTableStatus/{tableNumber}")
+//    public TableManagementRes updateTableStatus(@PathVariable String tableNumber, @RequestParam String status) {
+//        // 將 status 轉換成大寫來匹配枚舉
+//        String upperCaseStatus = status.toUpperCase();
+//        return tableManagementService.updateTableStatus(tableNumber, upperCaseStatus);
+//    }
 
     // 4. 查詢桌位狀態
     @GetMapping ("/tableManagement/searchTableStatus")
@@ -64,8 +67,10 @@ public class TableManagementController {
 
     // 5. 查詢所有桌位
     @GetMapping ("/tableManagement/getAllTables")
-    public List <TableManagement> getAllTables () {
-        return tableManagementService.getAllTables ();
+    public List<TableManagement> getAllTables (
+    		 @RequestParam ("reservationDate") @DateTimeFormat (iso = DateTimeFormat.ISO.DATE) LocalDate reservationDate,
+    		  @RequestParam int diningDuration) {
+        return tableManagementService.getAllTables(reservationDate, diningDuration);
     }
     
 	// 6. 更新桌位（桌號或容納人數）

@@ -35,5 +35,4 @@ public interface ReservationService {
     
     // 9. 訂位前一天發送提醒
     public void sendReservationReminders ();
-    
 }

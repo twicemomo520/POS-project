@@ -1,16 +1,21 @@
 package com.example.pos10.controller;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.pos10.service.ifs.ReservationService;
 import com.example.pos10.vo.ReservationReq;
 import com.example.pos10.vo.ReservationRes;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 
 @RestController
 public class ReservationController {
@@ -30,7 +35,7 @@ public class ReservationController {
     
     // 2. 計算可用的開始時間段
     @GetMapping ("/reservation/calculateAvailableStartTimes")
-    public List <LocalTime> calculateAvailableStartTimes (
+    public List <LocalTime>  calculateAvailableStartTimes (
             @RequestParam ("openingTime") @DateTimeFormat (iso = DateTimeFormat.ISO.TIME) LocalTime openingTime,
             @RequestParam ("closingTime") @DateTimeFormat (iso = DateTimeFormat.ISO.TIME) LocalTime closingTime,
             @RequestParam int diningDuration) {
