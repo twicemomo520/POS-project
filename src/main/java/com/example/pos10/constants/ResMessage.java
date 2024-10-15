@@ -39,26 +39,12 @@ public enum ResMessage {
 	INVALID_CUSTOMER_COUNT (400, "Customer count is invalid !!!"), //
 	NO_AVAILABLE_TABLES (400, "No available tables !!!"), // 沒有可使用中的位子
 		
-	// BusinessHour 營業時間
-	INVALID_OPENING_AND_CLOSING_TIME (400, "Opening time must be earlier than closing time !!!"), // 開店時間必須早於關店時間
-	CONFLICTING_BUSINESS_HOURS (400, "The specified time period conflicts with existing business hours !!!"), // 指定的時間段與現有的營業時間衝突
-	BUSINESS_HOURS_TO_UPDATE_NOT_FOUND (400, "The business hours to update were not found !!!"), // 營業時間不存在無法進行更新操作
-	BUSINESS_HOURS_NOT_FOUND_FOR_DELETION (400, "Cannot delete, the business hours ID does not exist."), // 無法刪除，不存在的營業時間 ID
-		
-	// DiningDuration 用餐時間
-	NULL_OR_EMPTY_DINING_DURATION (400,"Dining duration cannot be null or empty !!!"), // 用餐時間不能為 null 或空白
-	BUSINESS_HOURS_NOT_FOUND_FOR_DINING_DURATION (400, "The corresponding business hours for the dining duration do not exist !!!"), // 找不到對應營業時間
-	DINING_DURATION_NOT_FOUND_FOR_UPDATE (400, "Dining duration does not exist, unable to update !!!"), // 用餐時間不存在無法更新
-	DINING_DURATION_CONFLICT (400, "The dining duration overlaps with an existing record !!!"), // 用餐時間段與現有記錄重疊
-	RESERVATION_EXISTS_IN_TIME_RANGE (400, "Reservations exist for the specified time range, unable to update !!!"), // 該時間段已有預訂無法更新用餐時間
-	DINING_DURATION_EXCEEDS_BUSINESS_HOURS (400, "Dining duration cannot exceed business hours !!!"), // 用餐時間不能超過營業時間
-	INVALID_STORE_ID (400, "Invalid store ID !!!"), // 無效的 storeID
-	INVALID_DAY_OF_WEEK (400, "Invalid day of the week !!!"), // 無效的星期
-	DINING_DURATION_NOT_FOUND (404, "Dining duration not found !!!"), // 找不到用餐時間
-	INVALID_DINING_DURATION_ID (400, "Invalid dining duration ID !!!"), // 無效的用餐時間 ID
-	DINING_DURATION_HAS_RESERVATIONS (400, "Cannot delete. There are reservations associated with this dining duration !!!"), // 用餐時間已經有人預定
-	INVALID_TIME_FORMAT (400, "Invalid time format !!!"), // 時間格式無效
-	INVALID_DINING_DURATION (400, "Start time must be earlier than end time !!!"), // 無效的用餐時間
+	// OperatingHours
+	INVALID_OPERATING_HOURS (400, "Opening time or closing time cannot be null !!!"), // 營業開始時間或結束時間不得為空
+	OPENING_TIME_AFTER_CLOSING (400, "Opening time cannot be later than closing time !!!"), // 營業開始時間不能晚於結束時間
+	INVALID_DINING_DURATION (400, "Dining duration must be greater than 0 minutes !!!"), // 用餐時間應該大於 0
+	CONFLICTING_OPERATING_HOURS (409, "Conflicting operating hours found !!!"), // 有營業時間段衝突
+	INVALID_ID_LIST (400, "The provided ID list cannot be null or empty !!!"), // 傳入的 ID 列表不能為空或 null
 		
 	// ReservationManagement
 	NO_BUSINESS_HOURS_FOUND_FOR_DAY (400, "No business hours found for the selected day !!!"), // 當天無營業時間

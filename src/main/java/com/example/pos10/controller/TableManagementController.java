@@ -50,36 +50,22 @@ public class TableManagementController {
         return tableManagementService.deleteTable (tableNumber);
     }
 
+    // 3. 更新桌位（桌號或容納人數）
+ 	@PutMapping ("/tableManagement/updateTable")
+ 	public TableManagementRes updateTable (@RequestParam String oldTableNumber,
+ 			@RequestParam (required = false) String newTableNumber,
+ 			@RequestParam (required = false) Integer newCapacity) {
 
-//    // 3. 更新桌位狀態
-//    @PutMapping("/tableManagement/updateTableStatus/{tableNumber}")
-//    public TableManagementRes updateTableStatus(@PathVariable String tableNumber, @RequestParam String status) {
-//        // 將 status 轉換成大寫來匹配枚舉
-//        String upperCaseStatus = status.toUpperCase();
-//        return tableManagementService.updateTableStatus(tableNumber, upperCaseStatus);
-//    }
+ 		// 呼叫 service 進行更新
+ 		return tableManagementService.updateTable(oldTableNumber, newTableNumber, newCapacity != null ? newCapacity : 0);
+ 	}
 
-    // 4. 查詢桌位狀態
-    @GetMapping ("/tableManagement/searchTableStatus")
-    public List <TableManagement> searchTableStatus (@RequestParam TableManagement.TableStatus status) {
-        return tableManagementService.searchTableStatus (status);
-    }
-
-    // 5. 查詢所有桌位
+ 	// 4. 查詢所有桌位
     @GetMapping ("/tableManagement/getAllTables")
-    public List<TableManagement> getAllTables (
-    		 @RequestParam ("reservationDate") @DateTimeFormat (iso = DateTimeFormat.ISO.DATE) LocalDate reservationDate,
-    		  @RequestParam int diningDuration) {
-        return tableManagementService.getAllTables(reservationDate, diningDuration);
+    public List <TableManagement> getAllTables () {
+        return tableManagementService.getAllTables ();
     }
-    
-	// 6. 更新桌位（桌號或容納人數）
-	@PutMapping ("/tableManagement/updateTable")
-	public TableManagementRes updateTable (@RequestParam String oldTableNumber,
-			@RequestParam (required = false) String newTableNumber,
-			@RequestParam (required = false) Integer newCapacity) {
 
-		// 呼叫 service 進行更新
-		return tableManagementService.updateTable(oldTableNumber, newTableNumber, newCapacity != null ? newCapacity : 0);
-	}
+
+   
 }
