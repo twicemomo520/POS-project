@@ -1,46 +1,32 @@
 package com.example.pos10.vo;
 
-import java.time.LocalTime;
 import java.util.List;
 
 import com.example.pos10.entity.TableManagement;
 
 public class TimeSlotWithTableStatusRes {
-    private LocalTime startTime;
-    private LocalTime endTime;
-    private List<TableManagement> allTables; // 此時間段的所有桌位狀態
+	private String timeSlot;
+    private List<TableManagement> tableStatuses;
 
-    public TimeSlotWithTableStatusRes () {
+    public TimeSlotWithTableStatusRes(String timeSlot, List<TableManagement> tableStatuses) {
 		super();
+		this.timeSlot = timeSlot;
+		this.tableStatuses = tableStatuses;
 	}
 
-	public TimeSlotWithTableStatusRes (LocalTime startTime, LocalTime endTime, List<TableManagement> allTables) {
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.allTables = allTables;
+	public String getTimeSlot() {
+		return timeSlot;
 	}
 
-    public LocalTime getStartTime () {
-        return startTime;
-    }
+	public void setTimeSlot(String timeSlot) {
+		this.timeSlot = timeSlot;
+	}
 
-    public void setStartTime (LocalTime startTime) {
-        this.startTime = startTime;
-    }
+	public List<TableManagement> getTableStatuses() {
+		return tableStatuses;
+	}
 
-    public LocalTime getEndTime () {
-        return endTime;
-    }
-
-    public void setEndTime (LocalTime endTime) {
-        this.endTime = endTime;
-    }
-
-    public List <TableManagement> getAllTables () {
-        return allTables;
-    }
-
-    public void setAllTables (List <TableManagement> allTables) {
-        this.allTables = allTables;
-    }
+	public void setTableStatuses(List<TableManagement> tableStatuses) {
+		this.tableStatuses = tableStatuses;
+	}
 }

@@ -18,9 +18,13 @@ public interface OperatingHoursDao extends JpaRepository<OperatingHours, Integer
 	// 2. 查詢指定的營業時間段是否與已有時間衝突，並根據 dayOfWeek 過濾
 	@Query("SELECT o FROM OperatingHours o WHERE (:dayOfWeek IS NULL OR o.dayOfWeek = :dayOfWeek) " +
 		       "AND (o.openingTime < :closingTime AND o.closingTime > :openingTime)")
-		List<OperatingHours> findConflictingOperatingHours(
+	List<OperatingHours> findConflictingOperatingHours(
 		    @Param("dayOfWeek") OperatingHours.DayOfWeek dayOfWeek, // 改成 OperatingHours.DayOfWeek
 		    @Param("openingTime") LocalTime openingTime,
 		    @Param("closingTime") LocalTime closingTime
 		);
+	
+	// 3. 根據當前日期獲取對應的開放時間和關閉時間（應用在TableManagement）
+	@Query("SELECT o.openingTime, o.closingTime, o.diningDuration FROM OperatingHours o WHERE o.dayOfWeek = :dayOfWeek")
+	public List<Object[]> getOperatingHours(@Param("dayOfWeek") OperatingHours.DayOfWeek dayOfWeek);
 }
