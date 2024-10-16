@@ -18,11 +18,15 @@ public interface ReservationDao extends JpaRepository<Reservation, Integer> {
 
 	// 1. 查詢可用桌位 (桌位狀態為 AVAILABLE，且無重疊預訂時間)
 	@Query("SELECT t FROM TableManagement t WHERE t.tableStatus = 'AVAILABLE' "
-			+ "AND NOT EXISTS (SELECT r FROM Reservation r WHERE t MEMBER OF r.tables "
-			+ "AND r.reservationDate = :reservationDate "
-			+ "AND (:startTime < r.reservationEndingTime AND :endTime > r.reservationStartTime))")
+		     + "AND NOT EXISTS (SELECT r FROM Reservation r WHERE t MEMBER OF r.tables "
+		     + "AND r.reservationDate = :reservationDate "
+		     + "AND (:startTime < r.reservationEndingTime AND :endTime > r.reservationStartTime))")
 	List<TableManagement> findAvailableTables(@Param("reservationDate") LocalDate reservationDate,
-			@Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime);
+		                                           @Param("startTime") LocalTime startTime,
+		                                           @Param("endTime") LocalTime endTime);
+	// 1-1.
+	@Query("SELECT r FROM Reservation r JOIN r.tables t WHERE r.reservationDate = :reservationDate AND t.tableNumber = :tableNumber")
+	List<Reservation> findReservationsForTable(@Param("tableNumber") String tableNumber, @Param("reservationDate") LocalDate reservationDate);
 
 	// 2. 儲存訂位
 	@Override

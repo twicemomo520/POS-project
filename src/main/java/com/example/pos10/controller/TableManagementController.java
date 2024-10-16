@@ -1,8 +1,11 @@
 package com.example.pos10.controller;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +20,7 @@ import com.example.pos10.entity.TableManagement;
 import com.example.pos10.service.ifs.TableManagementService;
 import com.example.pos10.vo.TableManagementReq;
 import com.example.pos10.vo.TableManagementRes;
+import com.example.pos10.vo.TimeSlotWithTableStatusRes;
 
 
 @RestController
@@ -47,34 +51,41 @@ public class TableManagementController {
         return tableManagementService.deleteTable (tableNumber);
     }
 
+    // 3. 更新桌位（桌號或容納人數）
+ 	@PutMapping ("/tableManagement/updateTable")
+ 	public TableManagementRes updateTable (@RequestParam String oldTableNumber,
+ 			@RequestParam (required = false) String newTableNumber,
+ 			@RequestParam (required = false) Integer newCapacity) {
 
-    // 3. 更新桌位狀態
-    @PutMapping("/tableManagement/updateTableStatus/{tableNumber}")
-    public TableManagementRes updateTableStatus(@PathVariable String tableNumber, @RequestParam String status) {
-        // 將 status 轉換成大寫來匹配枚舉
-        String upperCaseStatus = status.toUpperCase();
-        return tableManagementService.updateTableStatus(tableNumber, upperCaseStatus);
-    }
+ 		// 呼叫 service 進行更新
+ 		return tableManagementService.updateTable(oldTableNumber, newTableNumber, newCapacity != null ? newCapacity : 0);
+ 	}
 
-    // 4. 查詢桌位狀態
-    @GetMapping ("/tableManagement/searchTableStatus")
-    public List <TableManagement> searchTableStatus (@RequestParam TableManagement.TableStatus status) {
-        return tableManagementService.searchTableStatus (status);
-    }
-
-    // 5. 查詢所有桌位
+ 	// 4. 查詢所有桌位
     @GetMapping ("/tableManagement/getAllTables")
     public List <TableManagement> getAllTables () {
         return tableManagementService.getAllTables ();
     }
-    
-	// 6. 更新桌位（桌號或容納人數）
-	@PutMapping ("/tableManagement/updateTable")
-	public TableManagementRes updateTable (@RequestParam String oldTableNumber,
-			@RequestParam (required = false) String newTableNumber,
-			@RequestParam (required = false) Integer newCapacity) {
 
-		// 呼叫 service 進行更新
-		return tableManagementService.updateTable(oldTableNumber, newTableNumber, newCapacity != null ? newCapacity : 0);
-	}
+    // 5. 根據時間段獲取所有桌位的狀態
+    @GetMapping("/tableManagement/getTodayTableStatuses")
+    public List<TimeSlotWithTableStatusRes> getTodayTableStatuses() {
+        return tableManagementService.getTodayTableStatuses();
+    }
+    
+    // 6. 根據日期查詢可使用的桌位狀態
+    @GetMapping("/tableManagement/getAvailableTableStatusesByDate")
+    public List<TimeSlotWithTableStatusRes> getAvailableTableStatusesByDate (
+    		 @RequestParam ("reservationDate") @DateTimeFormat (iso = DateTimeFormat.ISO.DATE) LocalDate reservationDate) {
+        return tableManagementService.getAvailableTableStatusesByDate(reservationDate);
+    }
+    
+    // 7. 根據日期和訂位時間查詢可使用的桌位狀態
+    @GetMapping("/tableManagement/getAvailableTableStatuses")
+    public List<TimeSlotWithTableStatusRes> getAvailableTableStatuses (
+             @RequestParam("reservationDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reservationDate,
+             @RequestParam("reservationStartTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime reservationStartTime,
+             @RequestParam("reservationEndTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime reservationEndingTime) {
+        return tableManagementService.getAvailableTableStatuses(reservationDate, reservationStartTime, reservationEndingTime);
+    }
 }
