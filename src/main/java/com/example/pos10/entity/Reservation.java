@@ -60,7 +60,7 @@ public class Reservation {
     private LocalTime reservationEndingTime;
 
     // 與 TableManagement 之間的多對多關係
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable (
         name = "reservation_table", // 中間表名
         joinColumns = @JoinColumn(name = "reservation_id"), // Reservation 的外鍵

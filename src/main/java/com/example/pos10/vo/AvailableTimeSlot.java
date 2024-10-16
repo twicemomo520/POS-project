@@ -1,47 +1,53 @@
 package com.example.pos10.vo;
 
-import java.time.LocalTime;
-
 public class AvailableTimeSlot {
 
-    private LocalTime startTime;
-    
-    private LocalTime endTime;
-    
+    private String startTime; // 將 LocalTime 改為 String
+    private String endTime;   // 將 LocalTime 改為 String
     private boolean available;
 
-	public AvailableTimeSlot () {
-		super ();
-	}
+    // 無參構造函數
+    public AvailableTimeSlot() {
+        super();
+    }
 
-	public AvailableTimeSlot (LocalTime startTime, LocalTime endTime, boolean available) {
-		super ();
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.available = available;
-	}
+    // 含 startTime 和 endTime 的構造函數
+    public AvailableTimeSlot(String startTime, String endTime) {
+        super();
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 
-	public LocalTime getStartTime () {
-		return startTime;
-	}
+    // 含 startTime, endTime 和 available 的構造函數
+    public AvailableTimeSlot(String startTime, String endTime, boolean available) {
+        super();
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.available = available;
+    }
 
-	public void setStartTime (LocalTime startTime) {
-		this.startTime = startTime;
-	}
+    // Getter 和 Setter 方法
+    public String getStartTime() {
+        return startTime;
+    }
 
-	public LocalTime getEndTime () {
-		return endTime;
-	}
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
 
-	public void setEndTime (LocalTime endTime) {
-		this.endTime = endTime;
-	}
+    public String getEndTime() {
+        return endTime;
+    }
 
-	public boolean isAvailable () {
-		return available;
-	}
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
 
-	public void setAvailable (boolean available) {
-		this.available = available;
-	}
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
 }
