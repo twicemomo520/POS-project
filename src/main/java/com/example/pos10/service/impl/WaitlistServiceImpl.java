@@ -159,7 +159,7 @@ public class WaitlistServiceImpl implements WaitlistService {
         return new WaitlistRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(), waitlistReqs);
     }
 
- // 4. 取消候位
+    // 4. 取消候位
     @Override
     @Transactional
     public WaitlistRes cancelWaitlist(int waitlistId) {
@@ -189,7 +189,7 @@ public class WaitlistServiceImpl implements WaitlistService {
         return new WaitlistRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
     }
 
- // 5. 手動報到更新候位狀態
+    // 5. 手動報到更新候位狀態
     @Override
     @Transactional
     public WaitlistRes manualCheckIn(int waitlistId) {

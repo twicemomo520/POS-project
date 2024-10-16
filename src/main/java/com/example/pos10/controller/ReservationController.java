@@ -66,7 +66,7 @@ public class ReservationController {
     
     // 7. 手動報到更新桌位狀態
     @PostMapping (value = "/reservation/manualCheckIn")
-    public ReservationRes manualCheckIn (@RequestParam ("tableNumber") String tableNumber) {
-        return reservationService.manualCheckIn(tableNumber);
+    public ReservationRes manualCheckIn (@RequestParam ("tableNumber") String tableNumber, int reservationId) {
+        return reservationService.manualCheckIn(tableNumber, reservationId);
     }
 }
