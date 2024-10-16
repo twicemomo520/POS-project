@@ -19,7 +19,7 @@ public class TableManagement {
     private int tableCapacity;
 
     public enum TableStatus {
-        AVAILABLE, RESERVED, ACTIVE
+        可使用, 訂位中, 用餐中
     }
 
     @Enumerated(EnumType.STRING)
