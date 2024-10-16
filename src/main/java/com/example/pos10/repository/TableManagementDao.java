@@ -58,6 +58,11 @@ public interface TableManagementDao extends JpaRepository <TableManagement, Stri
 	@Modifying
     @Query("UPDATE TableManagement t SET t.tableStatus = :status WHERE t.tableNumber = :tableNumber")
     public int updateTableStatus(@Param("tableNumber") String tableNumber, @Param("status") TableManagement.TableStatus status);
+	
+    //8.回傳所有資料
+    @Query(value = " SELECT * FROM table_management  ",nativeQuery = true)
+    public List<TableManagement> selectAll();
+
     
 //    // 5. 查詢特定桌位在特定日期是否有預訂（先保留可能之後會在自動更新桌位狀態用到？）
 //    @Query("SELECT COUNT(r) > 0 FROM Reservation r JOIN r.tables t WHERE t.tableNumber = :tableNumber AND r.reservationDate = :reservationDate")
