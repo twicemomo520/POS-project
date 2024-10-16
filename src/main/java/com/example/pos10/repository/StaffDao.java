@@ -104,5 +104,10 @@ public interface StaffDao extends JpaRepository<Staff, String> {
  	@Query(value = " UPDATE staff SET first_login = 0 WHERE staff_number = :staffNember", nativeQuery = true)
  	public int updateFirstLogin( @Param("staffNember") String staffNember);
  	
+ 	//確認此權限是否有人使用了
+ 	@Query( value = "SELECT COUNT(*) FROM staff WHERE authorization = :authorization",nativeQuery = true )
+ 	public int countAuthorization(@Param("authorization") int authorization);
+ 	
+ 	
  	
 }

@@ -40,5 +40,8 @@ public interface AuthorizationDao extends JpaRepository<Authorization, Integer> 
 	@Query(value = "DELETE FROM authorization WHERE authorization_id = :id", nativeQuery = true)
 	public int deleteAuthorization(@Param("id") int id);
 
+	@Query("SELECT COUNT(*) FROM Authorization WHERE authorizationName = :authorizationName AND id != :id")
+	int countByAuthorizationNameAndIdNot(@Param("authorizationName") String authorizationName, @Param("id") int id);
+
 
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.pos10.entity.Authorization;
 import com.example.pos10.repository.AuthorizationDao;
+import com.example.pos10.repository.StaffDao;
 import com.example.pos10.service.ifs.AuthorizationService;
 import com.example.pos10.vo.BasicRes;
 import com.example.pos10.vo.InsertAuthorizationReq;
@@ -17,6 +18,9 @@ public class AuthorizationImpl implements AuthorizationService {
 
 	@Autowired
 	private AuthorizationDao authorizationDao;
+	
+	@Autowired
+	private StaffDao staffDao;
 
 	@Override
 	public BasicRes insertAuthorization(InsertAuthorizationReq req) {
@@ -60,8 +64,14 @@ public class AuthorizationImpl implements AuthorizationService {
 		if (req.getAuthorizationItem() == null || req.getAuthorizationItem().trim().isEmpty()) {
 			return new BasicRes(400, "更新權限失敗：管理範圍格式不正確");
 		}
+		
+		//2.確認名稱是否已存在
+		int count = authorizationDao.countByAuthorizationNameAndIdNot(req.getAuthorizationName(),req.getAuthorizationId());
+		if (count > 0) {
+			return new BasicRes(400, "更新權限失敗：該權限名稱已存在");
+		}
 
-		// 2. 更新
+		// 3. 更新
 		int result = authorizationDao.updateAuthorization(req.getAuthorizationId(), req.getAuthorizationName(),
 				req.getAuthorizationItem());
 		if (result > 0) {
@@ -73,7 +83,14 @@ public class AuthorizationImpl implements AuthorizationService {
 
 	@Override
 	public BasicRes deleteAuthorization(int id) {
+		
 		// 1. 刪除
+		
+		int count = staffDao.countAuthorization(id);
+		if (count > 0) {
+			return new BasicRes(400, "刪除權限失敗：該權限有使用者");
+		}
+		
 		int result = authorizationDao.deleteAuthorization(id);
 		if (result > 0) {
 			return new BasicRes(200, "刪除權限成功");
