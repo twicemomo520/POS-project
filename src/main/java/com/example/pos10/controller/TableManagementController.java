@@ -1,6 +1,7 @@
 package com.example.pos10.controller;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,10 +73,19 @@ public class TableManagementController {
         return tableManagementService.getTodayTableStatuses();
     }
     
-    // 6. 根據日期查詢可用桌位狀態
+    // 6. 根據日期查詢可使用的桌位狀態
+    @GetMapping("/tableManagement/getAvailableTableStatusesByDate")
+    public List<TimeSlotWithTableStatusRes> getAvailableTableStatusesByDate (
+    		 @RequestParam ("reservationDate") @DateTimeFormat (iso = DateTimeFormat.ISO.DATE) LocalDate reservationDate) {
+        return tableManagementService.getAvailableTableStatusesByDate(reservationDate);
+    }
+    
+    // 7. 根據日期和訂位時間查詢可使用的桌位狀態
     @GetMapping("/tableManagement/getAvailableTableStatuses")
     public List<TimeSlotWithTableStatusRes> getAvailableTableStatuses (
-    		 @RequestParam ("reservationDate") @DateTimeFormat (iso = DateTimeFormat.ISO.DATE) LocalDate reservationDate) {
-        return tableManagementService.getAvailableTableStatuses(reservationDate);
+             @RequestParam("reservationDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reservationDate,
+             @RequestParam("reservationStartTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime reservationStartTime,
+             @RequestParam("reservationEndTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime reservationEndingTime) {
+        return tableManagementService.getAvailableTableStatuses(reservationDate, reservationStartTime, reservationEndingTime);
     }
 }

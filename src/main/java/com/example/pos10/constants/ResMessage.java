@@ -37,7 +37,6 @@ public enum ResMessage {
 	TABLE_STATUS_NOT_FOUND (400, "Table status not found !!!"), //
 	TABLE_STATUS_NOT_ALLOWED_FOR_CAPACITY_CHANGE (400, "Table status not allowed for capacity change !!!"), //
 	INVALID_CUSTOMER_COUNT (400, "Customer count is invalid !!!"), //
-	NO_AVAILABLE_TABLES (400, "No available tables !!!"), // 沒有可使用中的位子
 		
 	// OperatingHours
 	INVALID_OPERATING_HOURS (400, "Opening time or closing time cannot be null !!!"), // 營業開始時間或結束時間不得為空
@@ -45,6 +44,10 @@ public enum ResMessage {
 	INVALID_DINING_DURATION (400, "Dining duration must be greater than 0 minutes !!!"), // 用餐時間應該大於 0
 	CONFLICTING_OPERATING_HOURS (409, "Conflicting operating hours found !!!"), // 有營業時間段衝突
 	INVALID_ID_LIST (400, "The provided ID list cannot be null or empty !!!"), // 傳入的 ID 列表不能為空或 null
+	
+	// Reservation
+	NO_AVAILABLE_TABLES (400, "No available tables !!!"), // 沒有可使用中的桌位
+	
 		
 	// ReservationManagement
 	NO_BUSINESS_HOURS_FOUND_FOR_DAY (400, "No business hours found for the selected day !!!"), // 當天無營業時間

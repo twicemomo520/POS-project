@@ -34,14 +34,17 @@ public interface TableManagementDao extends JpaRepository <TableManagement, Stri
     @Modifying
     @Query (value = "UPDATE table_management SET table_number = ?2, table_capacity = ?3 WHERE table_number = ?1", nativeQuery = true)
     public int updateTable (String oldTableNumber, String newTableNumber, int newCapacity);
-    
+	
 	// 4. 查詢某個時間段內所有可用的桌位
-	@Query("SELECT t FROM TableManagement t WHERE t.tableStatus = '可使用' "
-			+ "AND NOT EXISTS (SELECT r FROM Reservation r WHERE t MEMBER OF r.tables "
-			+ "AND r.reservationDate = :reservationDate "
-			+ "AND (:startTime < r.reservationEndingTime AND :endTime > r.reservationStartTime))")
-	List<TableManagement> findAvailableTablesInTimeSlot(@Param("reservationDate") LocalDate reservationDate,
-			@Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime);
+    @Query("SELECT t FROM TableManagement t WHERE t.tableStatus = '可使用' "
+    	    + "AND NOT EXISTS (SELECT r FROM Reservation r WHERE t MEMBER OF r.tables "
+    	    + "AND r.reservationDate = :reservationDate "
+    	    + "AND ((:startTime < r.reservationEndingTime AND :startTime >= r.reservationStartTime) "
+    	    + "OR (:endTime > r.reservationStartTime AND :endTime <= r.reservationEndingTime)))")
+    List<TableManagement> findAvailableTablesInTimeSlot(
+    	    @Param("reservationDate") LocalDate reservationDate,
+    	    @Param("startTime") LocalTime startTime,
+    	    @Param("endTime") LocalTime endTime);
 
 	// 5. 查詢狀態為 "AVAILABLE" 的所有桌位，並根據桌位容量來排序
 	@Query("SELECT t FROM TableManagement t WHERE t.tableStatus = 'AVAILABLE' ORDER BY t.tableCapacity ASC")
@@ -50,6 +53,12 @@ public interface TableManagementDao extends JpaRepository <TableManagement, Stri
 	// 6. 查詢同一 reservation 的桌位（顯示合併桌位） - 使用 JPQL 查詢
 	@Query("SELECT t FROM TableManagement t JOIN t.reservations r WHERE r = :reservation")
 	public List<TableManagement> findByReservations(Reservation reservation);
+	
+	// 7. 更改桌位的狀態
+	@Modifying
+    @Query("UPDATE TableManagement t SET t.tableStatus = :status WHERE t.tableNumber = :tableNumber")
+    public int updateTableStatus(@Param("tableNumber") String tableNumber, @Param("status") TableManagement.TableStatus status);
+
     
 //    // 5. 查詢特定桌位在特定日期是否有預訂（先保留可能之後會在自動更新桌位狀態用到？）
 //    @Query("SELECT COUNT(r) > 0 FROM Reservation r JOIN r.tables t WHERE t.tableNumber = :tableNumber AND r.reservationDate = :reservationDate")
