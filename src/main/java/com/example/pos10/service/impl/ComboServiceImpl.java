@@ -32,6 +32,7 @@ public class ComboServiceImpl implements ComboService{
 		String comboDetail = req.getComboDetail();
 		int discountAmount = req.getDiscountAmount();
 		int categoryId = req.getCategoryId();
+		System.out.println(comboDetail);
 		
 		long countByComboName = comboDao.countByComboName(comboName);
 		if (countByComboName>0) {
@@ -69,8 +70,6 @@ public class ComboServiceImpl implements ComboService{
 		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
 	}
 
-	
-	
 	
 	@Override
 	public BasicRes deleteCombo(DeleteCbReq req) {
