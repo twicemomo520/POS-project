@@ -96,4 +96,11 @@ public class ComboServiceImpl implements ComboService{
 		return new SearchCbRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(), comboList);
 	}
 
+
+
+	@Override
+	public int countData() {
+		return comboDao.countData();
+	}
+
 }

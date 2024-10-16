@@ -66,4 +66,8 @@ public interface ComboDao extends JpaRepository<ComboItems, String> {
 	@Query( value = " SELECT * FROM combo_items " ,nativeQuery = true)
 	public List<ComboItems> selectAll();
 	
+	@Query(value = "SELECT COUNT(*) AS combo_name "
+			+ "FROM combo_items", nativeQuery = true)
+	public int countData();
+	
 }
