@@ -267,7 +267,7 @@ public class WaitlistServiceImpl implements WaitlistService {
             .map(TableManagement::getTableNumber)
             .collect(Collectors.joining(", "));
 
-        String message = String.format("成功報到！已分配桌位：%s", tableNumbers);
+        String message = String.format("已分配桌位%s", tableNumbers);
         return new WaitlistRes(ResMessage.SUCCESS.getCode(), message);
     }
     
@@ -275,39 +275,32 @@ public class WaitlistServiceImpl implements WaitlistService {
     @Override
     @Scheduled(cron = "0 */5 * * * ?") // 每五分鐘執行一次
     public void sendNotificationsForAvailableTables() {
-        // 1. 獲取所有候位顧客
-        List<Waitlist> waitlists = waitlistDao.findAllWaitlists();
+        System.out.println("開始發送通知...");
 
-        // 2. 檢查可用桌位
+        List<Waitlist> waitlists = waitlistDao.findAllWaitlists();
         List<TableManagement> availableTables = tableManagementDao.findAvailableTablesOrderedByCapacity();
 
-        // 計數發送的通知數量
         int notificationCount = 0;
 
-        // 3. 若有可用桌位，則發送通知
         if (!availableTables.isEmpty()) {
             for (Waitlist waitlist : waitlists) {
-                // 檢查該候位顧客的候位狀態
-                if (waitlist.getWaitlistOrder() != 0) { // 假設 0 表示已報到或已取消
-                    // 假設你有一個方法來發送郵件
+                if (waitlist.getWaitlistOrder() != 0) {
                     try {
                         emailService.sendWaitlistNotificationEmail(
                             waitlist.getCustomerEmail(),
                             waitlist.getCustomerName(),
-                            waitlist.getWaitListPeople() // 可以在郵件中提及人數
+                            waitlist.getWaitListPeople()
                         );
 
-                        notificationCount++; // 增加發送計數
+                        notificationCount++;
                     } catch (Exception e) {
-                        // 處理郵件發送錯誤
                         System.err.println("發送郵件失敗給顧客 " + waitlist.getCustomerName() + ": " + e.getMessage());
                     }
                 }
             }
         }
 
-        // 可以在這裡記錄發送通知的數量，例如使用日誌記錄
-        System.out.println("成功發送通知！共發送 " + notificationCount + " 封郵件。");
+        System.out.println("共發送通知數量: " + notificationCount);
     }
 
     // 7. 獲取最大候位順序

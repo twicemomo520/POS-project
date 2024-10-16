@@ -47,7 +47,7 @@ public interface TableManagementDao extends JpaRepository <TableManagement, Stri
     	    @Param("endTime") LocalTime endTime);
 
 	// 5. 查詢狀態為 "AVAILABLE" 的所有桌位，並根據桌位容量來排序
-	@Query("SELECT t FROM TableManagement t WHERE t.tableStatus = 'AVAILABLE' ORDER BY t.tableCapacity ASC")
+	@Query("SELECT t FROM TableManagement t WHERE t.tableStatus = '可使用' ORDER BY t.tableCapacity ASC")
 	public List<TableManagement> findAvailableTablesOrderedByCapacity();
 
 	// 6. 查詢同一 reservation 的桌位（顯示合併桌位） - 使用 JPQL 查詢
