@@ -27,7 +27,7 @@ public interface ReservationService {
     public ReservationRes autoUpdateTableStatus (LocalDate currentDate, LocalTime currentTime);
 
     // 7. 手動報到更新桌位狀態
-    public ReservationRes manualCheckIn (String tableNumber);
+    public ReservationRes manualCheckIn (String tableNumber, int reservationId);
     
     // 8. 訂位前一天發送提醒
     public void sendReservationReminders ();

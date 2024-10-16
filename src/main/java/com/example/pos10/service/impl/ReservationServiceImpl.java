@@ -4,10 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -21,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.example.pos10.constants.ResMessage;
 import com.example.pos10.entity.Reservation;
 import com.example.pos10.entity.TableManagement;
+import com.example.pos10.entity.TableManagement.TableStatus;
 import com.example.pos10.repository.ReservationDao;
 import com.example.pos10.repository.TableManagementDao;
 import com.example.pos10.service.ifs.ReservationService;
@@ -113,7 +111,7 @@ public class ReservationServiceImpl implements ReservationService {
             return new ReservationRes(ResMessage.INVALID_RESERVATION_PEOPLE.getCode(), ResMessage.INVALID_RESERVATION_PEOPLE.getMessage());
         }
 
-     // 6. 確認選擇的訂位時間段
+        // 6. 確認選擇的訂位時間段
         LocalDate reservationDate = reservationReq.getReservationDate();
         LocalTime reservationStartTime = reservationReq.getReservationStartTime();
         LocalTime reservationEndTime = reservationReq.getReservationEndingTime();
@@ -131,18 +129,8 @@ public class ReservationServiceImpl implements ReservationService {
         List<TableManagement> largerTables = new ArrayList<>();
         List<TableManagement> mergeableTables = new ArrayList<>();
 
-        // 用來追蹤已處理的 ReservationId
-        Set<Integer> processedReservations = new HashSet<>();
-
         // 8. 遍歷可用時間段
         for (TimeSlotWithTableStatusRes timeSlotStatus : availableTableStatuses) {
-            // 假設 timeSlot 是 "HH:mm - HH:mm" 格式
-            String[] timeRange = timeSlotStatus.getTimeSlot().split(" - ");
-            LocalTime slotStartTime = LocalTime.parse(timeRange[0]);
-            LocalTime slotEndTime = LocalTime.parse(timeRange[1]);
-
-            System.out.println("正在處理時間段：" + timeSlotStatus.getTimeSlot()); // 新增日誌，顯示處理中的時間段
-
             // 遍歷可用桌位，進行分配
             for (TableManagement table : timeSlotStatus.getTableStatuses()) {
                 System.out.println("桌位：" + table.getTableNumber() + " 容量：" + table.getTableCapacity());
@@ -229,27 +217,6 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 儲存到資料庫
         reservationDao.save(reservation);
-       
-        // 強制刷新桌位實體，重新抓取相關的訂位資料
-        for (TableManagement table : selectedTables) {
-            // 強制重新從資料庫中讀取桌位資料
-            entityManager.refresh(table);
-
-            System.out.println("正在檢查桌位：" + table.getTableNumber());
-
-            // 確認是否抓取了訂位資料
-            List<Reservation> reservations = table.getReservations();
-            System.out.println("抓取的訂位數量：" + reservations.size());
-
-            Iterator<Reservation> reservationIterator = reservations.iterator();
-            while (reservationIterator.hasNext()) {
-                Reservation existingReservation = reservationIterator.next();
-                
-                // 列印訂位的詳細資訊
-                System.out.println("訂位 ID：" + existingReservation.getReservationId());
-                // 這裡可以繼續執行檢查和移除不符合條件的邏輯
-            }
-        }
 
         // 發送訂位確認信
         try {
@@ -412,7 +379,7 @@ public class ReservationServiceImpl implements ReservationService {
                                       ResMessage.TABLE_STATUS_IS_NOT_AVAILABLE.getMessage());
         }
 
-        // 4. 更新這些桌號的狀態為 "AVAILABLE"
+        // 4. 更新這些桌號的狀態為 "可使用"
         int updatedTablesCount = reservationDao.updateTableStatusToAvailable(reservedTables);
         
         // 查找並刪除與這些桌位關聯的過期訂位
@@ -434,7 +401,7 @@ public class ReservationServiceImpl implements ReservationService {
     // 8. 手動報到更新桌位狀態
     @Override
     @Transactional // 確保資料庫的更新操作在事務中執行
-    public ReservationRes manualCheckIn(String tableNumber) {
+    public ReservationRes manualCheckIn(String tableNumber, int reservationId) {
         // 1. 檢查桌號是否存在
     	 TableManagement table = tableManagementDao.findById(tableNumber).orElse(null);
  	    if (table == null) {
@@ -446,12 +413,15 @@ public class ReservationServiceImpl implements ReservationService {
         	return new ReservationRes(ResMessage.INVALID_STATUS_TRANSITION.getCode(), ResMessage.INVALID_STATUS_TRANSITION.getMessage());
         }
        
-        // 3. 更新桌位狀態為 ACTIVE
-        int updatedCount = reservationDao.manualCheckIn(tableNumber);
+        // 3. 更新桌位狀態為 用餐中
+        int updatedCount = reservationDao.manualCheckIn(tableNumber, TableStatus.用餐中, TableStatus.訂位中);
         if (updatedCount == 0) {
         	 return new ReservationRes(ResMessage.FAILED_TO_UPDATE_TABLE_STATUS.getCode(), //
              		ResMessage.FAILED_TO_UPDATE_TABLE_STATUS.getMessage());
         }
+        
+        // 4. 刪除對應的訂位資料
+        reservationDao.deleteById(reservationId);
 
         return new ReservationRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
     }
