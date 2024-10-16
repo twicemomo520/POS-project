@@ -69,5 +69,9 @@ public class StaffController {
 		return staffService.forgotPassword(req);
 	}
 	
+	@GetMapping("/updateFirstLogin/{staffNumber}")
+	public BasicRes updateFirstLogin(@PathVariable String staffNumber) {
+	    return staffService.updateFirstLogin(staffNumber);
+	}
 	
 }

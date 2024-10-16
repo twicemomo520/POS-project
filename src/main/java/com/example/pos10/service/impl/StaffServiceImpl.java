@@ -177,7 +177,7 @@ public class StaffServiceImpl implements StaffService {
 	@Override
 	public BasicRes loginStaff(LoginStaffReq req) {
 
-		// 1.防呆
+		// 1. 防呆
 		if (req.getStaffNumber() == null || req.getStaffNumber().trim().isEmpty()) {
 			return new BasicRes(400, "登入失敗：帳號格式不正確");
 		}
@@ -189,18 +189,46 @@ public class StaffServiceImpl implements StaffService {
 		// 2. 檢查員工是否已存在
 		if (staffDao.staffNumberExists(req.getStaffNumber()) > 0) {
 
-			// 3.確認密碼是否正確
+			Optional<Staff> staffOptional = staffDao.findById(req.getStaffNumber());
+
+			Staff staffData = staffOptional.get();
+
+			// 錯誤次數
+			Integer errorCount = staffData.getErrorCount();
+			LocalDateTime blockTime = staffData.getBlockTime();
+
+			// 檢查封鎖時間
+			if (blockTime != null && blockTime.plusMinutes(15).isAfter(LocalDateTime.now())) {
+				return new BasicRes(400, "登入失敗：帳號已被鎖定，請稍後再試");
+			}
+
+			// 3. 確認密碼是否正確
 			String pwd = staffDao.CheckLogin(req.getStaffNumber());
 
 			if (pwd == null || pwd.isEmpty()) {
 				return new BasicRes(400, "登入失敗：沒有此員工編號");
 			}
 
-			// 4.比對密碼
+			// 4. 比對密碼
 			if (passwordEncoder.matches(req.getPwd(), pwd)) {
+
+				// 重置錯誤次數與封鎖時間
+				staffDao.updateErrorCount(0, req.getStaffNumber());
+				staffDao.updateBlockTime(null, req.getStaffNumber());
+
 				// 登入成功
 				return new LoginStaffRes(200, "登入成功", req.getStaffNumber());
 			} else {
+				// 更新錯誤次數
+				errorCount++;
+				staffDao.updateErrorCount(errorCount, req.getStaffNumber());
+
+				// 當錯誤次數達到 5 次時，更新封鎖時間
+				if (errorCount >= 5) {
+					staffDao.updateBlockTime(LocalDateTime.now(), req.getStaffNumber());
+					return new BasicRes(400, "登入失敗：帳號已被鎖定，請稍後再試");
+				}
+
 				// 密碼錯誤
 				return new BasicRes(400, "登入失敗：密碼錯誤");
 			}
@@ -208,7 +236,6 @@ public class StaffServiceImpl implements StaffService {
 		} else {
 			return new BasicRes(400, "登入失敗：此員工編號尚未註冊");
 		}
-
 	}
 
 	// 抓員工資料
@@ -247,6 +274,9 @@ public class StaffServiceImpl implements StaffService {
 			String newPwd = encryptedPassword;
 			staffDao.resetPassword(newPwd, req.getStaffNumber());
 
+			staffDao.updateErrorCount(0, req.getStaffNumber());
+			staffDao.updateBlockTime(null, req.getStaffNumber());
+
 			return new BasicRes(200, "密碼修改成功");
 
 		} else {
@@ -272,10 +302,9 @@ public class StaffServiceImpl implements StaffService {
 
 		if (staffDao.staffNumberExists(req.getStaffNumber()) > 0) {
 
-			
 			// 確認員工編號和信箱是同一個人
 			if (staffDao.checkEmail(req.getStaffNumber(), req.getEmail()) > 0) {
-				
+
 				// 3. 產生驗證碼和時間
 				Random random = new Random();
 				int code = random.nextInt(999999) + 1; // 生成範圍是1到999999
@@ -285,7 +314,7 @@ public class StaffServiceImpl implements StaffService {
 				LocalDateTime expiry = LocalDateTime.now().plusSeconds(30);
 
 				staffDao.updateVerificationCode(verificationCode, expiry, req.getStaffNumber());
-				
+
 				try {
 					// 發送電子郵件
 					emailService.sendVerificationEmail(req.getEmail(), verificationCode);
@@ -302,6 +331,16 @@ public class StaffServiceImpl implements StaffService {
 			return new BasicRes(400, "驗證碼發送失敗：查無此帳號");
 		}
 
+	}
+
+	
+	
+	@Override
+	public BasicRes updateFirstLogin(String staffNumber) {
+		
+		staffDao.updateFirstLogin(staffNumber);
+		
+		return new BasicRes(200,"更新成功");
 	}
 
 }

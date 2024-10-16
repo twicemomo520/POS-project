@@ -1,5 +1,7 @@
 package com.example.pos10.entity;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -35,22 +37,36 @@ public class Staff {
 	@Column(name = "email")
 	private String email;
 
-	
+	// 用來記錄錯誤次數
+	@Column(name = "error_count")
+	private Integer errorCount = 0;
+
+	// 用來記錄封鎖的時間
+	@Column(name = "block_time")
+	private LocalDateTime blockTime;
+
+	@Column(name = "first_login")
+	private Boolean firstLogin = true;
+
 	public Staff() {
 		super();
 	}
 
-
-	public Staff(String staffNumber, String pwd, String name, String phone, String authorization, String email) {
+	public Staff(String staffNumber, @NotNull String pwd, @NotNull String name, @NotNull String phone,
+			@NotNull String authorization, @Email String email, Integer errorCount, LocalDateTime blockTime,
+			Boolean firstLogin) {
+		super();
 		this.staffNumber = staffNumber;
 		this.pwd = pwd;
 		this.name = name;
 		this.phone = phone;
 		this.authorization = authorization;
-		this.email = email; 
+		this.email = email;
+		this.errorCount = errorCount;
+		this.blockTime = blockTime;
+		this.firstLogin = firstLogin;
 	}
 
-	// Getters and Setters
 	public String getStaffNumber() {
 		return staffNumber;
 	}
@@ -91,11 +107,36 @@ public class Staff {
 		this.authorization = authorization;
 	}
 
-	public String getEmail() { 
+	public String getEmail() {
 		return email;
 	}
 
-	public void setEmail(String email) { 
+	public void setEmail(String email) {
 		this.email = email;
 	}
+
+	public Integer getErrorCount() {
+		return errorCount;
+	}
+
+	public void setErrorCount(Integer errorCount) {
+		this.errorCount = errorCount;
+	}
+
+	public LocalDateTime getBlockTime() {
+		return blockTime;
+	}
+
+	public void setBlockTime(LocalDateTime blockTime) {
+		this.blockTime = blockTime;
+	}
+
+	public Boolean getFirstLogin() {
+		return firstLogin;
+	}
+
+	public void setFirstLogin(Boolean firstLogin) {
+		this.firstLogin = firstLogin;
+	}
+
 }
