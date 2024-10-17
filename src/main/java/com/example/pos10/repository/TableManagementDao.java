@@ -61,7 +61,7 @@ public interface TableManagementDao extends JpaRepository <TableManagement, Stri
     public int updateTableStatus(@Param("tableNumber") String tableNumber, @Param("status") TableManagement.TableStatus status);
 	
     //8.回傳所有資料
-    @Query(value = " SELECT * FROM table_management  ",nativeQuery = true)
+    @Query(value = " SELECT * FROM table_management WHERE table_status = '用餐中'  ",nativeQuery = true)
     public List<TableManagement> selectAll();
 
     
