@@ -4,11 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.pos10.constants.ResMessage;
@@ -18,6 +18,8 @@ import com.example.pos10.entity.Reservation;
 import com.example.pos10.entity.TableManagement;
 import com.example.pos10.entity.TableManagement.TableStatus;
 import com.example.pos10.repository.OperatingHoursDao;
+//import com.example.pos10.repository.BusinessHoursDao;
+import com.example.pos10.repository.ReservationDao;
 import com.example.pos10.repository.TableManagementDao;
 import com.example.pos10.service.ifs.OperatingHoursService;
 //import com.example.pos10.service.ifs.ReservationService;
@@ -37,6 +39,9 @@ public class TableManagementServiceImpl implements TableManagementService {
 	
 	@Autowired
     private OperatingHoursService operatingHoursService;
+	
+	@Autowired
+	private ReservationDao reservationDao;
 
 	// 1. 創建桌位
 	@Override
@@ -215,36 +220,17 @@ public class TableManagementServiceImpl implements TableManagementService {
 	        for (LocalTime slot : availableSlots) {
 	            LocalTime nextSlot = slot.plusMinutes(diningDuration);
 	            
-	            String timeSlotString = slot + " - " + nextSlot;
-	            TimeSlotWithTableStatusRes slotStatus = new TimeSlotWithTableStatusRes(timeSlotString, new ArrayList<>());
-
-	            for (TableManagement table : allTables) {
-	                // 深度複製一個新的 table 物件來避免直接修改原始的 table 資料
-	                TableManagement tableClone = new TableManagement(
-	                    table.getTableNumber(), 
-	                    table.getTableCapacity(), 
-	                    table.getTableStatus()
-	                );
-
-	                // 過濾掉不符合條件的預訂紀錄
-	                List<Reservation> filteredReservations = table.getReservations().stream()
-	                    .filter(reservation -> reservation.getReservationStartTime().equals(slot))
-	                    .collect(Collectors.toList());
-
-	                tableClone.setReservations(filteredReservations);
-	                
-	                // 如果該時間段內沒有訂位，將狀態設置為「可使用」
-	                if (filteredReservations.isEmpty()) {
-	                    tableClone.setTableStatus(TableStatus.可使用);
-	                }
-
-	                // 將經過篩選的 table 狀態添加到 slot 狀態中
-	                slotStatus.getTableStatuses().add(tableClone);
-	            }
-
+	            // 創建當前時間段的桌位狀態
+	            TimeSlotWithTableStatusRes slotStatus = new TimeSlotWithTableStatusRes(
+	                slot + " - " + nextSlot,
+	                allTables // 在這裡使用所有桌位的狀態
+	            );
+	            
+	            // 將時間段與桌位狀態添加到回應列表
 	            response.add(slotStatus);
-
-	            System.out.println("時間段: " + timeSlotString + " 的桌位狀態: " + slotStatus.getTableStatuses());
+	            
+	            // 打印當前時間段的桌位狀態
+	            System.out.println("時間段: " + slot + " - " + nextSlot + " 的桌位狀態: " + allTables);
 	        }
 	    }
 
@@ -315,7 +301,6 @@ public class TableManagementServiceImpl implements TableManagementService {
 				TimeSlotWithTableStatusRes slotStatus = new TimeSlotWithTableStatusRes(slot + " - " + nextSlot,
 						availableTables // 在這裡使用可用的桌位狀態
 				);
-				
 
 				// 將時間段與桌位狀態添加到回應列表
 				response.add(slotStatus);
@@ -330,102 +315,79 @@ public class TableManagementServiceImpl implements TableManagementService {
 	
 	// 7. 根據日期和訂位時間查詢可使用的桌位狀態
 	@Override
-	public List<TimeSlotWithTableStatusRes> getAvailableTableStatuses(LocalDate reservationDate,
-			LocalTime reservationStartTime, LocalTime reservationEndingTime) {
-		// 根據傳入的日期獲取星期幾
-		java.time.DayOfWeek javaDayOfWeek = reservationDate.getDayOfWeek();
-		OperatingHours.DayOfWeek dayOfWeek;
+	public List<TimeSlotWithTableStatusRes> getAvailableTableStatuses(LocalDate reservationDate, LocalTime reservationStartTime, LocalTime reservationEndingTime) {
+	    // 根據傳入的日期獲取星期幾
+	    java.time.DayOfWeek javaDayOfWeek = reservationDate.getDayOfWeek();
+	    OperatingHours.DayOfWeek dayOfWeek;
 
-		switch (javaDayOfWeek) {
-		case MONDAY:
-			dayOfWeek = OperatingHours.DayOfWeek.星期一;
-			break;
-		case TUESDAY:
-			dayOfWeek = OperatingHours.DayOfWeek.星期二;
-			break;
-		case WEDNESDAY:
-			dayOfWeek = OperatingHours.DayOfWeek.星期三;
-			break;
-		case THURSDAY:
-			dayOfWeek = OperatingHours.DayOfWeek.星期四;
-			break;
-		case FRIDAY:
-			dayOfWeek = OperatingHours.DayOfWeek.星期五;
-			break;
-		case SATURDAY:
-			dayOfWeek = OperatingHours.DayOfWeek.星期六;
-			break;
-		case SUNDAY:
-			dayOfWeek = OperatingHours.DayOfWeek.星期日;
-			break;
-		default:
-			throw new IllegalArgumentException("無法獲取星期幾");
-		}
+	    switch (javaDayOfWeek) {
+	        case MONDAY:
+	            dayOfWeek = OperatingHours.DayOfWeek.星期一;
+	            break;
+	        case TUESDAY:
+	            dayOfWeek = OperatingHours.DayOfWeek.星期二;
+	            break;
+	        case WEDNESDAY:
+	            dayOfWeek = OperatingHours.DayOfWeek.星期三;
+	            break;
+	        case THURSDAY:
+	            dayOfWeek = OperatingHours.DayOfWeek.星期四;
+	            break;
+	        case FRIDAY:
+	            dayOfWeek = OperatingHours.DayOfWeek.星期五;
+	            break;
+	        case SATURDAY:
+	            dayOfWeek = OperatingHours.DayOfWeek.星期六;
+	            break;
+	        case SUNDAY:
+	            dayOfWeek = OperatingHours.DayOfWeek.星期日;
+	            break;
+	        default:
+	            throw new IllegalArgumentException("無法獲取星期幾");
+	    }
 
-		// 從資料庫中獲取當天的營業時間和用餐時間
-		List<Object[]> hours = operatingHoursDao.getOperatingHours(dayOfWeek);
+	    // 從資料庫中獲取當天的營業時間和用餐時間
+	    List<Object[]> hours = operatingHoursDao.getOperatingHours(dayOfWeek);
 
-		if (hours.isEmpty()) {
-			throw new IllegalArgumentException("當天無營業時間設定");
-		}
+	    if (hours.isEmpty()) {
+	        throw new IllegalArgumentException("當天無營業時間設定");
+	    }
 
-		List<TimeSlotWithTableStatusRes> response = new ArrayList<>();
+	    List<TimeSlotWithTableStatusRes> response = new ArrayList<>();
 
-		// 遍歷所有營業時間
-		for (Object[] hour : hours) {
-			LocalTime openingTime = (LocalTime) hour[0];
-			LocalTime closingTime = (LocalTime) hour[1];
-			int diningDuration = (int) hour[2]; // 用餐時間從資料庫中獲取
+	    // 遍歷所有營業時間
+	    for (Object[] hour : hours) {
+	        LocalTime openingTime = (LocalTime) hour[0];
+	        LocalTime closingTime = (LocalTime) hour[1];
+	        int diningDuration = (int) hour[2]; // 用餐時間從資料庫中獲取
 
-			// 計算可用的預約時間段
-			List<LocalTime> availableSlots = operatingHoursService.calculateAvailableTimeSlots(openingTime, closingTime,
-					diningDuration);
+	        // 計算可用的預約時間段
+	        List<LocalTime> availableSlots = operatingHoursService.calculateAvailableTimeSlots(openingTime, closingTime, diningDuration);
 
-			// 遍歷每個可用時間段，過濾出符合當前預約時間的可用時間段
-			for (LocalTime slot : availableSlots) {
-				LocalTime nextSlot = slot.plusMinutes(diningDuration);
+	        // 遍歷每個可用時間段，過濾出符合當前預約時間的可用時間段
+	        for (LocalTime slot : availableSlots) {
+	            LocalTime nextSlot = slot.plusMinutes(diningDuration);
 
-				// 查詢該時間段內的可用桌位
-				List<TableManagement> availableTables = tableManagementDao
-						.findAvailableTablesInTimeSlot(reservationDate, slot, nextSlot);
+	            // 優化後的重疊檢查邏輯
+	            if (!nextSlot.isBefore(reservationStartTime) && !slot.isAfter(reservationEndingTime)) {
+	                // 查詢該時間段內的可用桌位
+	                List<TableManagement> availableTables = tableManagementDao.findAvailableTablesInTimeSlot(reservationDate, slot, nextSlot);
 
-				// 創建當前時間段的桌位狀態
-				TimeSlotWithTableStatusRes slotStatus = new TimeSlotWithTableStatusRes(slot + " - " + nextSlot,
-						new ArrayList<>());
+	                // 創建當前時間段的桌位狀態
+	                TimeSlotWithTableStatusRes slotStatus = new TimeSlotWithTableStatusRes(
+	                    slot + " - " + nextSlot,
+	                    availableTables // 使用該時間段內的可用桌位狀態
+	                );
 
-				// 加入提供的邏輯來深度複製桌位並過濾預訂紀錄
-				for (TableManagement table : availableTables) {
-					// 深度複製一個新的 table 物件來避免直接修改原始的 table 資料
-					TableManagement tableClone = new TableManagement(table.getTableNumber(), table.getTableCapacity(),
-							table.getTableStatus());
+	                // 將時間段與桌位狀態添加到回應列表
+	                response.add(slotStatus);
 
-					// 過濾掉不符合條件的預訂紀錄
-					List<Reservation> filteredReservations = table.getReservations().stream()
-							.filter(reservation -> reservation.getReservationStartTime().equals(slot)
-									|| (reservation.getReservationStartTime().isBefore(slot)
-											&& reservation.getReservationEndingTime().isAfter(slot)))
-							.collect(Collectors.toList());
+	                // 打印當前時間段的桌位狀態
+	                System.out.println("時間段: " + slot + " - " + nextSlot + " 的桌位狀態: " + availableTables);
+	            }
+	        }
+	    }
 
-					tableClone.setReservations(filteredReservations);
-
-					// 如果該時間段內沒有訂位，將狀態設置為「可使用」
-					if (filteredReservations.isEmpty()) {
-						tableClone.setTableStatus(TableStatus.可使用);
-					}
-
-					// 將經過篩選的 table 狀態添加到 slot 狀態中
-					slotStatus.getTableStatuses().add(tableClone);
-				}
-
-				// 將時間段與桌位狀態添加到回應列表
-				response.add(slotStatus);
-
-				// 打印當前時間段的桌位狀態
-				System.out.println("時間段: " + slot + " - " + nextSlot + " 的桌位狀態: " + slotStatus.getTableStatuses());
-
-			}
-		}
-
-		return response; // 返回包含時間段和可用桌位狀態的列表
+	    return response; // 返回包含時間段和可用桌位狀態的列表
 	}
 }
