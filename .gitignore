@@ -9,7 +9,7 @@ build/
 ### STS ###
 .apt_generated
 .classpath
-.properties
+application.properties
 .factorypath
 .project
 .settings
