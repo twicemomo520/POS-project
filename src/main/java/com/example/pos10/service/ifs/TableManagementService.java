@@ -31,7 +31,4 @@ public interface TableManagementService {
     
     // 7. 根據日期和訂位時間查詢可使用的桌位狀態
     public List<TimeSlotWithTableStatusRes> getAvailableTableStatuses(LocalDate reservationDate, LocalTime reservationStartTime, LocalTime reservationEndingTime);
-      
-    // 8. 自動更新桌位狀態
-    public void autoUpdateTableStatuses();
 }

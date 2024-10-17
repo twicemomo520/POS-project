@@ -8,15 +8,12 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.pos10.constants.ResMessage;
 import com.example.pos10.entity.OperatingHours;
 import com.example.pos10.entity.OperatingHours.DayOfWeek;
-import com.example.pos10.entity.Reservation;
 import com.example.pos10.entity.TableManagement;
-import com.example.pos10.entity.TableManagement.TableStatus;
 import com.example.pos10.repository.OperatingHoursDao;
 //import com.example.pos10.repository.BusinessHoursDao;
 import com.example.pos10.repository.ReservationDao;
@@ -389,53 +386,5 @@ public class TableManagementServiceImpl implements TableManagementService {
 	    }
 
 	    return response; // 返回包含時間段和可用桌位狀態的列表
-	}
-	
-	// 7. 自動更新桌位狀態
-	@Override
-	@Scheduled(cron = "0 0 * * * ?")  // 每小時整點執行一次
-	public void autoUpdateTableStatuses() {
-	    // 獲取今天的日期
-	    LocalDate today = LocalDate.now();
-	    
-	    // 獲取今天的營業時間和所有桌位
-	    List<TimeSlotWithTableStatusRes> todayTableStatuses = getTodayTableStatuses();
-	    
-	    // 獲取當天的所有預定
-	    List<Reservation> reservations = reservationDao.findAllByReservationDate(today);
-	    
-	    // 用來保存更新的桌位
-	    List<TableManagement> updatedTables = new ArrayList<>();
-
-	    // 遍歷所有的時間段
-	    for (TimeSlotWithTableStatusRes timeSlot : todayTableStatuses) {
-	        String[] timeRange = timeSlot.getTimeSlot().split(" - ");
-	        LocalTime startTime = LocalTime.parse(timeRange[0].trim());
-	        LocalTime endTime = LocalTime.parse(timeRange[1].trim());
-	        
-	        // 獲取當前時間段內的所有桌位
-	        List<TableManagement> tables = timeSlot.getTableStatuses();
-
-	        // 更新桌位狀態
-	        for (TableManagement table : tables) {
-	            boolean isReserved = reservations.stream()
-	                    .anyMatch(reservation -> 
-	                        reservation.getTables().contains(table) && 
-	                        reservation.getReservationStartTime().isBefore(endTime) && 
-	                        reservation.getReservationEndingTime().isAfter(startTime));
-	            
-	            if (isReserved) {
-	                table.setTableStatus(TableStatus.訂位中);
-	            } else {
-	                table.setTableStatus(TableStatus.可使用);
-	            }
-
-	            // 將更新的桌位添加到列表中
-	            updatedTables.add(table);
-	        }
-	    }
-	    
-	    // 保存所有更新的桌位狀態
-	    tableManagementDao.saveAll(updatedTables);
 	}
 }
