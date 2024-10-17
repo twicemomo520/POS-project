@@ -1,4 +1,4 @@
-*.properties
+
 HELP.md
 .gradle
 build/
@@ -9,6 +9,7 @@ build/
 ### STS ###
 .apt_generated
 .classpath
+.properties
 .factorypath
 .project
 .settings
