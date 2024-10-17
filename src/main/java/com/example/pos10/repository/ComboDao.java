@@ -24,12 +24,13 @@ public interface ComboDao extends JpaRepository<ComboItems, String> {
 	
     @Modifying
     @Transactional
-	@Query(value= "insert into combo_items (combo_name, combo_detail, discount_amount) "
-			+ " values (:inputComboName, :inputComboDetail, :inputDiscountAmount) ", nativeQuery=true)
+	@Query(value= "insert into combo_items (combo_name, combo_detail, discount_amount, category_id) "
+			+ " values (:inputComboName, :inputComboDetail, :inputDiscountAmount, :inputCategoryId) ", nativeQuery=true)
 	public void createCombo(
 			@Param("inputComboName") String comboName,
 			@Param("inputComboDetail") String comboDetail,
-			@Param("inputDiscountAmount") int discountAmount
+			@Param("inputDiscountAmount") int discountAmount,
+			@Param("inputCategoryId") int categoryId
 			);
     
     
@@ -55,12 +56,18 @@ public interface ComboDao extends JpaRepository<ComboItems, String> {
     		@Param("inputComboName") String comboName
     		);
     
+    
     @Query(value= "select * from combo_items as c"
     		+ " where (:inputComboName is null or :inputComboName = '' or c.combo_name = :inputComboName)", nativeQuery=true)
     public List<ComboItems> searchCombo(
     		@Param("inputComboName") String comboName
     		);
     
+	@Query( value = " SELECT * FROM combo_items " ,nativeQuery = true)
+	public List<ComboItems> selectAll();
 	
+	@Query(value = "SELECT COUNT(*) AS combo_name "
+			+ "FROM combo_items", nativeQuery = true)
+	public int countData();
 	
 }

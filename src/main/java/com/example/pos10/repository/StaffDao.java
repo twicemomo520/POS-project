@@ -81,5 +81,33 @@ public interface StaffDao extends JpaRepository<Staff, String> {
 	//確認輸入的員工編號和email是同一個人
     @Query(value = "SELECT COUNT(*) FROM staff WHERE staff_number = :staffNember AND email = :email", nativeQuery = true)
     public int checkEmail(@Param("staffNember") String staffNember, @Param("email") String email);
-
+    
+    //以下為無聊新增 因不想改動上面方法 所以都在下面新增
+       
+    
+    // 更新錯誤次數
+ 	@Modifying
+ 	@Transactional
+ 	@Query(value = " UPDATE staff SET error_count = :errorCount WHERE staff_number = :staffNember", nativeQuery = true)
+ 	public int updateErrorCount(@Param("errorCount") int errorCount, @Param("staffNember") String staffNember);
+    
+ 	//更新封鎖時間
+ 	@Modifying
+ 	@Transactional
+ 	@Query(value = " UPDATE staff SET block_time = :blocktime WHERE staff_number = :staffNember", nativeQuery = true)
+ 	public int updateBlockTime(@Param("blocktime") LocalDateTime blocktime, @Param("staffNember") String staffNember);
+ 	
+ 	
+ 	//更新是否為第一次登入
+ 	@Modifying
+ 	@Transactional
+ 	@Query(value = " UPDATE staff SET first_login = 0 WHERE staff_number = :staffNember", nativeQuery = true)
+ 	public int updateFirstLogin( @Param("staffNember") String staffNember);
+ 	
+ 	//確認此權限是否有人使用了
+ 	@Query( value = "SELECT COUNT(*) FROM staff WHERE authorization = :authorization",nativeQuery = true )
+ 	public int countAuthorization(@Param("authorization") int authorization);
+ 	
+ 	
+ 	
 }

@@ -31,13 +31,15 @@ public class ComboServiceImpl implements ComboService{
 		String comboName =  req.getComboName();
 		String comboDetail = req.getComboDetail();
 		int discountAmount = req.getDiscountAmount();
+		int categoryId = req.getCategoryId();
+		System.out.println(comboDetail);
 		
 		long countByComboName = comboDao.countByComboName(comboName);
 		if (countByComboName>0) {
 			return new BasicRes(ResMessage.COMBO_NAME_EXISTS.getCode(), ResMessage.COMBO_NAME_EXISTS.getMessage());
 		}
 		
-		comboDao.createCombo(comboName, comboDetail, discountAmount);
+		comboDao.createCombo(comboName, comboDetail, discountAmount, categoryId);
 		
 		return new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
 	}
@@ -50,6 +52,7 @@ public class ComboServiceImpl implements ComboService{
 		String comboName =  req.getComboName();
 		String comboDetail = req.getComboDetail();
 		int discountAmount = req.getDiscountAmount();
+//		int categoryId = req.getCategoryId();
 		
 		if (StringUtils.isEmpty(oldComboName) || StringUtils.isEmpty(comboName) || 
 				StringUtils.isEmpty(comboDetail) || StringUtils.isEmpty(discountAmount)) {
@@ -68,8 +71,6 @@ public class ComboServiceImpl implements ComboService{
 	}
 
 	
-	
-	
 	@Override
 	public BasicRes deleteCombo(DeleteCbReq req) {
 		
@@ -85,12 +86,20 @@ public class ComboServiceImpl implements ComboService{
 		return  new BasicRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
 	}
 
+	
 	@Override
 	public SearchCbRes searchCombo(SearchCbReq req) {
 		String comboName = req.getComboName();
 		List<ComboItems> comboList = comboDao.searchCombo(comboName);
 		
 		return new SearchCbRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(), comboList);
+	}
+
+
+
+	@Override
+	public int countData() {
+		return comboDao.countData();
 	}
 
 }

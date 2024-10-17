@@ -12,81 +12,76 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
 @Entity
-@Table(name = "order_detail_history")
-public class OrderDetailHistory {
+@Table(name = "orders_history")
+public class OrdersHistory {
 	
-	@NotBlank(message = "Id cannot be null or empty")
 	@Id
 	@Column(name = "id")
-	private int id;
+	private Integer id;
 	
-	@NotBlank(message = "Order Id cannot be null or empty")
 	@Column(name = "order_id")
 	private String orderId;
 	
-	@NotBlank(message = "Order meal Id cannot be null or empty")
 	@Column(name = "order_meal_id")
 	private String orderMealId;
 	
-	
-	@NotBlank(message = "Combo name cannot be null or empty")
-	@Column(name = "combo_name")
-	private String comboName;
+    @Column(name = "combo_name")
+    private String comboName;
 	
 	
-	@NotBlank(message = "Meal detail cannot be null or empty")
-	@Column(name = "meal_detail")
-	private String mealDetail;
+	@Column(name = "meal_name")
+	private String mealName;
 	
+    @Column(name = "options")
+    private String options;
 	
-	@NotBlank(message = "Workstation id cannot be null or empty")
 	@Column(name = "workstation_id")
-	private int workstationId;
+	private Integer workstationId;
+
 	
-	
-	@Min (value = 0, message = "Quantity must be greater than 0 !!!")
-	@Column(name = "quantity")
-	private int quantity;
-	
-	
-	@Min (value = 0, message = "Price must be greater than 0 !!!")
 	@Column(name = "price")
-	private int price;
+	private Integer price;
 	
-	@NotBlank(message = "Meal status cannot be null or empty")
 	@Column (name = "meal_status")
 	private String mealStatus;
 	
 	
-	@NotBlank(message = "Table number cannot be null or empty")
 	@Column(name = "table_number")
 	private String tableNumber;
 	
 	
-	@NotBlank(message = "Order time cannot be null or empty")
 	@Column(name = "order_time")
 	private LocalDateTime orderTime;
 	
 	
 	@Column(name = "checkout")
-	private Boolean checkout;
+	private Boolean checkout = false;
 
 
-	public OrderDetailHistory() {
+	public OrdersHistory() {
 		super();
 	}
 
 
-	public OrderDetailHistory(int id,String orderId,String orderMealId,String comboName,String mealDetail,//
-			int workstationId, int quantity, int price,String mealStatus,String tableNumber,LocalDateTime orderTime, Boolean checkout) {
+	public OrdersHistory(@NotBlank(message = "Id cannot be null or empty") Integer id,
+			@NotBlank(message = "Order Id cannot be null or empty") String orderId,
+			@NotBlank(message = "Order meal Id cannot be null or empty") String orderMealId,
+			@NotBlank(message = "Combo name cannot be null or empty") String comboName,
+			@NotBlank(message = "Combo name cannot be null or empty") String mealName,
+			@NotBlank(message = "Options cannot be null or empty") String options,
+			@NotBlank(message = "Workstation id cannot be null or empty") Integer workstationId,
+			@Min(value = 0, message = "Price must be greater than 0 !!!") Integer price,
+			@NotBlank(message = "Meal status cannot be null or empty") String mealStatus,
+			@NotBlank(message = "Table number cannot be null or empty") String tableNumber,
+			@NotBlank(message = "Order time cannot be null or empty") LocalDateTime orderTime, Boolean checkout) {
 		super();
 		this.id = id;
 		this.orderId = orderId;
 		this.orderMealId = orderMealId;
 		this.comboName = comboName;
-		this.mealDetail = mealDetail;
+		this.mealName = mealName;
+		this.options = options;
 		this.workstationId = workstationId;
-		this.quantity = quantity;
 		this.price = price;
 		this.mealStatus = mealStatus;
 		this.tableNumber = tableNumber;
@@ -95,12 +90,12 @@ public class OrderDetailHistory {
 	}
 
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -135,42 +130,42 @@ public class OrderDetailHistory {
 	}
 
 
-	public String getMealDetail() {
-		return mealDetail;
+	public String getMealName() {
+		return mealName;
 	}
 
 
-	public void setMealDetail(String mealDetail) {
-		this.mealDetail = mealDetail;
+	public void setMealName(String mealName) {
+		this.mealName = mealName;
 	}
 
 
-	public int getWorkstationId() {
+	public String getOptions() {
+		return options;
+	}
+
+
+	public void setOptions(String options) {
+		this.options = options;
+	}
+
+
+	public Integer getWorkstationId() {
 		return workstationId;
 	}
 
 
-	public void setWorkstationId(int workstationId) {
+	public void setWorkstationId(Integer workstationId) {
 		this.workstationId = workstationId;
 	}
 
 
-	public int getQuantity() {
-		return quantity;
-	}
-
-
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
-
-
-	public int getPrice() {
+	public Integer getPrice() {
 		return price;
 	}
 
 
-	public void setPrice(int price) {
+	public void setPrice(Integer price) {
 		this.price = price;
 	}
 
@@ -213,6 +208,8 @@ public class OrderDetailHistory {
 	public void setCheckout(Boolean checkout) {
 		this.checkout = checkout;
 	}
+
+
 
 	
 

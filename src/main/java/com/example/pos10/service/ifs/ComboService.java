@@ -17,5 +17,6 @@ public interface ComboService {
 	
 	public SearchCbRes searchCombo(SearchCbReq req);
 	
+	public int countData();
 
 }

@@ -56,13 +56,27 @@ public class ReservationServiceImpl implements ReservationService {
 
         for (TimeSlotWithTableStatusRes timeSlot : availableTableStatuses) {
             boolean hasAvailableTable = false;
+            int totalCapacity = 0;  // 用來計算多張桌位的總容量
+            List<TableManagement> mergeableTables = new ArrayList<>(); // 存儲可合併的桌位
 
             // 檢查每個時間段中的桌位狀態
             for (TableManagement table : timeSlot.getTableStatuses()) {
-                // 檢查桌位是否滿足條件（例如容量和狀態）
+                // 檢查單桌是否滿足條件（例如容量和狀態）
                 if (table.getTableCapacity() >= reservationPeople && table.getTableStatus().equals(TableManagement.TableStatus.可使用)) {
-                    hasAvailableTable = true;
-                    break;
+                    hasAvailableTable = true;  // 單桌直接滿足，標記為可用
+                    break;  // 不需要繼續檢查其他桌位
+                }
+
+                // 如果單個桌位容量不夠，但可合併，將其加入合併桌位列表
+                if (table.getTableStatus().equals(TableManagement.TableStatus.可使用)) {
+                    mergeableTables.add(table);
+                    totalCapacity += table.getTableCapacity();
+
+                    // 如果累計的總容量已經滿足訂位需求，標記為可用
+                    if (totalCapacity >= reservationPeople) {
+                        hasAvailableTable = true;
+                        break;  // 已經找到滿足需求的桌位，不需要繼續檢查
+                    }
                 }
             }
 
@@ -79,7 +93,7 @@ public class ReservationServiceImpl implements ReservationService {
         return new ReservationRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(), availableTimeSlots, null);
     }
     
-    // 2. 儲存訂位
+ // 2. 儲存訂位
     @Override
     @Transactional
     public ReservationRes saveReservation(ReservationReq reservationReq) {
@@ -407,11 +421,6 @@ public class ReservationServiceImpl implements ReservationService {
  	    if (table == null) {
  	        return new ReservationRes(ResMessage.TABLE_NUMBER_NOT_FOUND.getCode(), ResMessage.TABLE_NUMBER_NOT_FOUND.getMessage());
  	    }
-
-        // 2. 確保桌位處於 訂位中 狀態
-        if (!table.getTableStatus().equals(TableManagement.TableStatus.訂位中)) {
-        	return new ReservationRes(ResMessage.INVALID_STATUS_TRANSITION.getCode(), ResMessage.INVALID_STATUS_TRANSITION.getMessage());
-        }
        
         // 3. 更新桌位狀態為 用餐中
         int updatedCount = reservationDao.manualCheckIn(tableNumber, TableStatus.用餐中, TableStatus.訂位中);

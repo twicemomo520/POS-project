@@ -4,6 +4,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,6 +42,11 @@ public class ComboController {
 	@PostMapping(value="pos/searchCombo")
 	public SearchCbRes searchCombo(@Valid @RequestBody SearchCbReq req) {
 		return comboService.searchCombo(req);
+	}
+	
+	@GetMapping(value = "pos/countComboData")
+	public int countData() {
+		return comboService.countData();
 	}
 	
 }

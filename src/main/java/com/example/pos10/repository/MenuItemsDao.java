@@ -57,6 +57,16 @@ public interface MenuItemsDao extends JpaRepository<MenuItems, String> {
 			@Param("price") int price, //
 			@Param("available") boolean available, //
 			@Param("pictureName") String pictureName);
+	
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE menu_items "
+			+ " SET "
+			+ " workstation_id = :workstationId"
+			+ " WHERE "
+			+ " category_id = :categoryId", nativeQuery = true)
+	public int updateMenuWorkStation(@Param("workstationId") int workstationId, //
+			@Param("categoryId") int categoryId);
 
 	// 刪除資料
 	@Modifying
@@ -64,9 +74,11 @@ public interface MenuItemsDao extends JpaRepository<MenuItems, String> {
 	@Query(value = "delete from menu_items where meal_name = :mealName", nativeQuery = true)
 	public int deleteMenuByMealName(@Param("mealName") String mealName);
 	
-	
-	
-	
+	@Modifying
+	@Transactional
+	@Query(value = "DELETE FROM menu_items "
+			+ " WHERE category_id = :categoryId", nativeQuery = true)
+	public int deleteMenuByCgId(@Param("categoryId") int categoryId);
 	
 	
 	

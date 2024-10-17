@@ -81,6 +81,10 @@ public class MenuItems {
 		return available;
 	}
 
+	public void setPictureName(String pictureName) {
+		this.pictureName = pictureName;
+	}
+
 	public String getPictureName() {
 		return pictureName;
 	}
