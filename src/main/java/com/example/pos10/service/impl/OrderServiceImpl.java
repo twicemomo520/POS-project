@@ -456,7 +456,15 @@ public class OrderServiceImpl implements OrderService {
 					DishVo dishVo = new DishVo();
 					dishVo.setDishName(dishName);
 
-					dishVo.setPrice(mealNameAndPrice.get(dishName));
+					//dishVo.setPrice(mealNameAndPrice.get(dishName));
+					Integer price = mealNameAndPrice.get(dishName);
+					if (price != null) {
+					    dishVo.setPrice(price);
+					} else {
+					    // 設置默認價格或記錄錯誤
+					    dishVo.setPrice(0); // 或者其他預設值
+					    System.out.println("No price found for dish: " + dishName);
+					}
 
 					dishVoList.add(dishVo);
 
