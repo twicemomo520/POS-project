@@ -79,7 +79,7 @@ public class ReservationServiceImpl implements ReservationService {
         return new ReservationRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(), availableTimeSlots, null);
     }
     
-    // 2. 儲存訂位
+ // 2. 儲存訂位
     @Override
     @Transactional
     public ReservationRes saveReservation(ReservationReq reservationReq) {
@@ -117,7 +117,8 @@ public class ReservationServiceImpl implements ReservationService {
         LocalTime reservationEndTime = reservationReq.getReservationEndingTime();
 
         // 7. 使用 TableManagementService 來獲取可用桌位狀態
-        List<TimeSlotWithTableStatusRes> availableTableStatuses = tableManagementService.getTodayTableStatuses();
+        List<TimeSlotWithTableStatusRes> availableTableStatuses = tableManagementService.getAvailableTableStatuses(
+            reservationDate, reservationStartTime, reservationEndTime);
 
         List<TableManagement> selectedTables = new ArrayList<>();
         int totalCapacity = 0;
