@@ -79,7 +79,7 @@ public class ReservationServiceImpl implements ReservationService {
         return new ReservationRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(), availableTimeSlots, null);
     }
     
- // 2. 儲存訂位
+    // 2. 儲存訂位
     @Override
     @Transactional
     public ReservationRes saveReservation(ReservationReq reservationReq) {
