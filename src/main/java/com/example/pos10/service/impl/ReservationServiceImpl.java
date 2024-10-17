@@ -79,7 +79,7 @@ public class ReservationServiceImpl implements ReservationService {
         return new ReservationRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage(), availableTimeSlots, null);
     }
     
-    // 2. 儲存訂位
+ // 2. 儲存訂位
     @Override
     @Transactional
     public ReservationRes saveReservation(ReservationReq reservationReq) {
@@ -403,21 +403,21 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional // 確保資料庫的更新操作在事務中執行
     public ReservationRes manualCheckIn(String tableNumber, int reservationId) {
         // 1. 檢查桌號是否存在
-    	 TableManagement table = tableManagementDao.findById(tableNumber).orElse(null);
- 	    if (table == null) {
- 	        return new ReservationRes(ResMessage.TABLE_NUMBER_NOT_FOUND.getCode(), ResMessage.TABLE_NUMBER_NOT_FOUND.getMessage());
- 	    }
+      TableManagement table = tableManagementDao.findById(tableNumber).orElse(null);
+      if (table == null) {
+          return new ReservationRes(ResMessage.TABLE_NUMBER_NOT_FOUND.getCode(), ResMessage.TABLE_NUMBER_NOT_FOUND.getMessage());
+      }
 
         // 2. 確保桌位處於 訂位中 狀態
         if (!table.getTableStatus().equals(TableManagement.TableStatus.訂位中)) {
-        	return new ReservationRes(ResMessage.INVALID_STATUS_TRANSITION.getCode(), ResMessage.INVALID_STATUS_TRANSITION.getMessage());
+         return new ReservationRes(ResMessage.INVALID_STATUS_TRANSITION.getCode(), ResMessage.INVALID_STATUS_TRANSITION.getMessage());
         }
        
         // 3. 更新桌位狀態為 用餐中
         int updatedCount = reservationDao.manualCheckIn(tableNumber, TableStatus.用餐中, TableStatus.訂位中);
         if (updatedCount == 0) {
-        	 return new ReservationRes(ResMessage.FAILED_TO_UPDATE_TABLE_STATUS.getCode(), //
-             		ResMessage.FAILED_TO_UPDATE_TABLE_STATUS.getMessage());
+          return new ReservationRes(ResMessage.FAILED_TO_UPDATE_TABLE_STATUS.getCode(), //
+               ResMessage.FAILED_TO_UPDATE_TABLE_STATUS.getMessage());
         }
         
         // 4. 刪除對應的訂位資料
