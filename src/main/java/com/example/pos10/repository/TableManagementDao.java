@@ -56,6 +56,7 @@ public interface TableManagementDao extends JpaRepository <TableManagement, Stri
 	
 	// 7. 更改桌位的狀態
 	@Modifying
+	@Transactional
     @Query("UPDATE TableManagement t SET t.tableStatus = :status WHERE t.tableNumber = :tableNumber")
     public int updateTableStatus(@Param("tableNumber") String tableNumber, @Param("status") TableManagement.TableStatus status);
 	

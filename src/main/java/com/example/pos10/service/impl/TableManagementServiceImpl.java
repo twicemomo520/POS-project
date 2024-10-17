@@ -316,29 +316,6 @@ public class TableManagementServiceImpl implements TableManagementService {
 						availableTables // 在這裡使用可用的桌位狀態
 				);
 				
-				// 加入提供的邏輯來深度複製桌位並過濾預訂紀錄
-				for (TableManagement table : availableTables) {
-					// 深度複製一個新的 table 物件來避免直接修改原始的 table 資料
-					TableManagement tableClone = new TableManagement(table.getTableNumber(), table.getTableCapacity(),
-							table.getTableStatus());
-
-					// 過濾掉不符合條件的預訂紀錄
-					List<Reservation> filteredReservations = table.getReservations().stream()
-							.filter(reservation -> reservation.getReservationStartTime().equals(slot)
-									|| (reservation.getReservationStartTime().isBefore(slot)
-											&& reservation.getReservationEndingTime().isAfter(slot)))
-							.collect(Collectors.toList());
-
-					tableClone.setReservations(filteredReservations);
-
-					// 如果該時間段內沒有訂位，將狀態設置為「可使用」
-					if (filteredReservations.isEmpty()) {
-						tableClone.setTableStatus(TableStatus.可使用);
-					}
-
-					// 將經過篩選的 table 狀態添加到 slot 狀態中
-					slotStatus.getTableStatuses().add(tableClone);
-				}
 
 				// 將時間段與桌位狀態添加到回應列表
 				response.add(slotStatus);

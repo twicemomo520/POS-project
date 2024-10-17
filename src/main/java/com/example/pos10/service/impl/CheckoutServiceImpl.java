@@ -262,11 +262,11 @@ public class CheckoutServiceImpl implements CheckoutService {
 		// 修改此訂單編號的orders為結帳
 		checkoutDao.updateCheckout(req.getOrderId());
 		
-//		// 更新桌位狀態為可使用
-//	    int updatedRows = tableManagementDao.updateTableStatus(req.getTableNumber(), TableManagement.TableStatus.可使用);
-//	    if (updatedRows == 0) {
-//	        return new BasicRes(400, "更新桌位狀態失敗: 找不到桌號或狀態不正確");
-//	    }
+		// 更新桌位狀態為可使用
+	    int updatedRows = tableManagementDao.updateTableStatus(req.getTableNumber(), TableManagement.TableStatus.可使用);
+	    if (updatedRows == 0) {
+	        return new BasicRes(400, "更新桌位狀態失敗: 找不到桌號或狀態不正確");
+	    }
 	    
 		if (req.getPayType().equals("信用卡")) {
 
