@@ -25,31 +25,6 @@ public enum ResMessage {
 	COMBO_NAME_NOT_FOUND(404,"Combo name cannot found"), //
 	UPLOAD_FAILED(400, "Upload failed"),//
 	
-	// TableManagement
-	INVALID_TABLE_STATUS (400, "Invalid table status value !!!"), //
-	NULL_OR_EMPTY_TABLE_STATUS (400, "Table status cannot be null or empty !!!"), //
-	TABLE_NUMBER_ALREADY_EXIST (400, "Table number already exists !!!"), //
-	INVALID_TABLE_CAPACITY (400, "Table capacity must be greater than 0 !!!"), //
-	TABLE_NUMBER_NOT_FOUND (400, "Table number not found !!!"), //
-	INVALID_TABLE_NUMBER_NAME (400, "Table number name is invalid !!!"), //
-	TABLE_HAS_RESERVATION_ID (400, "Table has reservaion id !!!"), //
-	TABLE_STATUS_IS_NOT_AVAILABLE (400, "Table status is not available !!!"), //
-	INVALID_STATUS_TRANSITION (400, "Table status transition is invalid !!!"), //
-	TABLE_RESERVATION_CONFLICT(400, "Table is already reserved by another reservation !!!"), //
-	TABLE_STATUS_NOT_FOUND (400, "Table status not found !!!"), //
-	TABLE_STATUS_NOT_ALLOWED_FOR_CAPACITY_CHANGE (400, "Table status not allowed for capacity change !!!"), //
-	INVALID_CUSTOMER_COUNT (400, "Customer count is invalid !!!"), //
-		
-	// OperatingHours
-	INVALID_OPERATING_HOURS (400, "Opening time or closing time cannot be null !!!"), // 營業開始時間或結束時間不得為空
-	OPENING_TIME_AFTER_CLOSING (400, "Opening time cannot be later than closing time !!!"), // 營業開始時間不能晚於結束時間
-	INVALID_DINING_DURATION (400, "Dining duration must be greater than 0 minutes !!!"), // 用餐時間應該大於 0
-	CONFLICTING_OPERATING_HOURS (409, "Conflicting operating hours found !!!"), // 有營業時間段衝突
-	INVALID_ID_LIST (400, "The provided ID list cannot be null or empty !!!"), // 傳入的 ID 列表不能為空或 null
-	
-	// Reservation
-	NO_AVAILABLE_TABLES (400, "No available tables !!!"), // 沒有可使用中的桌位
-	
 		
 	// ReservationManagement
 	NO_BUSINESS_HOURS_FOUND_FOR_DAY (400, "No business hours found for the selected day !!!"), // 當天無營業時間

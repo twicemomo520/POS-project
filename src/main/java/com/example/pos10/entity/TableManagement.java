@@ -5,6 +5,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "table_management")
 public class TableManagement {
@@ -27,21 +29,22 @@ public class TableManagement {
     @Column(name = "table_status", nullable = false)
     private TableStatus tableStatus;
 
-    // 多對多關係，與 Reservation 表關聯
-    @ManyToMany(mappedBy = "tables")
-    private List<Reservation> reservations; // 這裡指向 Reservation 的多對多關係
+    @OneToMany(mappedBy = "table")
+    @JsonManagedReference("table-reservationTables") // 使用唯一名稱
+    private List<ReservationAndTable> reservationTables; // 關聯到中間表
 
     public TableManagement() {
         super();
     }
 
-    public TableManagement(String tableNumber, int tableCapacity, TableStatus tableStatus) {
-        this.tableNumber = tableNumber;
-        this.tableCapacity = tableCapacity;
-        this.tableStatus = tableStatus;
-    }
-
-    // Getter 和 Setter
+    public TableManagement(String tableNumber, int tableCapacity, TableStatus tableStatus, List<ReservationAndTable> reservationTables) {
+		super();
+		this.tableNumber = tableNumber;
+		this.tableCapacity = tableCapacity;
+		this.tableStatus = tableStatus;
+		this.reservationTables = reservationTables;
+	}
+    
     public String getTableNumber() {
         return tableNumber;
     }
@@ -66,11 +69,11 @@ public class TableManagement {
         this.tableStatus = tableStatus;
     }
 
-    public List<Reservation> getReservations() {
-        return reservations;
-    }
+	public List<ReservationAndTable> getReservationTables() {
+		return reservationTables;
+	}
 
-    public void setReservations(List<Reservation> reservations) {
-        this.reservations = reservations;
-    }
+	public void setReservationTables(List<ReservationAndTable> reservationTables) {
+		this.reservationTables = reservationTables;
+	}
 }

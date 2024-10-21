@@ -3,7 +3,16 @@ package com.example.pos10.entity;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import javax.persistence.*;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
@@ -11,7 +20,7 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table (name = "reservation")
@@ -56,18 +65,12 @@ public class Reservation {
     private LocalTime reservationStartTime;
     
     // 預約結束時間
-    @Column (name = "reservation_endingtime", nullable = false)
-    private LocalTime reservationEndingTime;
+    @Column (name = "reservation_endtime", nullable = false)
+    private LocalTime reservationEndTime;
 
-    // 與 TableManagement 之間的多對多關係
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable (
-        name = "reservation_table", // 中間表名
-        joinColumns = @JoinColumn(name = "reservation_id"), // Reservation 的外鍵
-        inverseJoinColumns = @JoinColumn(name = "table_number") // TableManagement 的外鍵
-    )
-    @JsonBackReference
-    private List <TableManagement> tables; // 用來儲存分配的桌位
+    @OneToMany(mappedBy = "reservation")
+    @JsonManagedReference("reservation-reservationTables") // 使用唯一名稱
+    private List <ReservationAndTable> reservationTables; // 關聯到中間表
 
     public enum Gender {
         先生, 小姐
@@ -77,22 +80,23 @@ public class Reservation {
         super();
     }
 
-    public Reservation (int reservationId, String customerName, String customerPhoneNumber, String customerEmail,Gender customerGender, 
-    		int reservationPeople, LocalDate reservationDate, LocalTime reservationStartTime, LocalTime reservationEndingTime, 
-    		List <TableManagement> tables) {
-        this.reservationId = reservationId;
-        this.customerName = customerName;
-        this.customerPhoneNumber = customerPhoneNumber;
-        this.customerEmail = customerEmail;
-        this.customerGender = customerGender;
-        this.reservationPeople = reservationPeople;
-        this.reservationDate = reservationDate;
-        this.reservationStartTime = reservationStartTime;
-        this.reservationEndingTime = reservationEndingTime;
-        this.tables = tables;
-    }
+    public Reservation(int reservationId, String customerName, String customerPhoneNumber, String customerEmail,Gender customerGender,
+    		int reservationPeople, LocalDate reservationDate, LocalTime reservationStartTime, LocalTime reservationEndTime,
+    		List <ReservationAndTable> reservationTables) {
+		super();
+		this.reservationId = reservationId;
+		this.customerName = customerName;
+		this.customerPhoneNumber = customerPhoneNumber;
+		this.customerEmail = customerEmail;
+		this.customerGender = customerGender;
+		this.reservationPeople = reservationPeople;
+		this.reservationDate = reservationDate;
+		this.reservationStartTime = reservationStartTime;
+		this.reservationEndTime = reservationEndTime;
+		this.reservationTables = reservationTables;
+	}
 
-    public int getReservationId () {
+	public int getReservationId () {
         return reservationId;
     }
 
@@ -157,18 +161,18 @@ public class Reservation {
     }
 
     public LocalTime getReservationEndingTime () {
-        return reservationEndingTime;
+        return reservationEndTime;
     }
 
     public void setReservationEndingTime (LocalTime reservationEndingTime) {
-        this.reservationEndingTime = reservationEndingTime;
+        this.reservationEndTime = reservationEndingTime;
     }
 
-    public List <TableManagement> getTables () {
-        return tables;
-    }
+	public List<ReservationAndTable> getReservationTables() {
+		return reservationTables;
+	}
 
-    public void setTables (List <TableManagement> tables) {
-        this.tables = tables;
-    }
+	public void setReservationTables(List<ReservationAndTable> reservationTables) {
+		this.reservationTables = reservationTables;
+	}
 }

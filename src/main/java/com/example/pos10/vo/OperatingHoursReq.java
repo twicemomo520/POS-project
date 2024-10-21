@@ -6,10 +6,12 @@ import com.example.pos10.entity.OperatingHours;
 
 public class OperatingHoursReq extends OperatingHours {
 
-	public OperatingHoursReq() {
+	public OperatingHoursReq () {
+		super ();
 	}
 
-	public OperatingHoursReq (DayOfWeek dayOfWeek, LocalTime openingTime, LocalTime closingTime, int diningDuration) {
-		super (dayOfWeek, openingTime, closingTime, diningDuration);
-	}
+	public OperatingHoursReq (int id, DayOfWeek dayOfWeek, LocalTime openingTime, LocalTime closingTime,
+			int diningDuration, Integer cleaningBreak) {
+		super (id, dayOfWeek, openingTime, closingTime, diningDuration, cleaningBreak);
+	}	
 }

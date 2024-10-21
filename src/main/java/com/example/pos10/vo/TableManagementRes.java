@@ -1,7 +1,7 @@
 package com.example.pos10.vo;
 
-import java.time.LocalTime;
 import java.util.List;
+
 import com.example.pos10.entity.TableManagement;
 
 public class TableManagementRes {

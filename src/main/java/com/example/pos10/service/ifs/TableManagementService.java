@@ -1,7 +1,5 @@
 package com.example.pos10.service.ifs;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import com.example.pos10.entity.TableManagement;
@@ -26,9 +24,5 @@ public interface TableManagementService {
     // 5. 根據時間段獲取所有桌位的狀態
     public List<TimeSlotWithTableStatusRes> getTodayTableStatuses();
     
-    // 6. 根據日期查詢可使用的桌位狀態
-    public List<TimeSlotWithTableStatusRes> getAvailableTableStatusesByDate(LocalDate reservationDate);
-    
-    // 7. 根據日期和訂位時間查詢可使用的桌位狀態
-    public List<TimeSlotWithTableStatusRes> getAvailableTableStatuses(LocalDate reservationDate, LocalTime reservationStartTime, LocalTime reservationEndingTime);
+   
 }

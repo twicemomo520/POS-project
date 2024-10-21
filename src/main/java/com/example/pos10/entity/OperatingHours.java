@@ -35,23 +35,30 @@ public class OperatingHours {
     @Column(name = "dining_duration", nullable = false)
     @NotNull(message = "Dining duration cannot be null !!!")
     private int diningDuration; // 用餐時間，以分鐘為單位
+    
+    @Column(name = "cleaning_break")
+    private Integer cleaningBreak; //用餐間隔時間（清潔時間？）
 
     public enum DayOfWeek {
         星期一, 星期二, 星期三, 星期四, 星期五, 星期六, 星期日
     }
 
-    public OperatingHours() {
+    public OperatingHours () {
         super();
     }
 
-    public OperatingHours(DayOfWeek dayOfWeek, LocalTime openingTime, LocalTime closingTime, int diningDuration) {
-        this.dayOfWeek = dayOfWeek;
-        this.openingTime = openingTime;
-        this.closingTime = closingTime;
-        this.diningDuration = diningDuration;
-    }
+    public OperatingHours (int id, DayOfWeek dayOfWeek, LocalTime openingTime, LocalTime closingTime, int diningDuration, 
+    		Integer cleaningBreak) {
+		super();
+		this.id = id;
+		this.dayOfWeek = dayOfWeek;
+		this.openingTime = openingTime;
+		this.closingTime = closingTime;
+		this.diningDuration = diningDuration;
+		this.cleaningBreak = cleaningBreak;
+	}
 
-    public int getId() {
+	public int getId() {
         return id;
     }
 
@@ -90,4 +97,12 @@ public class OperatingHours {
     public void setDiningDuration(int diningDuration) {
         this.diningDuration = diningDuration;
     }
+
+	public Integer getCleaningBreak() {
+		return cleaningBreak;
+	}
+
+	public void setCleaningBreak(Integer cleaningBreak) {
+		this.cleaningBreak = cleaningBreak;
+	}
 }

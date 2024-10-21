@@ -24,23 +24,24 @@ public class OperatingHoursController {
     private OperatingHoursService operatingHoursService;
 
     // 1. 批量新增或更新營業時間
-    @PostMapping("/operatingHours/saveOperatingHours")
+    @PostMapping(value = "/operatingHours/saveOperatingHours")
     public List<OperatingHoursRes> saveOperatingHours(@RequestBody List<OperatingHoursReq> operatingHoursReqList) {
         return operatingHoursService.saveOperatingHours(operatingHoursReqList);
     }
     
     // 2. 計算可用的預約時間段
-    @GetMapping("/operatingHours/calculateAvailableStartTimes")
+    @GetMapping (value = "/operatingHours/calculateAvailableStartTimes")
     public List <LocalTime> calculateAvailableStartTimes(
     		@RequestParam ("openingTime") @DateTimeFormat (iso = DateTimeFormat.ISO.TIME) LocalTime openingTime,
     		@RequestParam ("closingTime") @DateTimeFormat (iso = DateTimeFormat.ISO.TIME) LocalTime closingTime,
-            @RequestParam int diningDuration) {
-        // 使用服務來計算可用的時間段
-        return operatingHoursService.calculateAvailableTimeSlots(openingTime, closingTime, diningDuration);
+            @RequestParam int diningDuration,
+            @RequestParam (required = false) Integer cleaningBreak) {
+    	// 使用服務來計算可用的時間段，傳入清潔時間參數
+        return operatingHoursService.calculateAvailableTimeSlots(openingTime, closingTime, diningDuration, cleaningBreak);
     }
     
     // 3. 查詢店鋪的營業時間，dayOfWeek 可選
-    @GetMapping("/operatingHours/getOperatingHours")
+    @GetMapping(value = "/operatingHours/getOperatingHours")
     public List<OperatingHours> getOperatingHours (@RequestParam(value = "dayOfWeek", required = false) String dayOfWeek) {
         try {
             return operatingHoursService.getOperatingHours(dayOfWeek);
@@ -51,7 +52,7 @@ public class OperatingHoursController {
     }
     
     // 4. 刪除指定的營業時間
-    @DeleteMapping("/operatingHours/deleteOperatingHours")
+    @DeleteMapping(value = "/operatingHours/deleteOperatingHours")
     public OperatingHoursRes deleteOperatingHours(@RequestBody List<Integer> ids) {
         return operatingHoursService.deleteOperatingHours(ids);
     }
