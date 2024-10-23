@@ -86,20 +86,25 @@ public class OperatingHoursServiceImpl implements OperatingHoursService {
                 operatingHours.setClosingTime(closingTime); // 對應的結束時間
                 operatingHours.setDiningDuration(req.getDiningDuration());
                 operatingHours.setCleaningBreak(req.getCleaningBreak());
-                operatingHoursDao.save(operatingHours);
+                operatingHoursDao.save(operatingHours); // 保存營業時間
 
                 // 7. 查詢是否已存在桌位
                 List<TableManagement> tables = tableManagementDao.findAll();
                 if (tables != null && !tables.isEmpty()) {
-                    // 8. 將每個桌位與新的時間段關聯，插入 reservation_and_table_timeslot 表
+                    // **構建與營業時間段的關聯**
+                    List<ReservationAndTableTimeslot> timeslotList = new ArrayList<>();
                     for (TableManagement table : tables) {
-                        reservationAndTableTimeslotDao.insertTimeslot(
-                            table.getTableNumber(),
-                            operatingHours.getId(),  // operating_hours 表中的 ID
-                            LocalDate.now(),          // 使用當前日期或其他動態邏輯
-                            "可使用"                 // 默認狀態
-                        );
+                        ReservationAndTableTimeslot timeslot = new ReservationAndTableTimeslot();
+                        timeslot.setTableManagement(table); // 使用桌位實體關聯
+                        timeslot.setOperatingHours(operatingHours); // 使用營業時間實體關聯
+                        timeslot.setReservationDate(LocalDate.now()); // 使用當前日期，或可根據需求動態調整
+                        timeslot.setTableStatus(ReservationAndTableTimeslot.TableStatus.可使用); // 默認狀態
+
+                        // 將 timeslot 加入到列表
+                        timeslotList.add(timeslot);
                     }
+                    // 批量保存所有 timeslot
+                    reservationAndTableTimeslotDao.saveAll(timeslotList);
                 }
             }
 
@@ -169,7 +174,7 @@ public class OperatingHoursServiceImpl implements OperatingHoursService {
     // 4. 刪除指定的營業時間
     @Override
     @Transactional
-    public OperatingHoursRes deleteOperatingHours(List <Integer> ids) {
+    public OperatingHoursRes deleteOperatingHours(List<Integer> ids) {
         // 檢查傳入的 ID 列表是否為空
         if (ids == null || ids.isEmpty()) {
             return new OperatingHoursRes(400, "傳入的 營業時間 ID 列表不能為空或 null !!!");
@@ -182,6 +187,7 @@ public class OperatingHoursServiceImpl implements OperatingHoursService {
             existingIds.add(hour.getId());
         }
 
+        // 檢查是否有不存在的 ID
         List<Integer> notFoundIds = new ArrayList<>();
         for (Integer id : ids) {
             if (!existingIds.contains(id)) {
@@ -194,12 +200,20 @@ public class OperatingHoursServiceImpl implements OperatingHoursService {
             List<ReservationAndTableTimeslot> timeslotList = reservationAndTableTimeslotDao.findByOperatingHourId(id);
             if (timeslotList != null && !timeslotList.isEmpty()) {
                 // 2. 刪除與營業時間相關的 reservation_and_table_timeslot 記錄
-                reservationAndTableTimeslotDao.deleteByOperatingHourId(id);
+                try {
+                    reservationAndTableTimeslotDao.deleteByOperatingHourId(id);
+                } catch (Exception e) {
+                    return new OperatingHoursRes(500, "刪除與營業時間相關的預約時間段時發生錯誤: " + e.getMessage());
+                }
             }
         }
 
         // 3. 批量刪除已存在的營業時間
-        operatingHoursDao.deleteAllById(existingIds);
+        try {
+            operatingHoursDao.deleteAllById(existingIds);
+        } catch (Exception e) {
+            return new OperatingHoursRes(500, "刪除營業時間時發生錯誤，請稍後再試: " + e.getMessage());
+        }
 
         // 4. 設定響應結果
         OperatingHoursRes response = new OperatingHoursRes();

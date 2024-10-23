@@ -12,14 +12,20 @@ public class ReservationAndTableTimeslot {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "reservation_id")
-    private Integer reservationId;
+    // 使用 @ManyToOne 來表示與 Reservation 的關聯
+    @ManyToOne
+    @JoinColumn(name = "reservation_id", referencedColumnName = "reservation_id")
+    private Reservation reservation;  // 改為引用 Reservation 實體，而不是手動存儲 reservationId
 
-    @Column(name = "table_number")
-    private String tableNumber;
+    // 與 TableManagement 表的關聯
+    @ManyToOne
+    @JoinColumn(name = "table_number", referencedColumnName = "table_number")
+    private TableManagement tableManagement; // 引用 TableManagement 實體
 
-    @Column(name = "operating_hour_id")
-    private int operatingHourId;
+    // 與 OperatingHours 表的關聯
+    @ManyToOne
+    @JoinColumn(name = "operating_hour_id", referencedColumnName = "id")
+    private OperatingHours operatingHours; // 引用 OperatingHours 實體
 
     @Column(name = "reservation_date")
     private LocalDate reservationDate;
@@ -32,24 +38,22 @@ public class ReservationAndTableTimeslot {
         可使用, 已訂位, 用餐中
     }
 
+    // Constructor
     public ReservationAndTableTimeslot() {
-		super();
-	}
+        super();
+    }
 
-	public ReservationAndTableTimeslot(int id, Integer reservationId, String tableNumber, int operatingHourId, LocalDate reservationDate,
-    		TableStatus tableStatus) {
-		super();
-		this.id = id;
-		this.reservationId = reservationId;
-		this.tableNumber = tableNumber;
-		this.operatingHourId = operatingHourId;
-		this.reservationDate = reservationDate;
-		this.tableStatus = tableStatus;
-	}
+    public ReservationAndTableTimeslot(int id, Reservation reservation, TableManagement tableManagement, 
+                                       OperatingHours operatingHours, LocalDate reservationDate, TableStatus tableStatus) {
+        this.id = id;
+        this.reservation = reservation;
+        this.tableManagement = tableManagement;
+        this.operatingHours = operatingHours;
+        this.reservationDate = reservationDate;
+        this.tableStatus = tableStatus;
+    }
 
-
-
-	// Getters and Setters
+    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -58,28 +62,28 @@ public class ReservationAndTableTimeslot {
         this.id = id;
     }
 
-    public Integer getReservationId() {
-		return reservationId;
-	}
-
-	public void setReservationId(Integer reservationId) {
-		this.reservationId = reservationId;
-	}
-
-	public String getTableNumber() {
-        return tableNumber;
+    public Reservation getReservation() {
+        return reservation;
     }
 
-    public void setTableNumber(String tableNumber) {
-        this.tableNumber = tableNumber;
+    public void setReservation(Reservation reservation) {
+        this.reservation = reservation;
     }
 
-    public int getOperatingHourId() {
-        return operatingHourId;
+    public TableManagement getTableManagement() {
+        return tableManagement;
     }
 
-    public void setOperatingHourId(int operatingHourId) {
-        this.operatingHourId = operatingHourId;
+    public void setTableManagement(TableManagement tableManagement) {
+        this.tableManagement = tableManagement;
+    }
+
+    public OperatingHours getOperatingHours() {
+        return operatingHours;
+    }
+
+    public void setOperatingHours(OperatingHours operatingHours) {
+        this.operatingHours = operatingHours;
     }
 
     public LocalDate getReservationDate() {

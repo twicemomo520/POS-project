@@ -1,6 +1,7 @@
 package com.example.pos10.service.impl;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,23 +53,29 @@ public class TableManagementServiceImpl implements TableManagementService {
         }
 
         // 插入新桌位到 table_management 表
-        tableManagementDao.insertTableNumber(
-            tableReq.getTableNumber(), 
-            tableReq.getTableCapacity()
-        );
+        TableManagement newTable = new TableManagement();
+        newTable.setTableNumber(tableReq.getTableNumber());
+        newTable.setTableCapacity(tableReq.getTableCapacity());
+        tableManagementDao.save(newTable); // 儲存新桌位
 
         // 從 operating_hours 表查詢所有營業時間段
         List<OperatingHours> operatingHoursList = operatingHoursDao.findAll();
-
-        // 將新桌位與每個營業時間段關聯，插入 reservation_and_table_timeslot 表
+        
+        // 構建與營業時間段的關聯
+        List<ReservationAndTableTimeslot> timeslotList = new ArrayList<>();
         for (OperatingHours hours : operatingHoursList) {
-            reservationAndTableTimeslotDao.insertTimeslot(
-                tableReq.getTableNumber(),
-                hours.getId(), // operating_hours 表中的 ID
-                LocalDate.now(), // 或者你可以使用更動態的日期邏輯
-                "可使用" // 默認狀態
-            );
+            ReservationAndTableTimeslot timeslot = new ReservationAndTableTimeslot();
+            timeslot.setTableManagement(newTable); // 使用新創建的桌位
+            timeslot.setOperatingHours(hours);     // 使用對應的營業時間
+            timeslot.setReservationDate(LocalDate.now()); // 設置當前日期，也可根據具體業務邏輯調整
+            timeslot.setTableStatus(ReservationAndTableTimeslot.TableStatus.可使用); // 默認為可使用
+
+            // 將 timeslot 加入到列表，稍後批量保存
+            timeslotList.add(timeslot);
         }
+
+        // 批量保存所有 timeslot
+        reservationAndTableTimeslotDao.saveAll(timeslotList);
 
         return new TableManagementRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
     }
@@ -94,8 +101,12 @@ public class TableManagementServiceImpl implements TableManagementService {
                 }
             }
 
-            // 3. 刪除 reservation_and_table_timeslot 中的相關記錄
-            reservationAndTableTimeslotDao.deleteByTableNumber(tableNumber);
+            // 3. 刪除 reservation_and_table_timeslot 中的相關記錄（如果都處於 "可使用" 狀態）
+            try {
+                reservationAndTableTimeslotDao.deleteByTableNumber(tableNumber);
+            } catch (Exception e) {
+                return new TableManagementRes(500, "刪除預約時間段時發生錯誤，請稍後再試: " + e.getMessage());
+            }
         }
 
         // 4. 刪除 table_management 表中的桌位記錄
@@ -129,10 +140,14 @@ public class TableManagementServiceImpl implements TableManagementService {
                 return new TableManagementRes(400, "這個桌號已經存在在資料庫中 !!!");
             }
 
-            // 4. 刪除 reservation_and_table_timeslot 中的相關記錄
-            reservationAndTableTimeslotDao.deleteByTableNumber(oldTableNumber);
+            // 4. 更新 reservation_and_table_timeslot 中的桌號關聯
+            List<ReservationAndTableTimeslot> timeslots = reservationAndTableTimeslotDao.findByTableNumber(oldTableNumber);
+            for (ReservationAndTableTimeslot timeslot : timeslots) {
+                timeslot.getTableManagement().setTableNumber(newTableNumber);  // 更新關聯的桌號
+                reservationAndTableTimeslotDao.save(timeslot);  // 保存更新
+            }
 
-            // 5. 刪除舊的桌號
+            // 5. 刪除舊的桌號記錄
             tableManagementDao.deleteById(oldTableNumber);
 
             // 6. 創建新桌號並保存
@@ -142,20 +157,26 @@ public class TableManagementServiceImpl implements TableManagementService {
             // 7. 從 operating_hours 表查詢所有營業時間段
             List<OperatingHours> operatingHoursList = operatingHoursDao.findAll();
 
-            // 8. 將新桌位與每個營業時間段關聯，插入 reservation_and_table_timeslot 表
+            // 8. 構建與營業時間段的關聯
+            List<ReservationAndTableTimeslot> timeslotList = new ArrayList<>();
             for (OperatingHours hours : operatingHoursList) {
-                reservationAndTableTimeslotDao.insertTimeslot(
-                    newTableNumber,
-                    hours.getId(), // operating_hours 表中的 ID
-                    LocalDate.now(), // 或者你可以使用更動態的日期邏輯
-                    "可使用" // 默認狀態
-                );
+                ReservationAndTableTimeslot timeslot = new ReservationAndTableTimeslot();
+                timeslot.setTableManagement(newTable); // 使用新創建的桌位
+                timeslot.setOperatingHours(hours);     // 使用對應的營業時間
+                timeslot.setReservationDate(LocalDate.now()); // 設置當前日期，也可根據具體業務邏輯調整
+                timeslot.setTableStatus(ReservationAndTableTimeslot.TableStatus.可使用); // 默認為可使用
+
+                // 將 timeslot 加入到列表，稍後批量保存
+                timeslotList.add(timeslot);
             }
+
+            // 9. 批量保存 timeslot
+            reservationAndTableTimeslotDao.saveAll(timeslotList);
 
             return new TableManagementRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
         }
 
-        // 9. 保存更新的桌位（如果只更新了容納人數）
+        // 10. 保存更新的桌位（如果只更新了容納人數）
         tableManagementDao.save(table);
         return new TableManagementRes(ResMessage.SUCCESS.getCode(), ResMessage.SUCCESS.getMessage());
     }
