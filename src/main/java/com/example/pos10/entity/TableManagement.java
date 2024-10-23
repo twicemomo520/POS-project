@@ -1,11 +1,11 @@
 package com.example.pos10.entity;
 
-import java.util.List;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "table_management")
@@ -20,29 +20,14 @@ public class TableManagement {
     @Column(name = "table_capacity", nullable = false)
     private int tableCapacity;
 
-    public enum TableStatus {
-        可使用, 訂位中, 用餐中
-    }
-
-    @Enumerated(EnumType.STRING)
-    @NotNull(message = "Table status cannot be null !!!")
-    @Column(name = "table_status", nullable = false)
-    private TableStatus tableStatus;
-
-    @OneToMany(mappedBy = "table")
-    @JsonManagedReference("table-reservationTables") // 使用唯一名稱
-    private List<ReservationAndTable> reservationTables; // 關聯到中間表
-
     public TableManagement() {
         super();
     }
 
-    public TableManagement(String tableNumber, int tableCapacity, TableStatus tableStatus, List<ReservationAndTable> reservationTables) {
+    public TableManagement(String tableNumber, int tableCapacity) {
 		super();
 		this.tableNumber = tableNumber;
 		this.tableCapacity = tableCapacity;
-		this.tableStatus = tableStatus;
-		this.reservationTables = reservationTables;
 	}
     
     public String getTableNumber() {
@@ -60,20 +45,4 @@ public class TableManagement {
     public void setTableCapacity(int tableCapacity) {
         this.tableCapacity = tableCapacity;
     }
-
-    public TableStatus getTableStatus() {
-        return tableStatus;
-    }
-
-    public void setTableStatus(TableStatus tableStatus) {
-        this.tableStatus = tableStatus;
-    }
-
-	public List<ReservationAndTable> getReservationTables() {
-		return reservationTables;
-	}
-
-	public void setReservationTables(List<ReservationAndTable> reservationTables) {
-		this.reservationTables = reservationTables;
-	}
 }

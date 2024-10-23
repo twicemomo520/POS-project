@@ -1,18 +1,18 @@
-package com.example.pos10.service.ifs;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-
-import com.example.pos10.vo.ReservationReq;
-import com.example.pos10.vo.ReservationRes;
-
-public interface ReservationService {
-	
-	// 1. 查詢可用時間段
-	public ReservationRes findAvailableTimeSlots(LocalDate reservationDate, int reservationPeople);
-    
-    // 2. 儲存訂位
-    public ReservationRes saveReservation (ReservationReq reservationReq);
+//package com.example.pos10.service.ifs;
+//
+//import java.time.LocalDate;
+//import java.time.LocalTime;
+//
+//import com.example.pos10.vo.ReservationReq;
+//import com.example.pos10.vo.ReservationRes;
+//
+//public interface ReservationService {
+//	
+//	// 1. 查詢可用時間段
+//	public ReservationRes findAvailableTimeSlots(LocalDate reservationDate, int reservationPeople);
+//    
+//    // 2. 儲存訂位
+//    public ReservationRes saveReservation (ReservationReq reservationReq);
 //
 //    // 3. 根據顧客電話號碼查詢訂位
 //    public ReservationRes findReservationsByPhoneNumber (String phoneNumber);
@@ -31,4 +31,4 @@ public interface ReservationService {
 //    
 //    // 8. 訂位前一天發送提醒
 //    public void sendReservationReminders ();
-}
+//}

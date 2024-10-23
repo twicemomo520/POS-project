@@ -1,41 +1,41 @@
-package com.example.pos10.controller;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.example.pos10.service.ifs.ReservationService;
-import com.example.pos10.vo.ReservationReq;
-import com.example.pos10.vo.ReservationRes;
-
-@RestController
-public class ReservationController {
-
-    @Autowired
-    private ReservationService reservationService;
-    
-    // 1. 查詢可用時間段
-    @GetMapping("/reservation/getAvailableTimeSlots")
-    public ReservationRes getAvailableTimeSlots (
-            @RequestParam("reservationDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reservationDate,
-            @RequestParam int reservationPeople) {
-
-        return reservationService.findAvailableTimeSlots(reservationDate, reservationPeople);
-    }
-   
-    // 2. 儲存訂位
-    @PostMapping (value = "/reservation/saveReservation")
-    public ReservationRes saveReservation (@RequestBody ReservationReq reservationReq) {
-        return reservationService.saveReservation(reservationReq);
-    }
+//package com.example.pos10.controller;
+//
+//import java.time.LocalDate;
+//import java.time.LocalTime;
+//
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.format.annotation.DateTimeFormat;
+//import org.springframework.web.bind.annotation.DeleteMapping;
+//import org.springframework.web.bind.annotation.GetMapping;
+//import org.springframework.web.bind.annotation.PostMapping;
+//import org.springframework.web.bind.annotation.RequestBody;
+//import org.springframework.web.bind.annotation.RequestParam;
+//import org.springframework.web.bind.annotation.RestController;
+//
+//import com.example.pos10.service.ifs.ReservationService;
+//import com.example.pos10.vo.ReservationReq;
+//import com.example.pos10.vo.ReservationRes;
+//
+//@RestController
+//public class ReservationController {
+//
+//    @Autowired
+//    private ReservationService reservationService;
+//    
+//    // 1. 查詢可用時間段
+//    @GetMapping("/reservation/getAvailableTimeSlots")
+//    public ReservationRes getAvailableTimeSlots (
+//            @RequestParam("reservationDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reservationDate,
+//            @RequestParam int reservationPeople) {
+//
+//        return reservationService.findAvailableTimeSlots(reservationDate, reservationPeople);
+//    }
+//   
+//    // 2. 儲存訂位
+//    @PostMapping (value = "/reservation/saveReservation")
+//    public ReservationRes saveReservation (@RequestBody ReservationReq reservationReq) {
+//        return reservationService.saveReservation(reservationReq);
+//    }
 //
 //    // 3. 根據顧客電話號碼查詢訂位
 //    @GetMapping (value = "/reservation/findReservationsByPhoneNumber")
@@ -69,4 +69,4 @@ public class ReservationController {
 //    public ReservationRes manualCheckIn (@RequestParam ("tableNumber") String tableNumber, int reservationId) {
 //        return reservationService.manualCheckIn(tableNumber, reservationId);
 //    }
-}
+//}

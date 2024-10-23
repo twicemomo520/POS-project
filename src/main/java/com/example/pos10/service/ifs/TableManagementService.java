@@ -5,7 +5,6 @@ import java.util.List;
 import com.example.pos10.entity.TableManagement;
 import com.example.pos10.vo.TableManagementReq;
 import com.example.pos10.vo.TableManagementRes;
-import com.example.pos10.vo.TimeSlotWithTableStatusRes;
 
 public interface TableManagementService {
 
@@ -20,9 +19,4 @@ public interface TableManagementService {
 
     // 4. 獲取所有桌位
     public List <TableManagement> getAllTables ();
-    
-    // 5. 根據時間段獲取所有桌位的狀態
-    public List<TimeSlotWithTableStatusRes> getTodayTableStatuses();
-    
-   
 }

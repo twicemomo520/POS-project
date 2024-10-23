@@ -68,10 +68,6 @@ public class Reservation {
     @Column (name = "reservation_endtime", nullable = false)
     private LocalTime reservationEndTime;
 
-    @OneToMany(mappedBy = "reservation")
-    @JsonManagedReference("reservation-reservationTables") // 使用唯一名稱
-    private List <ReservationAndTable> reservationTables; // 關聯到中間表
-
     public enum Gender {
         先生, 小姐
     }
@@ -81,8 +77,7 @@ public class Reservation {
     }
 
     public Reservation(int reservationId, String customerName, String customerPhoneNumber, String customerEmail,Gender customerGender,
-    		int reservationPeople, LocalDate reservationDate, LocalTime reservationStartTime, LocalTime reservationEndTime,
-    		List <ReservationAndTable> reservationTables) {
+    		int reservationPeople, LocalDate reservationDate, LocalTime reservationStartTime, LocalTime reservationEndTime) {
 		super();
 		this.reservationId = reservationId;
 		this.customerName = customerName;
@@ -93,7 +88,6 @@ public class Reservation {
 		this.reservationDate = reservationDate;
 		this.reservationStartTime = reservationStartTime;
 		this.reservationEndTime = reservationEndTime;
-		this.reservationTables = reservationTables;
 	}
 
 	public int getReservationId () {
@@ -167,12 +161,4 @@ public class Reservation {
     public void setReservationEndingTime (LocalTime reservationEndingTime) {
         this.reservationEndTime = reservationEndingTime;
     }
-
-	public List<ReservationAndTable> getReservationTables() {
-		return reservationTables;
-	}
-
-	public void setReservationTables(List<ReservationAndTable> reservationTables) {
-		this.reservationTables = reservationTables;
-	}
 }

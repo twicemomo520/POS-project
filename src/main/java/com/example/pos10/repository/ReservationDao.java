@@ -1,24 +1,24 @@
-package com.example.pos10.repository;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-
-import com.example.pos10.entity.Reservation;
-import com.example.pos10.entity.TableManagement.TableStatus;
-
-@Repository
-public interface ReservationDao extends JpaRepository<Reservation, Integer> {
-
-	// 1. 儲存訂位
-	@Override
-	<S extends Reservation> S save(S reservation);
+//package com.example.pos10.repository;
+//
+//import java.time.LocalDate;
+//import java.time.LocalTime;
+//import java.util.List;
+//
+//import org.springframework.data.jpa.repository.JpaRepository;
+//import org.springframework.data.jpa.repository.Modifying;
+//import org.springframework.data.jpa.repository.Query;
+//import org.springframework.data.repository.query.Param;
+//import org.springframework.stereotype.Repository;
+//
+//import com.example.pos10.entity.Reservation;
+//import com.example.pos10.entity.TableManagement.TableStatus;
+//
+//@Repository
+//public interface ReservationDao extends JpaRepository<Reservation, Integer> {
+//
+//	// 1. 儲存訂位
+//	@Override
+//	<S extends Reservation> S save(S reservation);
 //
 //    // 2. 根據顧客電話號碼查詢訂位
 //    @Query("SELECT r FROM Reservation r WHERE r.customerPhoneNumber = :phoneNumber")
@@ -71,4 +71,4 @@ public interface ReservationDao extends JpaRepository<Reservation, Integer> {
 //    public int manualCheckIn(@Param("tableNumber") String tableNumber,
 //                             @Param("newStatus") TableStatus newStatus,
 //                             @Param("currentStatus") TableStatus currentStatus);
-}
+//}

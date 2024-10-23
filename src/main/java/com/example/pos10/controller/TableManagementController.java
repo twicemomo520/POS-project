@@ -17,7 +17,6 @@ import com.example.pos10.entity.TableManagement;
 import com.example.pos10.service.ifs.TableManagementService;
 import com.example.pos10.vo.TableManagementReq;
 import com.example.pos10.vo.TableManagementRes;
-import com.example.pos10.vo.TimeSlotWithTableStatusRes;
 
 
 @RestController
@@ -64,11 +63,5 @@ public class TableManagementController {
     @GetMapping (value = "/tableManagement/getAllTables")
     public List <TableManagement> getAllTables () {
         return tableManagementService.getAllTables ();
-    }
-
-    // 5. 根據時間段獲取所有桌位的狀態
-    @GetMapping(value = "/tableManagement/getTodayTableStatuses")
-    public List<TimeSlotWithTableStatusRes> getTodayTableStatuses() {
-        return tableManagementService.getTodayTableStatuses();
     }
 }

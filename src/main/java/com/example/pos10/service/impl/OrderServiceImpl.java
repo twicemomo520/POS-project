@@ -28,7 +28,7 @@ import com.example.pos10.repository.ComboDao;
 import com.example.pos10.repository.MenuItemsDao;
 import com.example.pos10.repository.OptionsDao;
 import com.example.pos10.repository.OrderDao;
-import com.example.pos10.repository.TableManagementDao;
+//import com.example.pos10.repository.TableManagementDao;
 import com.example.pos10.service.ifs.OrderService;
 import com.example.pos10.vo.AddOrderReq;
 import com.example.pos10.vo.BasicRes;
@@ -64,8 +64,8 @@ public class OrderServiceImpl implements OrderService {
 	@Autowired
 	private OptionsDao optionsDao;
 
-	@Autowired
-	private TableManagementDao tableManagementDao;
+//	@Autowired
+//	private TableManagementDao tableManagementDao;
 
 	@Autowired
 	private ComboDao comboDao;
@@ -487,12 +487,12 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		List<String> tableNumberList = new ArrayList<>();
-		List<TableManagement> tableData = tableManagementDao.selectAll();
+//		List<TableManagement> tableData = tableManagementDao.selectAll();
 
-		for (TableManagement data : tableData) {
-			tableNumberList.add(data.getTableNumber());
-
-		}
+//		for (TableManagement data : tableData) {
+//			tableNumberList.add(data.getTableNumber());
+//
+//		}
 
 		return new OrderMenuRes(ResMessage.SUCCESS.getCode(), "成功回傳菜單資料", categoriesList, menuItemList, optionList,
 				comboList, tableNumberList);
