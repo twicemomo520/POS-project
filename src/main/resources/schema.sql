@@ -1,5 +1,3 @@
-USE pos_project;
-
 CREATE TABLE IF NOT EXISTS reservation (
     reservation_id INT AUTO_INCREMENT PRIMARY KEY, -- 自增主鍵
     customer_name VARCHAR(255) NOT NULL, -- 客戶名稱，不可為空
