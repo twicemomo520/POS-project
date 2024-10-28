@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS reservation (
     reservation_starttime TIME NOT NULL, -- 預約開始時間，合併自 reservation_management
     reservation_endingtime TIME NOT NULL -- 預約結束時間，合併自 reservation_management
 );
+ALTER TABLE reservation CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 
 CREATE TABLE IF NOT EXISTS table_management (
   table_number varchar(20) NOT NULL,
